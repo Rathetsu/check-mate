@@ -13,7 +13,9 @@ browser. The engine never blocks the UI.
 Decisions: 2026-10-10-09-browser-stockfish-behind-analysis-provider ·
 2026-10-10-08-single-chessground-board-component ·
 2026-10-10-11-raw-player-data-append-only-aggregates-derived ·
-2026-10-11-02-analysis-sessions-are-mutable-working-copies.
+2026-10-11-02-analysis-sessions-are-mutable-working-copies ·
+2026-10-11-05-saved-browser-reviews-are-private-labelled-cache ·
+2026-10-11-06-self-hosted-syzygy-tablebase.
 Contracts: `AnalysisProvider` and `TreeCursor` (core-architecture spec,
 chessboard spec).
 
@@ -21,10 +23,10 @@ chessboard spec).
 
 In: free exploration, variation tree, move list, annotations, engine panel,
 PGN/FEN load and export, share links, save to study, analysis sessions,
-browser game review (SHOULD).
-Out: server-side analysis (Phase 4), cloud evals, tablebase lookup (COULD
-later; Lichess tablebase API is still anonymous but may change), opening
-explorer panel (P2 adds it as a tab).
+browser game review saved per user (M1.2b), self-hosted Syzygy tablebase
+lookup (added 2026-10-11).
+Out: server-side analysis (Phase 4), cloud evals, the Lichess tablebase API,
+opening explorer panel (P2 adds it as a tab).
 
 ## User flows
 
@@ -55,6 +57,11 @@ explorer panel (P2 adds it as a tab).
 - **P1-AN-04 MUST** Annotations:
   - **Move NAGs:** `!`, `?`, `!!`, `??`, `!?`, `?!`.
   - **Position NAGs:** `=`, `∞`, `⩲`, `⩱`, `±`, `∓`, `+-`, `-+`.
+  - **Observation NAGs** (added 2026-10-11, Lichess parity): Lichess's
+    observation glyph group, with keys and symbols taken verbatim from lila
+    `Glyph.scala` at a pinned commit (novelty, development, initiative,
+    attack, counterplay, time trouble, compensation, with the idea, only
+    move, zugzwang).
   - **Comments:** one per node.
   - All are shown inline in the move list.
 - **P1-AN-05 MUST** Arrows and highlights persist per node and are exported
@@ -100,8 +107,13 @@ explorer panel (P2 adds it as a tab).
 - **P1-AN-20 MUST** Load via paste, file and URL (`/analysis/<fen>`) using
   the PGN/FEN spec. A multi-game PGN shows a game picker.
 - **P1-AN-21 MUST** Export PGN, export FEN, copy share link. The link
-  encodes the FEN of the current node. A full-PGN link is COULD (size
-  limits).
+  encodes the FEN of the current node.
+  - **Full-PGN link** (COULD until 2026-10-11, now in Phase 1): the whole tree,
+    compressed into the URL hash.
+  - The size is checked *before* the link is offered.
+  - Over the cap, a plain, friendly message explains that this analysis is
+    too big for a link and offers the FEN link or "Save as study and share"
+    instead. Never a broken or truncated link.
 - **P1-AN-22 MUST** "Save to study" creates a new chapter, or overwrites a
   chosen chapter after confirmation (studies spec). Lands with M1.4, once
   studies exist.
@@ -119,13 +131,14 @@ explorer panel (P2 adds it as a tab).
   - the PGN of the user's tree, including their own variations and comments
   - the last position key
   - `updated_at`
-- **P1-AN-32 MUST** Engine evaluations are **not** persisted
-  (2026-10-10-11; Phase 4 recomputes server-side).
+- **P1-AN-32 MUST** Live engine-panel evaluations are **not** persisted
+  (2026-10-10-11; Phase 4 recomputes server-side). Saved game reviews are a
+  separate, explicit, labelled cache (P1-AN-43).
 - **P1-AN-33 SHOULD** Free analysis with no source creates a session only
   when the user makes at least 1 move. Free sessions not updated for 90 days
-  are purged by a job.
+  are purged by a job. *(2026-10-11: build in Phase 1.)*
 
-### Browser game review (SHOULD, M1.2b)
+### Browser game review (SHOULD, M1.2b; 2026-10-11: build, saved per user)
 
 - **P1-AN-40 SHOULD** "Review game" runs `evaluateLine` over the mainline at
   a fixed depth (default 18) in the worker, with a progress bar. It can be
@@ -141,8 +154,33 @@ explorer panel (P2 adds it as a tab).
   - Each classified move shows the engine's best move as an alternative.
 - **P1-AN-42 SHOULD** Results show as glyphs plus a per-player summary.
   They can be exported as PGN comments tagged `[%eval]` with
-  "CheckMate browser review, Stockfish 19 Lite, depth 18". They are labelled
-  browser-computed and are not stored as truth.
+  "CheckMate browser review, Stockfish 19 Lite, depth 18". They are always
+  labelled browser-computed and are never treated as truth.
+- **P1-AN-43 MUST** (added 2026-10-11,
+  2026-10-11-05-saved-browser-reviews-are-private-labelled-cache) Each review
+  run is saved for the signed-in user:
+  - Stored as an append-only `game_reviews` row, keyed by `line_key` (SHA-256
+    of the initial FEN plus the mainline UCI).
+  - Reopening the same mainline from any page shows the latest run with no
+    recompute. A picker lists earlier runs, and "Re-run" (choose depth) adds a
+    new run.
+  - Reviews are read only by the owner's review UI. They never feed stats,
+    datasets or other features.
+  - Anonymous users can review but nothing is saved.
+
+### Tablebase (added 2026-10-11, 2026-10-11-06-self-hosted-syzygy-tablebase)
+
+- **P1-AN-50 MUST** For legal positions within the installed Syzygy piece
+  count (3-5 pieces at launch), the panel shows the tablebase result
+  (win / draw / loss and DTZ) and each legal move's outcome. Clicking a move
+  plays it into the tree.
+- **P1-AN-51 MUST** Results come only from the self-hosted lila-tablebase
+  service through `GET /api/v1/tablebase?fen=`, which validates the FEN with
+  `packages/chess`. They are labelled "Syzygy tablebase", never mixed into the
+  engine panel or eval bar. Positions outside coverage show nothing.
+- **P1-AN-52 MUST** If the tablebase service is down or disabled (its dataset
+  is not yet cleared in the register), the section is hidden. The board and
+  engine are unaffected.
 
 ## Data model
 
@@ -153,6 +191,13 @@ analysis_sessions (id uuid PK, user_id FK CASCADE,
   initial_fen text, pgn text, last_position_key text,
   created_at, updated_at timestamptz)
 INDEX (user_id, updated_at DESC)
+
+game_reviews (id uuid PK, user_id FK CASCADE,   -- append-only, one row per run
+  line_key text, initial_fen text, moves text[],  -- mainline UCI
+  provenance jsonb, depth int,
+  plies jsonb,     -- per ply: score, classification, best move (UCI)
+  summary jsonb, created_at timestamptz)
+INDEX (user_id, line_key, created_at DESC)
 ```
 
 ## API surface
@@ -161,6 +206,9 @@ INDEX (user_id, updated_at DESC)
 - `PATCH /api/v1/analysis-sessions/:id` (pgn, last_position_key)
 - `GET /api/v1/analysis-sessions?source_type=&source_id=`, used to resume
   the user's last session for a game, puzzle or chapter
+- `POST /api/v1/game-reviews`; `GET /api/v1/game-reviews?line_key=` (runs,
+  newest first)
+- `GET /api/v1/tablebase?fen=`
 
 ## Reuse
 
@@ -197,8 +245,15 @@ The provider interface lets a server provider replace browser Stockfish.
 - A fake provider swap renders identical UI (CORE-23).
 - A session autosave survives a reload and resumes on reopening the same
   source.
+- A full-PGN link over the cap is never offered. The friendly message appears
+  instead.
+- A KRvK position shows the tablebase result and per-move outcomes. A
+  6-piece position shows no tablebase section.
+- Review a game → reload → the latest review shows with no recompute. A
+  re-run adds a second run to the picker. User B can't read user A's reviews
+  (404).
 
 ## Open questions
 
-- Tablebase lookup for ≤7 pieces: deferred. Lichess's tablebase is anonymous
-  today but may require auth later, which makes it a Phase 4 server concern.
+- Resolved 2026-10-11: tablebase lookup is built self-hosted (P1-AN-50..52,
+  2026-10-11-06-self-hosted-syzygy-tablebase).

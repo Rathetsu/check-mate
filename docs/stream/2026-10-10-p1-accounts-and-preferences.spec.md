@@ -26,8 +26,8 @@ P1-AC-12).
 
 ## User flows
 
-1. **Register:** email + password + display name → signed in. A verification
-   email is sent; clicking the link marks the email verified.
+1. **Register:** email + username + display name + password → signed in. A
+   verification email is sent; clicking the link marks the email verified.
 2. **Sign in / out:** email + password → session cookie. Sign out revokes the
    current session.
 3. **Forgot password:** enter email → always show the same "check your inbox"
@@ -42,7 +42,13 @@ P1-AC-12).
 
 - **P1-AC-01 MUST** Registration with email, password (min 10 chars, checked
   against breached passwords by Better Auth's `haveIBeenPwned` plugin, which
-  sends only a 5-character hash prefix) and display name.
+  sends only a 5-character hash prefix), display name, and a **unique
+  username** (added 2026-10-11, for study invites,
+  2026-10-11-04-shared-collaborative-studies-ops-over-pgn):
+  - Lichess rules: 2-20 characters from `[A-Za-z0-9_-]`.
+  - Unique case-insensitively. The chosen casing is kept for display.
+  - Immutable after sign-up.
+  - Provided by Better Auth's `username` plugin.
 - **P1-AC-02 MUST** A verification email is sent on sign-up, but
   verification is **not required**: unverified users can sign in and save
   everything. `requireEmailVerification` stays `false` until the trigger in
@@ -76,7 +82,8 @@ P1-AC-12).
 
 ## Data model
 
-Better Auth generates `user`, `session`, `account`, `verification`. The
+Better Auth generates `user` (with the `username` plugin's `username` and
+`displayUsername` columns), `session`, `account`, `verification`. The
 `account` table also stores the Lichess OAuth link in Phase 3. Better Auth's
 default text ids are kept, so every `user_id` foreign key in CheckMate is
 `text`. CheckMate adds:
@@ -133,6 +140,8 @@ preferences become defaults for server-side analysis later.
 
 ## Acceptance criteria
 
+- Playwright: registering a username that differs only in case from an
+  existing one is rejected.
 - Playwright: register → signed in without verifying → save works → verify
   via the Mailpit link → sign out → reset password (Mailpit) → old sessions
   are revoked → sign in with the new password.

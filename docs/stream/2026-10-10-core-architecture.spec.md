@@ -32,7 +32,7 @@ Decisions this spec relies on (read for the why):
 |---|---|---|
 | Rules | `packages/chess` (chessops) | implemented anywhere else |
 | Analysis | `AnalysisProvider` (browser Stockfish now) | called except through the interface |
-| Knowledge/Data | `packages/core` (Postgres) + `services/explorer` | invented or estimated |
+| Knowledge/Data | `packages/core` (Postgres) + `services/explorer` + `services/tablebase` (Syzygy, 2026-10-11-06) | invented or estimated |
 
 ## Repository layout
 
@@ -48,6 +48,9 @@ packages/core     Drizzle schema + migrations, domain services, ExplorerSource
                   adapters, user-scoped query helpers. No React/Next imports.
 services/explorer Compose config + ingestion config for lila-openingexplorer
                   (Phase 2). No forked upstream code.
+services/tablebase Dockerfile building upstream lila-tablebase at a pinned
+                  commit; Syzygy files on a read-only volume (Phase 1,
+                  2026-10-11-06-self-hosted-syzygy-tablebase). No forked code.
 ```
 
 Requirements:
@@ -93,7 +96,7 @@ type VariationCheck = { legal: true; evals: PlyEval[] } | { legal: false; firstI
 - **CORE-20 MUST** `validateVariation` checks legality via the rules layer first; the engine is only asked about legal lines.
 - **CORE-21 MUST** Every result object carries `Provenance`.
 - **CORE-22 MUST** Only the provider implementation imports `stockfish` or parses UCI output (2026-10-10-09-browser-stockfish-behind-analysis-provider).
-- **CORE-23 SHOULD** A fake provider (deterministic canned lines) exists for tests and Storybook-style previews.
+- **CORE-23 SHOULD** A fake provider (deterministic canned lines) exists for tests and Storybook-style previews. *(2026-10-11: build in M1.1.)*
 
 ## Knowledge/Data layer: `ExplorerSource`
 
@@ -122,13 +125,13 @@ type PositionStats = { source: string; total: { games: number; white: number; dr
 - **CORE-40 MUST** JSON REST under `/api/v1/...`, inputs validated with zod, outputs typed from shared schemas.
 - **CORE-41 MUST** Error envelope `{ "error": { "code": "PGN_PARSE_ERROR", "message": "...", "details": {...} } }`; HTTP status matches class (400 validation, 401, 403, 404, 409 version conflict, 429, 5xx).
 - **CORE-42 MUST** Domain services take an explicit `userId` argument; route handlers resolve it from the session. Phase 4 will add service-to-service auth that resolves `userId` differently — no service may read cookies itself.
-- **CORE-43 SHOULD** Each endpoint is documented in the feature spec that introduces it; an OpenAPI document is generated before Phase 4 starts.
-- **CORE-44 COULD (P4-prep)** Rules endpoints (`/api/v1/chess/legal-moves`, `/validate-line`) as thin wrappers over `packages/chess` — not built in Phases 1-3.
+- **CORE-43 SHOULD** Each endpoint is documented in the feature spec that introduces it; an OpenAPI document is generated before Phase 4 starts. *(2026-10-11: confirmed. Specs as features land, OpenAPI at P4-prep.)*
+- **CORE-44 COULD (P4-prep)** Rules endpoints (`/api/v1/chess/legal-moves`, `/validate-line`) as thin wrappers over `packages/chess` — not built in Phases 1-3 (confirmed 2026-10-11).
 
 ## Data ownership and authz
 
 - **CORE-50 MUST** Every user-owned table has a non-null `user_id` FK with `ON DELETE CASCADE`.
-- **CORE-51 MUST** `packages/core` exposes queries that require `userId`; there is no unscoped accessor for user tables.
+- **CORE-51 MUST** `packages/core` exposes queries that require `userId`; there is no unscoped accessor for user tables. The one sanctioned non-owner path is the studies `studyAccess(userId | null, studyId)` gate (public, unlisted and member access, 2026-10-11-04-shared-collaborative-studies-ops-over-pgn). Every study query goes through it, and "none" answers 404.
 - **CORE-52 MUST** Every feature's test suite includes a cross-user access test (user B cannot read or mutate user A's rows; returns 404, not 403, to avoid leaking existence).
 - **CORE-53 MUST** Raw tables follow 2026-10-10-11 (append-only + derived rebuild jobs).
 

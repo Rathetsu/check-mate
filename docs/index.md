@@ -13,8 +13,9 @@ documentation system (ai-dev-docs).
 - [wiki/architecture.md](wiki/architecture.md): system map, module boundaries, invariants (orientation page)
 - [stream/2026-10-10-core-architecture.spec.md](stream/2026-10-10-core-architecture.spec.md): layout, `AnalysisProvider`, `ExplorerSource`, `/api/v1` conventions, authz, jobs
 - [wiki/open-source-reuse.md](wiki/open-source-reuse.md): every dependency, dataset and asset, with its license, status and obligations. Check it before adding anything.
-- [adr/](adr/): why things are the way they are (22 ADRs, 2026-10-10 and
+- [adr/](adr/): why things are the way they are (25 ADRs, 2026-10-10 and
   2026-10-11)
+- [stream/2026-10-11-phase-1-implementation.plan.md](stream/2026-10-11-phase-1-implementation.plan.md): Phase 1 build order, file layout, per-milestone checks, and every SHOULD/COULD decision
 
 ## Feature specs (`docs/stream/`)
 
@@ -34,6 +35,7 @@ documentation system (ai-dev-docs).
 | 3 | [p3-game-library](stream/2026-10-10-p3-game-library.spec.md) |
 | 3 | [p3-personal-opening-tree](stream/2026-10-10-p3-personal-opening-tree.spec.md) |
 | 2 | [masters-data-permission-requests](stream/2026-10-10-masters-data-permission-requests.plan.md) (plan: email drafts + tracking) |
+| 1 | [phase-1-implementation](stream/2026-10-11-phase-1-implementation.plan.md) (plan: build order M1.0-M1.6) |
 
 ## ADRs
 
@@ -61,6 +63,9 @@ documentation system (ai-dev-docs).
 | 2026-10-11-01 | [eslint-prettier-enforce-boundaries](adr/2026-10-11-01-eslint-prettier-enforce-boundaries.md) |
 | 2026-10-11-02 | [analysis-sessions-are-mutable-working-copies](adr/2026-10-11-02-analysis-sessions-are-mutable-working-copies.md) |
 | 2026-10-11-03 | [soft-launch-without-email-service](adr/2026-10-11-03-soft-launch-without-email-service.md) |
+| 2026-10-11-04 | [shared-collaborative-studies-ops-over-pgn](adr/2026-10-11-04-shared-collaborative-studies-ops-over-pgn.md) |
+| 2026-10-11-05 | [saved-browser-reviews-are-private-labelled-cache](adr/2026-10-11-05-saved-browser-reviews-are-private-labelled-cache.md) |
+| 2026-10-11-06 | [self-hosted-syzygy-tablebase](adr/2026-10-11-06-self-hosted-syzygy-tablebase.md) |
 
 ## Conventions
 

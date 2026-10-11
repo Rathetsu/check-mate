@@ -19,7 +19,9 @@ docs/stream/2026-10-10-mvp-roadmap.plan.md).
 - Only `<Board>` imports chessground; board state lives in `TreeCursor`
   (adr/2026-10-10-08).
 - Only the `AnalysisProvider` implementation imports `stockfish` or parses
-  UCI. Never persist browser evals as truth (adr/2026-10-10-09).
+  UCI. Never persist browser evals as truth (adr/2026-10-10-09). Saved game
+  reviews are a private, labelled, per-user cache, never truth
+  (adr/2026-10-11-05).
 - No LLM SDKs, prompts or coaching logic in this repo. The AI service uses
   `/api/v1` only (adr/2026-10-10-03).
 - Register every new dependency, asset or dataset in
@@ -47,3 +49,5 @@ docs/stream/2026-10-10-mvp-roadmap.plan.md).
 - Docs map (read first for structural work): docs/index.md
 - Current architecture: docs/wiki/architecture.md
 - Decisions: docs/adr/ · Specs and plans: docs/stream/ (not docs/specs/)
+- Phase 1 build order and per-milestone checks:
+  docs/stream/2026-10-11-phase-1-implementation.plan.md

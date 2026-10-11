@@ -32,6 +32,7 @@ call Core's `/api/v1`. Core never calls the AI service's internals.
 │ worker (Node 24, pg-boss): imports, sync, puzzle load,   │                     │
 │   explorer ingestion, position indexing ─────────────────┤                     │
 │ explorer (lila-openingexplorer, RocksDB) ◄── internal only, admin never public │
+│ tablebase (lila-tablebase, Syzygy files on a read-only volume) ◄── internal    │
 └───────────┬────────────────────────────────────────────────────────────────────┘
             ▼ outbound
    lichess.org API · explorer.lichess.org (optional, user token) ·
@@ -54,6 +55,7 @@ sits above all three.
 | `packages/chess` | Pure rules/PGN/FEN, `positionKey`, `gameFingerprint` (uploads), `terminalKey` (OTB dedup), opening classifier, `TreeCursor`, `AnalysisProvider` types. **No I/O.** | chessops |
 | `packages/core` | Drizzle schema, migrations, user-scoped domain services, `ExplorerSource` adapters. **No React.** | Postgres, explorer |
 | `services/explorer` | Compose and ingestion config for upstream lila-openingexplorer. **No forked code.** | — |
+| `services/tablebase` | Dockerfile for upstream lila-tablebase at a pinned commit, Syzygy 3-5 pieces on a read-only volume (2026-10-11-06). **No forked code.** | — |
 
 ## Data flow
 
@@ -82,6 +84,12 @@ sits above all three.
    - The adapters' results are merged. A source is excluded, with its
      reason, when it can't honor a filter.
    - Results are annotated with `classifyOpening`.
+5. **Study edit (shared or collaborative, 2026-10-11-04):**
+   - The client posts a tree op (add move, comment, glyph, …) for a chapter.
+   - `packages/core` checks `studyAccess`, locks the chapter row, applies the
+     op with `TreeCursor`, writes the PGN and bumps `version`.
+   - The op goes out over SSE to every member viewing the study. With sync on,
+     navigation is broadcast the same way.
 
 ## Invariants and boundaries
 
@@ -91,7 +99,9 @@ sits above all three.
   `TreeCursor`, not in React (ADR 08).
 - **Engine:** only the `AnalysisProvider` implementation imports
   `stockfish` or parses UCI. Engine results always carry provenance, and
-  browser evals are never persisted as truth (ADR 09).
+  browser evals are never persisted as truth (ADR 09). Saved game reviews are
+  a private, labelled, per-user cache that nothing else reads
+  (2026-10-11-05).
 - **AI boundary:** no LLM, prompt or coaching code lives in this repo. The
   AI service talks to Core only via `/api/v1`, never the DB, and never links
   GPL/AGPL code (ADR 03).
@@ -103,7 +113,9 @@ sits above all three.
     they are mutable working copies (2026-10-11-02).
   - Aggregates and indexes are derived, with a rebuild job.
   - Every player row has exactly one `user_id`.
-  - All access is user-scoped through `packages/core` (ADR 11).
+  - All access is user-scoped through `packages/core` (ADR 11). Studies are
+    the one exception: public, unlisted and member access goes through the
+    single `studyAccess` gate (2026-10-11-04).
 - **Dependencies, assets and datasets:** each is registered in
   `open-source-reuse.md` before merge. Only cleared datasets are ingested
   (ADR 04, 14).
@@ -113,6 +125,9 @@ sits above all three.
 - **Masters index:** rebuilt from the `explorer_otb_games` registry, never
   edited in place. Upstream can't delete games (ADR 19).
 - **Explorer admin routes:** never routed publicly (ADR 16).
+- **Tablebase:** results come only from the self-hosted Syzygy service, never
+  the Lichess API. Positions outside the installed piece count show nothing
+  (2026-10-11-06).
 
 ## External dependencies
 
@@ -123,6 +138,7 @@ sits above all three.
 | database.lichess.org | puzzle refresh, explorer ingestion | Monthly job retries; stale data is acceptable |
 | explorer.lichess.org (optional) | `lichess-account` source | Source shows "unavailable/rate limited"; others still work |
 | lila-openingexplorer (self-hosted) | explorer stats | Explorer panel degrades; board and analysis unaffected |
+| lila-tablebase (self-hosted) + Syzygy mirror (one-off download) | endgame results ≤5 pieces | Tablebase section hidden; board and engine unaffected |
 | SMTP provider (optional until launch, 2026-10-11-03) | verification, reset, email change | Not configured: links go to the server log and the operator passes them on. Verification is not required, so sign-up never blocks |
 
 ## Key decisions
@@ -148,4 +164,7 @@ sits above all three.
 - docs/adr/2026-10-11-01-eslint-prettier-enforce-boundaries.md
 - docs/adr/2026-10-11-02-analysis-sessions-are-mutable-working-copies.md
 - docs/adr/2026-10-11-03-soft-launch-without-email-service.md
+- docs/adr/2026-10-11-04-shared-collaborative-studies-ops-over-pgn.md
+- docs/adr/2026-10-11-05-saved-browser-reviews-are-private-labelled-cache.md
+- docs/adr/2026-10-11-06-self-hosted-syzygy-tablebase.md
 - Cross-cutting contracts: docs/stream/2026-10-10-core-architecture.spec.md

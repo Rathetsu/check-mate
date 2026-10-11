@@ -22,7 +22,7 @@ friend.
 
 | Phase | What users get | State |
 |---|---|---|
-| 1. Chess platform | Accounts, analysis board with Stockfish in the browser, board editor, PGN/FEN import and export, private studies, themed puzzle training with saved history | Specified, not started |
+| 1. Chess platform | Accounts, analysis board with Stockfish in the browser, endgame tablebase, saved game reviews, board editor, PGN/FEN import and export, studies like Lichess (sharing and live collaboration, no chat), themed puzzle training with saved history | Specified, not started |
 | 2. Opening explorer | Opening statistics from Lichess games and master games combined without double counting, with filters, master game viewer, opening names, and a free download of our master-game dataset | Specified, not started |
 | 3. Personal database | Connect Lichess and Chess.com, import and keep all your games, sync new ones, browse your library, see your personal opening tree and opening results, and compare with the wider database | Specified, not started |
 | 4. AI coach | Conversational coaching grounded in engine and database facts | Not planned yet. Will be a separate, private service |
@@ -31,11 +31,12 @@ friend.
 
 Phase 1, milestone M1.0:
 - project skeleton
-- sign-up and sign-in, settings
+- sign-up (with a unique username) and sign-in, settings
 - app shell in the CheckMate brand
 - license, attribution and privacy pages
 
-See docs/stream/2026-10-10-mvp-roadmap.plan.md.
+See docs/stream/2026-10-10-mvp-roadmap.plan.md and the build plan in
+docs/stream/2026-10-11-phase-1-implementation.plan.md.
 
 ## Decided (2026-10-10)
 
@@ -70,9 +71,26 @@ See docs/stream/2026-10-10-mvp-roadmap.plan.md.
   (ADR 2026-10-11-02).
 - **Small picks:** Geist font, `next-themes`, breached-password check via
   Have I Been Pwned, GitHub Actions for CI.
+- **Studies work like Lichess, without chat:** public or private studies,
+  clone, likes, topics, embedding, interactive lessons, practice against the
+  computer, and live editing with invited members (ADR 2026-10-11-04).
+- **Usernames:** every account picks a unique username at sign-up, used to
+  invite people to studies.
+- **Game reviews are saved:** a reviewed game stays reviewed for that user.
+  Every run is kept, and it's always labelled as a browser review, never
+  treated as fact (ADR 2026-10-11-05).
+- **Endgame tablebase, self-hosted:** perfect endgame answers for positions
+  with up to 5 pieces, served from our own copy of the free Syzygy files, not
+  Lichess's service. It grows to 6 pieces when disk allows (ADR
+  2026-10-11-06).
+- **Every optional Phase 1 item was decided one by one.** The list is in the
+  build plan. One is dropped for good: browser back/forward through editor
+  edits. Two-factor sign-in waits until later.
 
 ## Waiting on you
 
+- **Install Node 24 LTS** on your machine before the build starts (you have
+  22.11; the background-job library needs a newer version).
 - **Send two permission emails** to unlock historical master games (TWIC
   1994 to now, and PGN Mentor). Drafts and tracking are in
   docs/stream/2026-10-10-masters-data-permission-requests.plan.md.

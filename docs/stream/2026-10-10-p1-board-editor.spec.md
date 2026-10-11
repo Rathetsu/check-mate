@@ -43,7 +43,8 @@ recognition.
   - **Eraser:** click squares to clear them.
   - Dragging a piece off the board deletes it.
 - **P1-ED-03 MUST** Actions: Clear board, Starting position, Flip board,
-  Swap colors (COULD).
+  Swap colors (COULD until 2026-10-11, now in Phase 1: every piece changes
+  color, mirrored, and side to move flips).
 - **P1-ED-04 MUST** Side to move: White / Black.
 - **P1-ED-05 MUST** Castling:
   - Four checkboxes (White O-O, White O-O-O, Black O-O, Black O-O-O).
@@ -68,12 +69,13 @@ recognition.
   disabled while invalid. A tooltip lists the reasons. "Save as study
   chapter" lands with M1.4, once studies exist.
 - **P1-ED-11 MUST** URL stays in sync (`/editor/<fen>`) so positions are
-  shareable. Browser back/forward walks the edit history (COULD) or at least
-  the last committed FEN.
+  shareable, by replacing the history entry. Browser back/forward does
+  **not** walk the edit history: **won't do** (user decision 2026-10-11; not
+  planned for any phase).
 - **P1-ED-12 SHOULD** Load a position from the current analysis node ("Open
-  in editor").
+  in editor"). *(2026-10-11: build; it is the same button as P1-AN-23.)*
 - **P1-ED-13 SHOULD** Mobile: palette laid out as a scrollable row,
-  tap-to-place.
+  tap-to-place. *(2026-10-11: build in Phase 1.)*
 
 ## Reuse
 

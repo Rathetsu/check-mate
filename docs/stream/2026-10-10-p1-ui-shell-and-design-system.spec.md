@@ -21,7 +21,9 @@ Source link) · 2026-10-10-05-typescript-monorepo-nextjs-and-node-worker ·
 | `/` | Home: quick links (Analyze, Puzzles, Studies; Explorer from P2, My Games from P3), resume last activity. Links to unshipped phases are hidden, so there are no dead ends | 1 |
 | `/analysis`, `/analysis/[...fen]` | Analysis board | 1 |
 | `/editor`, `/editor/[...fen]` | Board editor | 1 |
-| `/studies`, `/studies/[id]`, `/studies/[id]/[chapterId]` | Studies | 1 |
+| `/studies`, `/studies/[id]`, `/studies/[id]/[chapterId]` | Studies. `/studies` has tabs: mine / member of / liked / public browse | 1 |
+| `/studies/topic/[topic]` | Public studies by topic | 1 |
+| `/embed/study/[id]/[chapterId]` | Read-only embeddable chapter: no engine, no COOP/COEP, frameable | 1 |
 | `/puzzles`, `/puzzles/[theme]`, `/puzzles/history` | Puzzle training | 1 |
 | `/explorer` | Opening explorer (board + explorer panel) | 2 |
 | `/games`, `/games/[id]`, `/games/import` | Personal library | 3 |
@@ -58,7 +60,8 @@ Source link) · 2026-10-10-05-typescript-monorepo-nextjs-and-node-worker ·
   - `f`: flip the board
   - `x`: toggle the engine
   - `?`: shortcut help
-  - `/`: command palette (SHOULD)
+  - `/`: command palette (SHOULD; 2026-10-11: build in Phase 1). Jump to a
+    route, flip, toggle the engine, import PGN.
 - **P1-UI-05 MUST** Accessibility:
   - visible focus rings
   - ARIA labels on all controls
@@ -84,10 +87,10 @@ Source link) · 2026-10-10-05-typescript-monorepo-nextjs-and-node-worker ·
   BY-SA broadcasts).
 - **P1-UI-09 MUST** A consistent empty / loading / error state component.
   Errors show the API `error.message`, never a raw stack.
-- **P1-UI-10 SHOULD** Typography: Geist (variable sans, OFL; the
+- **P1-UI-10 SHOULD** *(2026-10-11: build.)* Typography: Geist (variable sans, OFL; the
   `create-next-app` default) plus tabular numerals for evals and stats.
   Icons from Lucide (ISC).
-- **P1-UI-11 SHOULD** Toasts via `sonner` (the shadcn default; `toast` is
+- **P1-UI-11 SHOULD** *(2026-10-11: build.)* Toasts via `sonner` (the shadcn default; `toast` is
   deprecated).
 - **P1-UI-12 MUST** COOP/COEP headers only on engine routes (`/analysis`,
   `/studies/*`, `/games/[id]`, `/explorer`), per

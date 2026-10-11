@@ -18,6 +18,7 @@ parallel.
 | Spec | Milestones |
 |---|---|
 | 2026-10-10-core-architecture.spec.md | all (contracts) |
+| 2026-10-11-phase-1-implementation.plan.md | M1.0-M1.6 (build order, file layout, per-milestone checks) |
 | 2026-10-10-p1-accounts-and-preferences.spec.md | M1.0 |
 | 2026-10-10-p1-ui-shell-and-design-system.spec.md | M1.0, M1.6 |
 | 2026-10-10-p1-chessboard-component.spec.md | M1.1 |
@@ -36,12 +37,12 @@ parallel.
 
 | Milestone | Content | Done when |
 |---|---|---|
-| M1.0 Scaffold | monorepo, compose (web, worker, postgres, caddy, mailpit), CI on GitHub Actions (ESLint + Prettier, typecheck, Vitest, Playwright, register check), AGPL `LICENSE`, `NOTICE`/`/about` from the reuse register, footer Source link, `/privacy` page, brand tokens (Mate Violet), Better Auth (`sendEmail` with log fallback), preferences, app shell + theme | register/sign-in e2e green in CI; verification and reset e2e via Mailpit |
+| M1.0 Scaffold | monorepo, compose (web, worker, postgres, caddy, mailpit), CI on GitHub Actions (ESLint + Prettier, typecheck, Vitest, Playwright, register check), AGPL `LICENSE`, `NOTICE`/`/about` from the reuse register, footer Source link, `/privacy` page, brand tokens (Mate Violet), Better Auth (`sendEmail` with log fallback, unique usernames), preferences, app shell + theme | register/sign-in e2e green in CI; verification and reset e2e via Mailpit |
 | M1.1 Board + rules + PGN/FEN | `packages/chess`, `<Board>`, `TreeCursor`, PGN/FEN library + fixture corpus | chessboard and PGN/FEN acceptance criteria |
-| M1.2 Analysis + engine | analysis board, browser Stockfish provider, sessions | analysis acceptance criteria, except P1-AN-22 (moves to M1.4) |
-| M1.2b Game review (SHOULD) | per-ply review, classifications | P1-AN-40..42 |
+| M1.2 Analysis + engine + tablebase | analysis board, browser Stockfish provider, sessions, command palette, self-hosted Syzygy tablebase (3-5 pieces) | analysis acceptance criteria, except P1-AN-22 (moves to M1.4) and P1-AN-40..43 (M1.2b) |
+| M1.2b Saved game review (runs after M1.5) | per-ply review, classifications, saved per user with every run kept (2026-10-11-05) | P1-AN-40..43 |
 | M1.3 Board editor | editor | editor acceptance criteria, except "Save as study chapter" in P1-ED-10 (moves to M1.4) |
-| M1.4 Studies | studies CRUD + chapters + export; analysis "Save to study" (P1-AN-22); editor "Save as study chapter" (P1-ED-10) | studies acceptance criteria, except "From puzzle" in P1-ST-02 (moves to M1.5) |
+| M1.4 Studies (Lichess parity minus chat) | studies CRUD + chapters + export; single-user tools and chapter modes; sharing (public/unlisted, clone, likes, topics, browse, embed); collaboration (members, live sync) (2026-10-11-04); analysis "Save to study" (P1-AN-22); editor "Save as study chapter" (P1-ED-10) | studies acceptance criteria, except "From puzzle" in P1-ST-02 (moves to M1.5) |
 | M1.5 Puzzles | import job, theme catalog, solving, attempts, history; study chapter "From puzzle" (P1-ST-02) | puzzles acceptance criteria |
 | M1.6 Polish | responsive pass, a11y (axe), asset allowlist check, performance | UI shell acceptance criteria |
 
@@ -56,6 +57,14 @@ parallel.
    (P1-ST).
 7. Solve fork puzzles; history shows the attempts (P1-PZ).
 8. Navigate every route on phone and desktop with no dead ends (P1-UI).
+9. Invite a second user as a contributor. Both see edits live, sync follows
+   navigation, then publish the study and view it signed out (P1-ST,
+   2026-10-11-04).
+10. Review a game, reload, and the saved review is still there with no
+    recompute (P1-AN-43).
+
+Milestone order: M1.0 → M1.1 → M1.2 → M1.3 → M1.4 → M1.5 → M1.2b → M1.6
+(M1.2b needs the move classifier that M1.4 builds for practice mode).
 
 ## Phase 2: Unified opening explorer
 
@@ -138,6 +147,9 @@ parallel.
 | Chess.com personal import (decided 2026-10-10) | ADR 18 · P3-IM-02, P3-IM-08, P3-IM-18, P3-IM-19 |
 | Masters sourcing, Lichess-style (decided 2026-10-10) | ADR 19 · P2-EI-20..36 |
 | Brand (decided 2026-10-10) | P1-UI-14 + Brand section of the UI shell spec |
+| Studies at Lichess parity minus chat (decided 2026-10-11) | 2026-10-11-04 · studies spec (M1.4 rewrite) · P1-AC-01 usernames |
+| Saved game reviews (decided 2026-10-11) | 2026-10-11-05 · P1-AN-43 |
+| Self-hosted tablebase (decided 2026-10-11) | 2026-10-11-06 · P1-AN-50..52 |
 
 ## Risks and open items
 
@@ -146,7 +158,8 @@ parallel.
 | TWIC and PGN Mentor permission replies (historical masters before ~2020) | thinner Masters tab until granted | user: send the drafts in 2026-10-10-masters-data-permission-requests.plan.md |
 | Lichess dump subset size vs VPS disk | explorer coverage | M2.1 sizing review |
 | Chess.com objects to persisted personal imports | Chess.com sync off (kill switch); PGN upload fallback | accepted risk, ADR 18 |
-| Lichess may restrict anonymous tablebase/export further | already designed around (OAuth import; no tablebase dependency) | — |
+| Lichess may restrict anonymous tablebase/export further | already designed around (OAuth import; tablebase self-hosted, 2026-10-11-06) | — |
+| Syzygy table files' license not yet verified | tablebase ships disabled until the register row says cleared | M1.2 |
 | Paid legal review | only at ADR 17 triggers (money, investment, Phase 4 launch, complaint, trademark) | user, when a trigger fires |
 | First deploy has no domain or email service (soft launch, under 5 users) | HTTPS is still required: multi-threaded Stockfish needs a secure context, and auth cookies are `Secure`. A free `<server-ip>.sslip.io` hostname plus Caddy's automatic TLS works with no signup. Email links go to the server log | user, at first deploy; email and verification flip at the 2026-10-11-03-soft-launch-without-email-service trigger |
 
@@ -157,6 +170,12 @@ Resolved 2026-10-11 (Phase 1 readiness review): lint toolchain
 (2026-10-11-01), analysis session storage (2026-10-11-02), soft launch without
 an email service, with verification optional and export deferred
 (2026-10-11-03), and the milestone moves above.
+
+Resolved 2026-10-11 (scope walkthrough with the user): every Phase 1 SHOULD
+and COULD was decided one by one (table in
+2026-10-11-phase-1-implementation.plan.md). Studies were expanded to Lichess
+parity minus chat (2026-10-11-04). Game reviews are saved per user
+(2026-10-11-05). The tablebase is self-hosted (2026-10-11-06).
 
 ## Phase 4 (not started)
 
