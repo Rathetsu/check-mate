@@ -37,7 +37,7 @@ parallel.
 
 | Milestone | Content | Done when |
 |---|---|---|
-| M1.0 Scaffold | monorepo, compose (web, worker, postgres, caddy, mailpit), CI on GitHub Actions (ESLint + Prettier, typecheck, Vitest, Playwright, register check), AGPL `LICENSE`, `NOTICE`/`/about` from the reuse register, footer Source link, `/privacy` page, brand tokens (Mate Violet), Better Auth (`sendEmail` with log fallback, unique usernames), preferences, app shell + theme | register/sign-in e2e green in CI; verification and reset e2e via Mailpit |
+| M1.0 Scaffold | monorepo, compose (web, worker, postgres, caddy, mailpit), CI on GitHub Actions (ESLint + Prettier, typecheck, Vitest, Playwright, register check), AGPL `LICENSE`, `NOTICE`/`/about` from the reuse register, footer Source link, `/privacy` page, brand tokens (Mate Violet; Mate Green since 2026-10-11, ADR 2026-10-11-08), Better Auth (`sendEmail` with log fallback, unique usernames), preferences, app shell + theme | register/sign-in e2e green in CI; verification and reset e2e via Mailpit |
 | M1.1 Board + rules + PGN/FEN | `packages/chess`, `<Board>`, `TreeCursor`, PGN/FEN library + fixture corpus | chessboard and PGN/FEN acceptance criteria |
 | M1.2 Analysis + engine + tablebase | analysis board, browser Stockfish provider, sessions, command palette, self-hosted endgame tablebase (3-5 pieces) | analysis acceptance criteria, except P1-AN-22 (moves to M1.4) and P1-AN-40..43 (M1.2b) |
 | M1.2b Saved game review (runs after M1.5) | per-ply review, classifications, saved per user with every run kept (2026-10-11-05) | P1-AN-40..43 |

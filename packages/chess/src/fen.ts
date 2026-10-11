@@ -139,3 +139,18 @@ export function boardSquares(fen: string): ({ role: string; color: 'white' | 'bl
     }
   return out;
 }
+
+// Net attackers per square, a8 to h1 like boardSquares: white's count minus
+// black's. Direct attacks only (nothing seen through another piece). The
+// home hero's shading.
+export function squareControl(fen: string): number[] {
+  const setup = parseSetup(fen);
+  if (!setup) return Array<number>(64).fill(0);
+  const pos = unchecked(setup);
+  const occupied = setup.board.occupied;
+  return Array.from({ length: 64 }, (_, i) => {
+    const sq = (7 - Math.floor(i / 8)) * 8 + (i % 8);
+    // kingAttackers counts every piece of that color attacking the square.
+    return pos.kingAttackers(sq, 'white', occupied).size() - pos.kingAttackers(sq, 'black', occupied).size();
+  });
+}

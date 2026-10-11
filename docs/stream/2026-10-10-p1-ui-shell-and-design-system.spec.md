@@ -201,3 +201,10 @@ changes. The tab content will come from the AI API.
   send COEP + CORP `same-origin`. `NavLink` renders a plain `<a>` when a
   link crosses the boundary.
 
+
+### UI refresh (2026-10-11)
+
+- Brand (Mate Green, eggshell light theme), the `/` home page and the
+  collapsible desktop rail are superseded by
+  2026-10-11-ui-refresh.spec.md and ADR 2026-10-11-08. The logo brief
+  there closes the "Logo" open question.

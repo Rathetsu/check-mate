@@ -6,48 +6,54 @@
 
 /*
  * Design tokens: the one theme file (P1-UI-01). Brand values are exact from
- * the UI shell spec's Brand section (P1-UI-14). Neutrals use hue 285 with
- * chroma ≤ 0.012.
+ * the UI shell spec's Brand section (P1-UI-14, adr/2026-10-11-08). Light
+ * neutrals are warm eggshell (hue 85), dark neutrals hue 160, chroma ≤ 0.012.
+ * Light brightness follows elevation: sidebar < background < card < white.
+ * Pure white is only for floating surfaces (--popover) and fields (--field).
  * Reserved colors never use --primary: move quality, annotation arrows,
  * eval and W/D/L bars, and board squares keep their chess conventions.
  */
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.99 0.003 285);
-  --foreground: oklch(0.17 0.012 285);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.17 0.012 285);
+  --sidebar: oklch(0.945 0.009 85);
+  --background: oklch(0.965 0.008 85); /* eggshell ≈ #F6F3ED */
+  --foreground: oklch(0.2 0.012 85);
+  --card: oklch(0.982 0.005 85);
+  --card-foreground: oklch(0.2 0.012 85);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.17 0.012 285);
-  --primary: oklch(0.53 0.21 285); /* Mate Violet ≈ #664CDD */
+  --popover-foreground: oklch(0.2 0.012 85);
+  --field: oklch(1 0 0);
+  --primary: oklch(0.47 0.095 162); /* Mate Green ≈ #156B4A */
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.96 0.006 285);
-  --secondary-foreground: oklch(0.25 0.012 285);
-  --muted: oklch(0.96 0.006 285);
-  --muted-foreground: oklch(0.5 0.012 285);
-  --accent: oklch(0.95 0.008 285);
-  --accent-foreground: oklch(0.25 0.012 285);
+  --secondary: oklch(0.935 0.009 85);
+  --secondary-foreground: oklch(0.25 0.012 85);
+  --muted: oklch(0.935 0.009 85);
+  --muted-foreground: oklch(0.48 0.012 85);
+  --accent: oklch(0.93 0.01 85);
+  --accent-foreground: oklch(0.25 0.012 85);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.91 0.006 285);
-  --input: oklch(0.91 0.006 285);
+  --border: oklch(0.885 0.009 85);
+  --input: oklch(0.885 0.009 85);
   --ring: var(--primary);
 }
 
 .dark {
-  --background: oklch(0.17 0.012 285); /* ≈ #0F0F15 */
-  --foreground: oklch(0.97 0.004 285);
-  --card: oklch(0.21 0.012 285);
-  --card-foreground: oklch(0.97 0.004 285);
-  --popover: oklch(0.21 0.012 285);
-  --popover-foreground: oklch(0.97 0.004 285);
-  --primary: oklch(0.74 0.14 285); /* Mate Violet ≈ #A29DFF */
-  --primary-foreground: oklch(0.2 0.02 285);
-  --secondary: oklch(0.27 0.012 285);
-  --secondary-foreground: oklch(0.97 0.004 285);
-  --muted: oklch(0.27 0.012 285);
-  --muted-foreground: oklch(0.72 0.01 285);
-  --accent: oklch(0.29 0.012 285);
-  --accent-foreground: oklch(0.97 0.004 285);
+  --sidebar: oklch(0.2 0.008 160);
+  --background: oklch(0.18 0.008 160); /* ≈ #0F1310 */
+  --foreground: oklch(0.95 0.006 160);
+  --card: oklch(0.215 0.009 160);
+  --card-foreground: oklch(0.95 0.006 160);
+  --popover: oklch(0.215 0.009 160);
+  --popover-foreground: oklch(0.95 0.006 160);
+  --field: transparent; /* fields use dark:bg-input/30 */
+  --primary: oklch(0.76 0.12 160); /* Mate Green ≈ #64C897 */
+  --primary-foreground: oklch(0.2 0.02 160);
+  --secondary: oklch(0.27 0.01 160);
+  --secondary-foreground: oklch(0.95 0.006 160);
+  --muted: oklch(0.27 0.01 160);
+  --muted-foreground: oklch(0.72 0.01 160);
+  --accent: oklch(0.29 0.01 160);
+  --accent-foreground: oklch(0.95 0.006 160);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
@@ -57,6 +63,8 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar: var(--sidebar);
+  --color-field: var(--field);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

@@ -1,6 +1,6 @@
 'use client';
 
-import { CircleUserRound, LogOut, Settings } from 'lucide-react';
+import { CircleUserRound, LogIn, LogOut, Settings } from 'lucide-react';
 import { NavLink } from './nav-link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -16,13 +16,25 @@ import { authClient } from '@/lib/auth-client';
 
 export type ShellUser = { name: string; username: string | null };
 
-export function UserMenu({ user, compact = false }: { user: ShellUser | null; compact?: boolean }) {
+// labelClassName hides the "Sign in" text visually on the icon rail.
+export function UserMenu({
+  user,
+  compact = false,
+  labelClassName,
+}: {
+  user: ShellUser | null;
+  compact?: boolean;
+  labelClassName?: string;
+}) {
   const router = useRouter();
 
   if (!user) {
     return (
-      <Button asChild size="sm" variant="outline">
-        <NavLink href="/auth/sign-in">Sign in</NavLink>
+      <Button asChild size="sm" variant="outline" className="min-h-11 min-w-11">
+        <NavLink href="/auth/sign-in">
+          <LogIn aria-hidden />
+          <span className={labelClassName}>Sign in</span>
+        </NavLink>
       </Button>
     );
   }

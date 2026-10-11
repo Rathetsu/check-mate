@@ -29,6 +29,10 @@ export default function PrivacyPage() {
             <strong>Preferences:</strong> board, pieces, sounds, theme and engine settings, so they follow you.
           </li>
           <li>
+            <strong>Sidebar:</strong> a cookie in your browser remembers whether you collapsed the sidebar. It holds
+            nothing else.
+          </li>
+          <li>
             <strong>What you create:</strong> studies, puzzle attempts, analysis sessions and saved game reviews, as
             each of those features arrives. Later, games you import and the Lichess or Chess.com accounts you choose to
             link.

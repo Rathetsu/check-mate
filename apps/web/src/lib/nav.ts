@@ -1,14 +1,30 @@
 import { BookOpen, House, Microscope, PencilRuler, type LucideIcon } from 'lucide-react';
 
-export type NavItem = { href: string; label: string; icon: LucideIcon };
+// blurb: the home page card for this feature. Home itself has none.
+export type NavItem = { href: string; label: string; icon: LucideIcon; blurb?: string };
 
 // Only shipped routes appear, so there are no dead ends (ui-shell route map).
 // Puzzles join in M1.5.
 export const NAV: NavItem[] = [
   { href: '/', label: 'Home', icon: House },
-  { href: '/analysis', label: 'Analysis', icon: Microscope },
-  { href: '/editor', label: 'Editor', icon: PencilRuler },
-  { href: '/studies', label: 'Studies', icon: BookOpen },
+  {
+    href: '/analysis',
+    label: 'Analysis',
+    icon: Microscope,
+    blurb: 'Play through any game or position with a strong engine at your side, move by move.',
+  },
+  {
+    href: '/editor',
+    label: 'Editor',
+    icon: PencilRuler,
+    blurb: 'Set up any position piece by piece, then send it straight to the analysis board.',
+  },
+  {
+    href: '/studies',
+    label: 'Studies',
+    icon: BookOpen,
+    blurb: 'Build chapters of lines and notes, practice them, and share them with friends.',
+  },
 ];
 
 // Pages that run the engine are cross-origin isolated (COOP/COEP in

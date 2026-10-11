@@ -1,0 +1,175 @@
+/*
+ * Home hero: a board pulled apart into squares, attack shading and pieces.
+ * Squares come from the board theme and the shading is white/black, never
+ * --primary (P1-UI-14).
+ *
+ * The base styles are a still pose. With scroll timelines, a wide screen and
+ * motion allowed, scrolling through the 200vh section parts the layers and
+ * rejoins them. Only transform and opacity animate, with literal keyframes,
+ * so the browser runs them on the compositor: no @property, and no var() in
+ * keyframes (custom property animations run on the main thread).
+ *
+ * Never put opacity, filter or overflow on .hero-tilt or .hero-rig: those
+ * flatten preserve-3d.
+ */
+.hero {
+  overflow-x: clip; /* the tilted planes would otherwise widen the page; clip keeps sticky working */
+}
+.hero-stage {
+  display: grid;
+  justify-items: center;
+  perspective: 1200px;
+  padding-block: 3rem;
+}
+.hero-tilt {
+  transform-style: preserve-3d;
+  transition: transform 200ms ease-out; /* eases the pointer tilt (hero.tsx) */
+}
+.hero-rig {
+  position: relative;
+  width: min(72vw, 26rem);
+  aspect-ratio: 1;
+  transform-style: preserve-3d;
+  transform: rotateX(42deg) rotateZ(-18deg);
+}
+.hero-rig > * {
+  position: absolute;
+  inset: 0;
+}
+.hero-squares {
+  background: repeating-conic-gradient(var(--sq-dark) 0 25%, var(--sq-light) 0 50%) 0 0 / 25% 25%;
+}
+/* A small base offset keeps layers from flickering where they overlap. */
+.hero-shade {
+  transform: translateZ(30px);
+}
+.hero-pieces {
+  transform: translateZ(60px);
+}
+/* Lifted pieces float past the board's edge; a faint rim keeps black ones
+   visible on the dark page. Fine here: .hero-pieces isn't preserve-3d. */
+.dark .hero-pieces {
+  filter: drop-shadow(0 0 1.5px color-mix(in oklch, var(--foreground) 55%, transparent));
+}
+.hero-label {
+  position: absolute;
+  left: calc(100% + 0.75rem);
+  display: none; /* shown at lg, where there's room beside the board */
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+.hero-label::before {
+  content: '';
+  width: 1.5rem;
+  border-top: 1px solid currentColor;
+}
+
+@media (min-width: 1024px) {
+  .hero-rig {
+    width: min(26vw, 22rem);
+  }
+  .hero-label {
+    display: flex;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    .hero {
+      height: 200vh;
+      view-timeline: --hero block;
+    }
+    .hero-sticky {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+    }
+    /* contain = the stuck phase: the section fully covers the viewport. */
+    .hero-rig,
+    .hero-shade,
+    .hero-pieces,
+    .hero-label,
+    .hero-copy {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --hero;
+      animation-range: contain;
+    }
+    .hero-rig {
+      animation-name: hero-turn;
+    }
+    .hero-shade {
+      animation-name: hero-lift-shade;
+    }
+    .hero-pieces {
+      animation-name: hero-lift-pieces;
+    }
+    .hero-label {
+      animation-name: hero-label;
+    }
+    .hero-copy {
+      animation-name: hero-drift;
+    }
+
+    .hero-card {
+      animation: hero-card-in linear both;
+      animation-timeline: view(); /* after the shorthand, which resets it */
+      animation-range: entry 0% entry 80%;
+    }
+  }
+}
+
+@keyframes hero-turn {
+  from {
+    transform: rotateX(55deg) rotateZ(-35deg);
+  }
+  to {
+    transform: rotateX(28deg) rotateZ(0deg);
+  }
+}
+@keyframes hero-lift-shade {
+  0% {
+    transform: translateZ(20px);
+  }
+  50% {
+    transform: translateZ(70px);
+  }
+  100% {
+    transform: translateZ(1px);
+  }
+}
+@keyframes hero-lift-pieces {
+  0% {
+    transform: translateZ(40px);
+  }
+  50% {
+    transform: translateZ(140px);
+  }
+  100% {
+    transform: translateZ(2px);
+  }
+}
+@keyframes hero-label {
+  0%,
+  25%,
+  75%,
+  100% {
+    opacity: 0;
+  }
+  40%,
+  60% {
+    opacity: 1;
+  }
+}
+@keyframes hero-drift {
+  to {
+    transform: translateY(-3rem);
+  }
+}
+@keyframes hero-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}

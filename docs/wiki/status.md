@@ -14,8 +14,12 @@ built.**
 - **Accounts:** people can create an account with a unique username, sign
   in, reset a forgotten password, verify their email, change settings, see
   and end their sessions, and delete their account.
-- **Look:** the app has its CheckMate look in light and dark, plus About,
-  Privacy and Source pages.
+- **Look:** the app has its CheckMate look in light and dark (Mate Green
+  on a soft eggshell background), plus About, Privacy and Source pages.
+  On desktop the sidebar collapses to icons and remembers that choice.
+- **Home page:** a hero about the AI coach. Its board pulls apart into
+  layers (squares, which side controls each square, pieces) as you scroll,
+  then cards lead to each feature that's built.
 - **The analysis board** (`/analysis`):
   - a real chessboard: drag or click to move, promotion, arrows in four
     colors, flip, arrow keys, typed moves, variations
@@ -97,8 +101,9 @@ docs/stream/2026-10-11-phase-1-implementation.plan.md.
   batches, duplicates removed by final position), using only sources we're
   allowed to use. Today that means Lichess broadcast games from about 2020
   onward.
-- **Brand:** the name is CheckMate. The accent color is "Mate Violet"
-  (#664CDD light / #A29DFF dark).
+- **Brand:** the name is CheckMate. The accent color is "Mate Green"
+  (#156B4A light / #64C897 dark) on a warm eggshell light theme. It
+  replaced Mate Violet on 2026-10-11 (ADR 2026-10-11-08).
 
 ## Decided (2026-10-11)
 
@@ -141,7 +146,9 @@ docs/stream/2026-10-11-phase-1-implementation.plan.md.
 - **Send two permission emails** to unlock historical master games (TWIC
   1994 to now, and PGN Mentor). Drafts and tracking are in
   docs/stream/2026-10-10-masters-data-permission-requests.plan.md.
-- **Logo (optional):** a text wordmark is used until one is designed.
+- **Logo:** you're designing a pawn mascot with an image generator; the
+  prompt is in the UI shell spec's "Logo brief". A text wordmark is used
+  until the SVG files arrive.
 - **Before marketing:** buy a domain, pick an email service, then turn on
   required verification and ship data export (ADR 2026-10-11-03).
 

@@ -10,6 +10,7 @@ import {
   INITIAL_FEN,
   isMoveError,
   positionKey,
+  squareControl,
   TreeCursor,
   validateSetup,
   type Played,
@@ -148,4 +149,14 @@ test('boardSquares lists a8 to h1', () => {
   expect(sq[60]).toEqual({ role: 'king', color: 'white' });
   expect(sq[27]).toBeNull();
   expect(boardSquares('junk').every((s) => s === null)).toBe(true);
+});
+
+test('squareControl nets attackers per square, a8 to h1', () => {
+  const start = squareControl(INITIAL_FEN);
+  expect(start.slice(40, 48)).toEqual([2, 2, 3, 2, 2, 3, 2, 2]); // rank 3: pawns and knights
+  expect(start.slice(16, 24)).toEqual([-2, -2, -3, -2, -2, -3, -2, -2]); // rank 6 mirrors it
+  expect(start.slice(24, 40)).toEqual(Array(16).fill(0)); // ranks 5 and 4
+  // A 4-field EPD: d5 is hit by Bc4, Nc3 and e4, held only by Nf6.
+  expect(squareControl('r1bq1rk1/pppp1ppp/2n2n2/2b1p3/2B1P3/2NP1N2/PPP2PPP/R1BQ1RK1 b - -')[27]).toBe(2);
+  expect(squareControl('junk')).toEqual(Array(64).fill(0));
 });
