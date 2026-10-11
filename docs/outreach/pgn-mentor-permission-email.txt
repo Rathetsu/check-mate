@@ -1,0 +1,12 @@
+To: [contact address from pgnmentor.com]
+Subject: Permission to use PGN Mentor games in CheckMate
+
+Hello,
+
+I'm building CheckMate, a free, open-source chess learning site. May I use PGN Mentor's game files in its opening explorer (move statistics and game replay), credited with a link to pgnmentor.com?
+
+Our master-game dataset is also offered as a public download. Should your games be left out of it, or are there any other conditions?
+
+Thanks,
+[Your name]
+[Project URL]

@@ -1,0 +1,12 @@
+To: mdcrowth@btinternet.com
+Subject: Permission to use TWIC games in CheckMate
+
+Hi Mark,
+
+I'm building CheckMate, a free, open-source chess learning site. May I use TWIC games in its opening explorer (move statistics and game replay), credited with a link to theweekinchess.com?
+
+Our master-game dataset is also offered as a public download. Should TWIC games be left out of it, or are there any other conditions?
+
+Thanks,
+[Your name]
+[Project URL]
