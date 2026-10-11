@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { AppShell } from '@/components/shell/app-shell';
 import { ThemeProvider } from '@/components/shell/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { PrefsProvider } from '@/lib/prefs';
 import { getSession } from '@/lib/session';
 import './globals.css';
@@ -27,7 +28,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme={prefs.theme} enableSystem disableTransitionOnChange>
           <PrefsProvider initial={prefs} signedIn={!!session}>
-            <AppShell user={user}>{children}</AppShell>
+            <TooltipProvider>
+              <AppShell user={user}>{children}</AppShell>
+            </TooltipProvider>
             <Toaster />
           </PrefsProvider>
         </ThemeProvider>

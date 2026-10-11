@@ -8,9 +8,9 @@ import { Chessground } from '@lichess-org/chessground';
 import type { Api } from '@lichess-org/chessground/api';
 import type { Config } from '@lichess-org/chessground/config';
 import type { DrawShape } from '@lichess-org/chessground/draw';
-import type { Key, Role } from '@lichess-org/chessground/types';
+import type { Key, MouchEvent, Role } from '@lichess-org/chessground/types';
 import { cn } from 'cn';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { usePrefs } from '@/lib/prefs';
 import '@/styles/board.css';
 
@@ -26,13 +26,22 @@ export type BoardProps = {
   check?: boolean | Color;
   shapes?: Shape[];
   autoShapes?: AutoShape[];
-  mode?: 'play' | 'view';
+  // 'free' is the editor (P1-ED-01): any piece goes anywhere, dropping one
+  // off the board deletes it, and `onBoardChange` reports the placement.
+  mode?: 'play' | 'view' | 'free';
   movable?: 'both' | Color | 'none';
   onMove?: (uci: string) => void;
+  onBoardChange?: (placement: string) => void;
+  onSquareClick?: (square: SquareName) => void;
+  ref?: React.Ref<BoardHandle>;
   onShapesChange?: (shapes: Shape[]) => void;
   announce?: string; // the last move in SAN, read by screen readers (P1-BD-10)
   className?: string;
 };
+
+// Lets the editor's spare-piece palette drag a new piece in without
+// importing chessground itself.
+export type BoardHandle = { dragNewPiece(piece: { role: Role; color: Color }, e: MouseEvent | TouchEvent): void };
 
 const PROMOTIONS: Role[] = ['queen', 'rook', 'bishop', 'knight'];
 const ROLE_CHAR: Partial<Record<Role, string>> = { queen: 'q', rook: 'r', bishop: 'b', knight: 'n' };
@@ -50,7 +59,7 @@ const fromDraw = (shapes: DrawShape[]): Shape[] =>
 
 const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export function Board(props: BoardProps) {
+export function Board({ ref, ...props }: BoardProps) {
   const { prefs } = usePrefs();
   const el = useRef<HTMLDivElement>(null);
   const api = useRef<Api | null>(null);
@@ -65,6 +74,7 @@ export function Board(props: BoardProps) {
   const config = (): Config => {
     const p = latest.current;
     const mode = p.mode ?? 'play';
+    const free = mode === 'free';
     return {
       fen: p.fen,
       orientation: p.orientation,
@@ -73,18 +83,24 @@ export function Board(props: BoardProps) {
       lastMove: p.lastMove,
       coordinates: prefs.showCoords,
       viewOnly: mode === 'view',
+      // Every square is a target in the editor, so touches never scroll there.
+      blockTouchScroll: free,
       animation: { enabled: prefs.animationMs > 0 && !reducedMotion(), duration: prefs.animationMs },
       highlight: { lastMove: true, check: true },
       movable: {
-        free: false,
+        free,
         color: p.movable === 'none' ? undefined : (p.movable ?? 'both'),
         dests: (p.dests ?? new Map()) as Map<Key, Key[]>,
-        showDests: prefs.showLegalDests,
+        showDests: prefs.showLegalDests && !free,
         events: { after: onAfter },
+      },
+      events: {
+        change: () => free && api.current && latest.current.onBoardChange?.(api.current.getFen()),
+        select: (key) => free && latest.current.onSquareClick?.(key as SquareName),
       },
       premovable: { enabled: false }, // P1-BD-09
       predroppable: { enabled: false },
-      draggable: { enabled: prefs.moveInput !== 'click', showGhost: true },
+      draggable: { enabled: free || prefs.moveInput !== 'click', showGhost: true, deleteOnDropOff: free },
       selectable: { enabled: prefs.moveInput !== 'drag' },
       drawable: {
         enabled: true,
@@ -96,6 +112,7 @@ export function Board(props: BoardProps) {
   };
 
   function onAfter(from: Key, to: Key) {
+    if (latest.current.mode === 'free') return; // reported through `change`
     const piece = api.current?.state.pieces.get(to);
     if (piece?.role === 'pawn' && (to[1] === '8' || to[1] === '1')) setPromotion({ from, to, color: piece.color });
     else latest.current.onMove?.(from + to);
@@ -107,6 +124,10 @@ export function Board(props: BoardProps) {
     api.current = Chessground(el.current!, config());
     return () => api.current?.destroy();
   }, [prefs.showCoords]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useImperativeHandle(ref, () => ({
+    dragNewPiece: (piece, e) => api.current?.dragNewPiece(piece, e as MouchEvent, true),
+  }));
 
   // Every input change goes to chessground; `set` with a fen also resets the
   // drawn shapes, so they always travel with it.

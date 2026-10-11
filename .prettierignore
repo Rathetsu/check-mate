@@ -7,3 +7,4 @@ apps/web/src/components/ui/
 apps/web/src/generated/
 **/.next/
 **/next-env.d.ts
+packages/chess/src/data/

@@ -19,6 +19,9 @@ export async function drag(page: Page, from: string, to: string, button: 'left' 
   await page.mouse.move(a.x, a.y);
   await page.mouse.down({ button });
   await page.mouse.move(b.x, b.y, { steps: 8 });
+  // chessground starts a drag on an animation frame; a release before one has
+  // run (a busy main thread) would count as a click.
+  await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
   await page.mouse.up({ button });
 }
 

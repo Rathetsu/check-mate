@@ -1,6 +1,7 @@
 // The rules layer (CORE-10): every chess answer in CheckMate comes from here.
 export * from './advice.ts';
 export * from './analysis.ts';
+export * from './editor.ts';
 export * from './fen.ts';
 export * from './glyphs.ts';
 export * from './keys.ts';

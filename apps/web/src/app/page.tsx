@@ -22,6 +22,9 @@ export default async function Home() {
         <Button asChild size="lg">
           <NavLink href="/analysis">Analyze a position</NavLink>
         </Button>
+        <Button asChild size="lg" variant="outline">
+          <NavLink href="/editor">Set up a position</NavLink>
+        </Button>
         {last && (
           <Button asChild size="lg" variant="outline">
             <NavLink href={`/analysis?session=${last.id}`}>Continue your last analysis</NavLink>

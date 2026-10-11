@@ -1,7 +1,7 @@
 # Spec: Board editor
 
 Date: 2026-10-10
-Status: Approved (design; no code yet)
+Status: Approved. Built in M1.3 (2026-10-11), except "Save as study chapter" (M1.4)
 Phase: 1 · Milestone M1.3
 
 ## Goal
@@ -115,3 +115,33 @@ None specific. Positions created here flow into analysis and studies as FEN.
 ## Open questions
 
 None.
+
+## Build notes
+
+### M1.3 (2026-10-11)
+
+- **`packages/chess/src/editor.ts`** holds the editor state (`EditorState`:
+  placement, side to move, requested castling, en passant, counters) and
+  writes its FEN. Castling availability and en passant candidates are
+  adapted from lila `ui/editor/src/ctrl.ts` at `46d24871` and rewritten over
+  chessops boards. Validity still comes only from `validateSetup`.
+- **Requested vs. available castling:** a checkbox remembers what the user
+  asked for, but a right goes into the FEN only while that king and rook
+  stand at home (as lila does). An en passant square goes in only while it's
+  a candidate.
+- **Any parseable FEN opens** in the editor, valid or not, so it can be fixed
+  there. Chess960 castling is refused with a message.
+- **`<Board mode="free">`:** chessground free movement, drag off to delete,
+  `onBoardChange` with the placement, `onSquareClick` for the tools, and a
+  `ref` handle with `dragNewPiece` so the palette never imports chessground.
+  Touches on the editor board never scroll the page.
+- **Palettes** show the pointer, six pieces and the eraser. With the pointer,
+  pressing a piece drags a new one in; clicking or tapping it makes it the
+  sticky piece. On phones this is tap-to-place (P1-ED-13).
+- **Analyze** is a full page load (the analysis board is cross-origin
+  isolated). The analysis board's "Open in editor" (P1-AN-23) sits with the
+  board controls.
+- **Tests:** a 20-setup availability table, FEN writing, counters,
+  swap-colors round trips, `placePiece`; Playwright: the spec flow, the
+  round trip through analysis, drag in and drag off, castling, en passant,
+  each invalid-FEN reason, swap colors, and tap-to-place at 375 px.

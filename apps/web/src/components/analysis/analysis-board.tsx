@@ -7,6 +7,7 @@
 import {
   applyOp,
   classifyLine,
+  fenToUrl,
   gameStatus,
   loadOpenings,
   makePgn,
@@ -16,12 +17,13 @@ import {
   type SquareName,
   type TreeOp,
 } from '@checkmate/chess';
-import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, FlipVertical2 } from 'lucide-react';
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, FlipVertical2, PencilRuler } from 'lucide-react';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Board, type AutoShape } from '@/components/board/Board';
 import { MoveInput } from '@/components/board/move-input';
 import { EngineFields } from '@/components/prefs/pref-fields';
+import { NavLink } from '@/components/shell/nav-link';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -169,6 +171,12 @@ export function AnalysisBoard({ tree, me, readOnly, engineAllowed = true, onOp, 
             ))}
             <Button variant="ghost" size="icon" aria-label="Flip board" onClick={flip}>
               <FlipVertical2 aria-hidden />
+            </Button>
+            {/* P1-AN-23 / P1-ED-12 */}
+            <Button asChild variant="ghost" size="icon" aria-label="Open in editor">
+              <NavLink href={`/editor/${fenToUrl(node.fen)}`}>
+                <PencilRuler aria-hidden />
+              </NavLink>
             </Button>
           </div>
           <div className="flex flex-wrap gap-2">{toolbar}</div>

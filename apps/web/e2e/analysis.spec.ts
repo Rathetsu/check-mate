@@ -117,9 +117,15 @@ test('a signed-in analysis autosaves and resumes after a reload (P1-AN-31, P1-AN
   await expect(page.getByTestId('board').locator('piece').first()).toBeVisible();
   await drag(page, 'e2', 'e4');
   await expect(moves(page)).toContainText('e4');
+  // The save that carries 1... e5 (5 s after the last change).
+  const saved = page.waitForResponse(
+    (r) => r.url().includes('/api/v1/analysis-sessions') && !!r.request().postData()?.includes('e5') && r.ok(),
+    { timeout: 15_000 },
+  );
   await drag(page, 'e7', 'e5');
   await expect(fen(page)).toContainText('4p3');
-  await expect(page).toHaveURL(/\/analysis\?session=[0-9a-f-]{36}$/, { timeout: 15_000 });
+  await saved;
+  await expect(page).toHaveURL(/\/analysis\?session=[0-9a-f-]{36}$/);
   await page.reload();
   await expect(moves(page)).toContainText('e5');
   await expect(fen(page)).toContainText('4p3'); // resumed on the last move

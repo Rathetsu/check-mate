@@ -31,8 +31,8 @@ register:write` regenerates `NOTICE` and the `/about` data
 - Stockfish: `pnpm install` copies the WASM builds into
   `apps/web/public/engine/` (gitignored) via `scripts/copy-stockfish.ts`
 - Tablebase (optional): `scripts/fetch-tablebases.sh` (3-5 pieces, ~938
-  MiB; `ci` for KRvK and KQvK only) then `docker compose --profile
-  tablebase up -d tablebase`. `pnpm e2e` expects it on :9000
+  MiB; `ci` for KRvK and KQvK only), then start the `tablebase` compose
+  service with `--profile tablebase`. `pnpm e2e` expects it on :9000
 - `pnpm e2e` runs the real engine in some tests;
   `LONGTASK_SECONDS=60 pnpm e2e -g "long tasks"` is the full long-task check
 

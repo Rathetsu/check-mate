@@ -56,6 +56,11 @@ export async function signUp(page: Page, user: User) {
   await page.getByRole('button', { name: 'Create account' }).click();
   await expect(page).toHaveURL('/', { timeout: 15_000 }); // includes the breach check over the network
   await expect(page.getByRole('button', { name: 'Account menu' }).first()).toBeVisible();
+  // Like signed-out pages, new accounts start with the engine off in tests.
+  const res = await page.request.put('/api/v1/me/preferences', {
+    data: { ...defaultPreferences, engineEnabled: false },
+  });
+  expect(res.ok()).toBe(true);
 }
 
 export async function signIn(page: Page, login: string, password: string) {

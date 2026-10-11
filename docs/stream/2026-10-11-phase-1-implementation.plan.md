@@ -472,3 +472,13 @@ building (details in the analysis and ui-shell spec build notes):
   opts in (`test.use({ engine: true })`), so parallel tests don't compete
   for CPU.
 
+### M1.3 (2026-10-11)
+
+Built per the M1.1-M1.4 build plan; details in the board-editor spec build
+notes.
+- **One editor file per side:** `packages/chess/src/editor.ts` (state,
+  availability, FEN, swap) and `apps/web/src/components/editor/editor.tsx`
+  (palettes, options, FEN field, validation). The plan's four component
+  files became one.
+- **Phone layout fix:** the palette row must not set the column's minimum
+  width, or the page scrolls sideways at 375 px.

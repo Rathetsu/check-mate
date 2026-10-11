@@ -8,8 +8,8 @@ Last updated: 2026-10-11
 
 ## Where we are
 
-**Phase 1 is under way. M1.0 (the foundation), M1.1 (the chessboard) and
-M1.2 (the analysis board) are built.**
+**Phase 1 is under way. M1.0 (the foundation), M1.1 (the chessboard), M1.2
+(the analysis board) and M1.3 (the board editor) are built.**
 - **Accounts:** people can create an account with a unique username, sign
   in, reset a forgotten password, verify their email, change settings, see
   and end their sessions, and delete their account.
@@ -31,6 +31,11 @@ M1.2 (the analysis board) are built.**
     link that carries the whole analysis
   - signed-in users' analysis saves itself and picks up where they left off
     (Home shows "Continue your last analysis")
+- **The board editor** (`/editor`): place pieces by dragging or tapping,
+  erase, clear, flip, swap colors, set the side to move, castling, en
+  passant and move counters, paste a FEN, and see every reason a position
+  isn't legal. "Analyze" opens it on the analysis board, and the analysis
+  board's "Open in editor" comes back.
 - **Shortcuts:** `/` opens a command palette on every page, `?` lists the
   keys.
 - **Board looks:** 11 piece sets, four board colors and four sound sets
@@ -49,15 +54,16 @@ friend.
 
 | Phase | What users get | State |
 |---|---|---|
-| 1. Chess platform | Accounts, analysis board with Stockfish in the browser, endgame tablebase, saved game reviews, board editor, PGN/FEN import and export, studies like Lichess (sharing and live collaboration, no chat), themed puzzle training with saved history | In progress: accounts, the chessboard with PGN/FEN, and the analysis board with engine and tablebase are built |
+| 1. Chess platform | Accounts, analysis board with Stockfish in the browser, endgame tablebase, saved game reviews, board editor, PGN/FEN import and export, studies like Lichess (sharing and live collaboration, no chat), themed puzzle training with saved history | In progress: accounts, the chessboard with PGN/FEN, the analysis board with engine and tablebase, and the board editor are built |
 | 2. Opening explorer | Opening statistics from Lichess games and master games combined without double counting, with filters, master game viewer, opening names, and a free download of our master-game dataset | Specified, not started |
 | 3. Personal database | Connect Lichess and Chess.com, import and keep all your games, sync new ones, browse your library, see your personal opening tree and opening results, and compare with the wider database | Specified, not started |
 | 4. AI coach | Conversational coaching grounded in engine and database facts | Not planned yet. Will be a separate, private service |
 
 ## Up next
 
-Phase 1, milestone M1.3: the board editor (set up any position, check it's
-legal, and open it on the analysis board).
+Phase 1, milestone M1.4: studies like Lichess (chapters, sharing, likes,
+embedding, interactive lessons, practice against the computer, and live
+editing with invited members).
 
 See docs/stream/2026-10-10-mvp-roadmap.plan.md and the build plan in
 docs/stream/2026-10-11-phase-1-implementation.plan.md.
