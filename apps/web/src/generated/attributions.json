@@ -83,6 +83,11 @@
       "mode": "reused"
     },
     {
+      "name": "gifenc",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
       "name": "next-themes",
       "license": "MIT",
       "mode": "reused"

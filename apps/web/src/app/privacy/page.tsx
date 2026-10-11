@@ -39,9 +39,19 @@ export default function PrivacyPage() {
       <section className="grid gap-2">
         <h2>Who sees it</h2>
         <p>
-          Only you. Nothing is sold, shared, or used for ads. There are no trackers or analytics. Engine analysis runs
-          in your own browser.
+          Only you, unless you share something. Nothing is sold, shared, or used for ads. There are no trackers or
+          analytics. Engine analysis runs in your own browser.
         </p>
+        <ul>
+          <li>
+            <strong>Studies you make public or unlisted</strong> can be read by anyone with the link (public ones are
+            also listed), along with your username. Private studies are seen only by you and the members you invite.
+          </li>
+          <li>
+            <strong>Members of a study</strong> see each other&apos;s usernames, comments and whether they&apos;re
+            viewing it right now.
+          </li>
+        </ul>
       </section>
 
       <section className="grid gap-2">
@@ -49,6 +59,14 @@ export default function PrivacyPage() {
         <p>
           When you choose a password, we check it against known data breaches using Have I Been Pwned. Only the first 5
           characters of a hash of your password are sent, never the password, so the service can’t tell what it is.
+        </p>
+      </section>
+
+      <section className="grid gap-2">
+        <h2>Lichess game links</h2>
+        <p>
+          If you add a study chapter from a Lichess game link, our server downloads that one game from Lichess when you
+          ask. Nothing about you is sent to Lichess.
         </p>
       </section>
 
@@ -69,6 +87,13 @@ export default function PrivacyPage() {
           → Account → Delete account removes your account and everything in it right away. A download of all your data
           is coming before CheckMate opens to the public.
         </p>
+        <ul>
+          <li>Deleting your account deletes your studies, including anything members added to them.</li>
+          <li>
+            Comments you wrote in other people&apos;s studies stay there, shown as written by &ldquo;Deleted
+            user&rdquo;. Your username is not kept with them.
+          </li>
+        </ul>
       </section>
 
       <section className="grid gap-2">

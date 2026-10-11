@@ -61,6 +61,7 @@ page. A paid review happens only at the triggers in
 | Lucide icons (`lucide-react`) | 1.55.0 | ISC | reused | |
 | sonner (`sonner`) | 2.0.8 | MIT | reused | Toasts (P1-UI-11) |
 | cmdk (`cmdk`) | 1.1.1 | MIT | reused | Under shadcn `command`: the `/` command palette (P1-UI-04) |
+| gifenc (`gifenc`) | 1.0.3 | MIT | reused | GIF export of a study chapter's mainline (P1-ST-08). Ships no types: one local `.d.ts` |
 | next-themes (`next-themes`) | 0.4.6 | MIT | reused | Light/dark/system without flash (P1-UI-02) |
 | Better Auth (`better-auth`) | 1.7.7 | MIT | reused | Vercel-owned since 2026-07-07. `username` and `haveIBeenPwned` plugins enabled (P1-AC-01) |
 | nodemailer (`nodemailer`) | 10.1.0 | MIT-0 | reused | SMTP for `sendEmail`. Without SMTP env, links go to the server log (2026-10-11-03) |
@@ -92,7 +93,7 @@ page. A paid review happens only at the triggers in
 | lichess-org/chess-openings | CC0 | **cleared** | opening classifier (P1-AN-07) | Commit `a6189a30` (2026-10-06), replayed into `packages/chess/src/data/openings.json` by `scripts/gen-openings.ts` |
 | Lichess Masters database | no license; not downloadable | **excluded** (data) | — | ~3M OTB games, curated privately by Lichess (Rotella base, 2016; manual batch updates). We copy the *method*, not the data (2026-10-10-19-curated-masters-set-deduped-by-terminal-position) |
 | Lichess explorer API (explorer.lichess.org) | Lichess ToS; OAuth required since 2026-03-03; 20 req/min per user | optional (COULD) | `lichess-account` source, user's own token only | Never with a shared server token; cache responses |
-| Lichess game export + OAuth API | Lichess ToS; one request at a time; wait ≥60 s after 429 | **cleared** | P3 imports | PKCE public client, no scopes; anonymous export is being throttled |
+| Lichess game export + OAuth API | Lichess ToS; one request at a time; wait ≥60 s after 429 | **cleared** | P3 imports; M1.4 study chapter from a game URL (single game by URL, user-initiated, server-side, 5 s timeout) | PKCE public client, no scopes; anonymous export is being throttled |
 | Have I Been Pwned (Pwned Passwords range API) | free, no key; k-anonymity (only a 5-character SHA-1 prefix is sent) | **cleared** | password breach check at sign-up and password change (P1-AC-01) | Disclosed on `/privacy` |
 | Test fixtures (`packages/chess/fixtures/`) | per file: Lichess game exports CC0, broadcast round CC BY-SA 4.0, our own study and Chess.com games, synthetic malformed files | **cleared** | PGN/FEN tests | Sources and licenses listed in the fixture README. No other players' Chess.com data |
 | Chess.com PubAPI | User Agreement §2(C), §2(D), §4(D) | **accepted risk**: personal import only (2026-10-10-18-import-own-chesscom-games-accepted-risk) | P3 imports, owner-private | Linked usernames only (max 3 per user); serial requests; User-Agent with contact; ETag caching; kill switch `CHESSCOM_IMPORT_ENABLED`. **Never** in shared stats or datasets |
