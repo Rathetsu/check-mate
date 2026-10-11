@@ -4,8 +4,10 @@ kind: system
 
 # Architecture
 
-Last verified: n/a. Design only; no code exists yet (2026-10-10). Once
-M1.0 lands, verify this page against code and bump the date.
+Last verified: 2026-10-11, against the M1.0 code (`apps/web`,
+`apps/worker`, `packages/core`). `packages/chess` arrives in M1.1, and
+`services/*` in M1.2 (tablebase) and Phase 2 (explorer). Rows for parts not
+built yet describe the design.
 
 ## System overview
 
@@ -46,14 +48,14 @@ Three chess-truth layers (2026-10-10-02-chess-software-is-sole-source-of-chess-t
 (browser Stockfish today). **Knowledge/Data** = Postgres + explorer. Any LLM
 sits above all three.
 
-## Module map (planned)
+## Module map
 
 | Path | Responsibility | Talks to |
 |---|---|---|
-| `apps/web` | UI routes, `<Board>`, `/api/v1` handlers, auth, browser engine provider. No direct SQL. | `packages/core`, `packages/chess` |
+| `apps/web` | UI routes, `<Board>`, `/api/v1` handlers, browser engine provider. No direct SQL. Every `/api/v1` handler goes through `src/lib/api.ts`, which resolves the session into a `userId` (CORE-42), validates with zod and returns the CORE-41 error envelope. Better Auth is mounted at `/api/auth/*` | `packages/core`, `packages/chess` |
 | `apps/worker` | All long-running jobs (pg-boss). | `packages/core`, `packages/chess`, external APIs, explorer admin |
 | `packages/chess` | Pure rules/PGN/FEN, `positionKey`, `gameFingerprint` (uploads), `terminalKey` (OTB dedup), opening classifier, `TreeCursor`, `AnalysisProvider` types. **No I/O.** | chessops |
-| `packages/core` | Drizzle schema, migrations, user-scoped domain services, `ExplorerSource` adapters. **No React.** | Postgres, explorer |
+| `packages/core` | Drizzle schema (`src/schema/`), SQL migrations (`drizzle/`), the Better Auth instance (`src/auth.ts`), `sendEmail`, user-scoped domain services, `ExplorerSource` adapters. Its subpath `@checkmate/core/shared` is pure (zod schemas, preference allowlists), so client components may import it. `db` is not exported. **No React.** | Postgres, explorer |
 | `services/explorer` | Compose and ingestion config for upstream lila-openingexplorer. **No forked code.** | — |
 | `services/tablebase` | Dockerfile for upstream lila-tablebase at a pinned commit, Syzygy 3-5 pieces on a read-only volume (2026-10-11-06). **No forked code.** | — |
 
@@ -107,7 +109,10 @@ sits above all three.
   GPL/AGPL code (ADR 03).
 - **Lint boundaries:** the dependency direction and import rules above are
   enforced by ESLint `no-restricted-imports`, plus a no-DOM, no-Node
-  tsconfig for `packages/chess` (2026-10-11-01).
+  tsconfig for `packages/chess` (2026-10-11-01). `test/boundaries.test.ts`
+  proves each rule fires.
+- **No build step for packages:** workspace packages ship TypeScript source.
+  Next transpiles them, and Node 24 runs them directly (2026-10-11-07).
 - **Raw data:**
   - Raw player data is append-only. Analysis sessions are the exception:
     they are mutable working copies (2026-10-11-02).
@@ -167,4 +172,5 @@ sits above all three.
 - docs/adr/2026-10-11-04-shared-collaborative-studies-ops-over-pgn.md
 - docs/adr/2026-10-11-05-saved-browser-reviews-are-private-labelled-cache.md
 - docs/adr/2026-10-11-06-self-hosted-syzygy-tablebase.md
+- docs/adr/2026-10-11-07-internal-packages-ship-typescript-source.md
 - Cross-cutting contracts: docs/stream/2026-10-10-core-architecture.spec.md

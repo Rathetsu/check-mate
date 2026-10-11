@@ -1,0 +1,8 @@
+# SITE_ADDRESS: a domain, `<server-ip>.sslip.io` for the soft launch, or
+# localhost (Caddy's local CA). Caddy gets the TLS certificate itself.
+# reverse_proxy sets X-Forwarded-For from the real peer, which Better Auth's
+# rate limiter reads.
+{$SITE_ADDRESS} {
+	encode zstd gzip
+	reverse_proxy web:3000
+}

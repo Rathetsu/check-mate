@@ -6,8 +6,26 @@ database. No AI in this repo.
 
 ## Commands
 
-None yet. They arrive with the M1.0 scaffold (pnpm + Turborepo, see
-docs/stream/2026-10-10-mvp-roadmap.plan.md).
+Node 24 (`.nvmrc`), pnpm via corepack (`corepack enable`). Copy `.env.example`
+to `.env` first.
+
+- `docker compose --profile dev up -d postgres mailpit`: local DB and email
+  catcher (Mailpit UI on :8025)
+- `pnpm db:migrate`: apply migrations. `pnpm db:generate` writes a new one
+  after a schema change in `packages/core/src/schema/`
+- `pnpm dev`: web on :3000 plus the worker
+- `pnpm lint` · `pnpm format:check` · `pnpm typecheck`
+- `pnpm test`: Vitest. Uses a separate `checkmate_test` database
+- `pnpm e2e`: Playwright (needs postgres + mailpit). Add `PW_CHANNEL=chrome`
+  to use a local Chrome
+- `pnpm check:register`: register, license and LLM checks. `pnpm
+register:write` regenerates `NOTICE` and the `/about` data
+- `docker compose --profile dev up --build`: full stack behind Caddy at
+  https://localhost
+
+Workspace packages ship TypeScript source; nothing is compiled
+(adr/2026-10-11-07). Relative imports use `.ts` extensions, and enums and
+parameter properties are not allowed (`erasableSyntaxOnly`).
 
 ## Hard rules
 

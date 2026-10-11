@@ -8,8 +8,12 @@ Last updated: 2026-10-11
 
 ## Where we are
 
-**Planning is complete and reviewed for Phase 1. No product is built yet.**
-The 2026-10-11 readiness review settled the last decisions M1.0 needed.
+**Phase 1 has started. Milestone M1.0, the foundation, is built.** People
+can create an account (with a unique username), sign in, reset a forgotten
+password, verify their email, change settings, see and end their sessions,
+and delete their account. The app has its CheckMate look in light and dark,
+plus About, Privacy and Source pages. Every check runs automatically on each
+change. Chess features start with M1.1.
 
 The full plan for the first release (Phases 1-3) is written: what we're
 building, how it fits together, and why each major choice was made. The
@@ -29,11 +33,8 @@ friend.
 
 ## Up next
 
-Phase 1, milestone M1.0:
-- project skeleton
-- sign-up (with a unique username) and sign-in, settings
-- app shell in the CheckMate brand
-- license, attribution and privacy pages
+Phase 1, milestone M1.1: the chessboard, chess rules, and PGN/FEN import
+and export, with a first simple analysis page.
 
 See docs/stream/2026-10-10-mvp-roadmap.plan.md and the build plan in
 docs/stream/2026-10-11-phase-1-implementation.plan.md.
@@ -89,8 +90,8 @@ docs/stream/2026-10-11-phase-1-implementation.plan.md.
 
 ## Waiting on you
 
-- **Install Node 24 LTS** on your machine before the build starts (you have
-  22.11; the background-job library needs a newer version).
+- **A contact address (optional):** the Privacy page points to GitHub
+  issues for now. Give me an address if you'd rather people email.
 - **Send two permission emails** to unlock historical master games (TWIC
   1994 to now, and PGN Mentor). Drafts and tracking are in
   docs/stream/2026-10-10-masters-data-permission-requests.plan.md.

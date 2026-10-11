@@ -395,3 +395,32 @@ Three slices, each committed separately. Roughly 3-4 weeks.
 | Parse+write PGN per op is too slow on 500 KB chapters | M1.4.1 | cache the parsed tree per chapter in-process, keyed by version |
 | `zlib.createZstdDecompress` status in Node 24 | M1.5 | `zstd` CLI in the worker image |
 | Puzzle selection p95 on 6.16M rows | M1.5 | partial indexes per band, or a theme+band bucket |
+
+## Build notes
+
+### M1.0 (2026-10-11)
+
+What changed against this plan while building:
+- **`packages/chess` starts in M1.1,** where it first has code. The DOM-free
+  tsconfig check lands with it. The lint boundaries for it are already in
+  `eslint.config.mjs` and tested.
+- **Better Auth tables are written by hand** in `packages/core/src/schema/auth.ts`,
+  matching the 1.7 generator's output. The `@better-auth/cli` dependency
+  isn't needed.
+- **Sign-in accepts email or username** (Lichess parity). It's a small
+  addition to P1-AC flow 2 and has the same rate limit.
+- **Versions:**
+  - PostgreSQL 18.6, not 16 (ADR 06 says 16+).
+  - TypeScript pinned to 6.0.x, because typescript-eslint doesn't support 7
+    yet.
+  - shadcn style `radix-nova`, whose `cn` package replaces clsx +
+    tailwind-merge.
+- **License allowlist:** gains `LGPL-3.0-or-later`, for sharp's libvips via
+  Next.js image optimization.
+- **`/privacy` contact:** GitHub issues, so no personal email is published.
+  Swap in a contact address when one exists.
+- **Dev tooling:**
+  - Next's dev indicator is off, because it covered the nav rail's account
+    button.
+  - Playwright can use a local Chrome (`PW_CHANNEL=chrome`) when its browser
+    download is blocked.

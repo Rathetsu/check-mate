@@ -1,0 +1,210 @@
+{
+  "components": [
+    {
+      "name": "lila (Lichess)",
+      "upstream": "github.com/lichess-org/lila",
+      "license": "AGPL-3.0-or-later",
+      "mode": "adapted: editor castling/ep logic, puzzle moveTest.ts, Advice win-chance constants, puzzle theme keys/groups"
+    },
+    {
+      "name": "chessground",
+      "upstream": "github.com/lichess-org/chessground",
+      "license": "GPL-3.0-or-later",
+      "mode": "reused"
+    },
+    {
+      "name": "chessops",
+      "upstream": "github.com/niklasf/chessops",
+      "license": "GPL-3.0-or-later",
+      "mode": "reused"
+    },
+    {
+      "name": "lila-openingexplorer",
+      "upstream": "github.com/lichess-org/lila-openingexplorer",
+      "license": "AGPL-3.0-or-later",
+      "mode": "reused, unmodified, separate service"
+    },
+    {
+      "name": "stockfish.js",
+      "upstream": "github.com/nmrugg/stockfish.js",
+      "license": "GPL-3.0 (engine); MIT (non-engine code)",
+      "mode": "reused"
+    },
+    {
+      "name": "Next.js",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "React",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "Tailwind CSS",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "shadcn/ui",
+      "license": "MIT",
+      "mode": "reused (components vendored in apps/web/src/components/ui, style radix-nova)"
+    },
+    {
+      "name": "shadcn runtime deps",
+      "license": "MIT / Apache-2.0 / MIT / MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "Lucide icons",
+      "license": "ISC",
+      "mode": "reused"
+    },
+    {
+      "name": "sonner",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "next-themes",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "Better Auth",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "nodemailer",
+      "license": "MIT-0",
+      "mode": "reused"
+    },
+    {
+      "name": "ESLint",
+      "license": "MIT",
+      "mode": "reused (dev only)"
+    },
+    {
+      "name": "Prettier",
+      "license": "MIT",
+      "mode": "reused (dev only)"
+    },
+    {
+      "name": "TypeScript",
+      "license": "Apache-2.0",
+      "mode": "reused (dev only)"
+    },
+    {
+      "name": "DefinitelyTyped",
+      "license": "MIT",
+      "mode": "reused (dev only)"
+    },
+    {
+      "name": "Drizzle ORM / drizzle-kit",
+      "license": "Apache-2.0 / MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "node-postgres",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "pg-boss",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "pnpm / Turborepo",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "Vitest / Playwright",
+      "license": "MIT / Apache-2.0",
+      "mode": "reused (dev only)"
+    },
+    {
+      "name": "zod",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "axe-core",
+      "license": "MPL-2.0",
+      "mode": "reused (tests only)"
+    },
+    {
+      "name": "Geist font",
+      "license": "OFL-1.1",
+      "mode": "reused"
+    },
+    {
+      "name": "PostgreSQL (+ pg_trgm)",
+      "license": "PostgreSQL License",
+      "mode": "reused"
+    },
+    {
+      "name": "Caddy",
+      "license": "Apache-2.0",
+      "mode": "reused"
+    },
+    {
+      "name": "Mailpit",
+      "license": "MIT",
+      "mode": "reused (dev only)"
+    }
+  ],
+  "datasets": [
+    {
+      "name": "Lichess standard rated game dumps (database.lichess.org)",
+      "terms": "CC0",
+      "notes": "8.22B games. We ingest a sized subset"
+    },
+    {
+      "name": "Lichess puzzle CSV",
+      "terms": "CC0",
+      "notes": "6,157,341 puzzles (2026-10-05). Attribution optional; given anyway"
+    },
+    {
+      "name": "Lichess broadcast dumps",
+      "terms": "CC BY-SA 4.0",
+      "notes": "Attribution in UI. Share-alike is met by the monthly CC BY-SA masters dump on /about/data (P2-EI-35)"
+    },
+    {
+      "name": "lichess-org/chess-openings",
+      "terms": "CC0",
+      "notes": "Vendored at a pinned commit"
+    },
+    {
+      "name": "Lichess game export + OAuth API",
+      "terms": "Lichess ToS; one request at a time; wait ≥60 s after 429",
+      "notes": "PKCE public client, no scopes; anonymous export is being throttled"
+    },
+    {
+      "name": "Have I Been Pwned (Pwned Passwords range API)",
+      "terms": "free, no key; k-anonymity (only a 5-character SHA-1 prefix is sent)",
+      "notes": "Disclosed on /privacy"
+    },
+    {
+      "name": "Test fixtures (packages/chess/fixtures/)",
+      "terms": "per file: Lichess game exports CC0, broadcast round CC BY-SA 4.0, our own study and Chess.com games, synthetic malformed files",
+      "notes": "Sources and licenses listed in the fixture README. No other players' Chess.com data"
+    }
+  ],
+  "assets": [
+    {
+      "name": "pieces kiwen-suwi, firi",
+      "license": "CC BY 4.0"
+    },
+    {
+      "name": "pieces shapes",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "name": "game-icons.net theme icons",
+      "license": "CC BY 3.0"
+    }
+  ]
+}

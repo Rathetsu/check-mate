@@ -1,0 +1,15 @@
+{
+  "name": "@checkmate/worker",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file-if-exists=../../.env --watch src/main.ts",
+    "start": "node src/main.ts",
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "@checkmate/core": "workspace:*",
+    "pg-boss": "^12.37.1"
+  }
+}

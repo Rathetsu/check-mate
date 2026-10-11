@@ -10,11 +10,15 @@ merged** (2026-10-10-04-license-core-agpl-3-or-later). A dataset may be
 ingested only when its row says **cleared**
 (2026-10-10-14-self-hosted-opening-explorer-from-licensed-data).
 
-Last verified: 2026-10-10 (rows added 2026-10-11 are marked "re-verify at
-install"). Licenses were checked against upstream
-LICENSE/COPYING files, package.json, the npm registry, or official terms.
-"Re-verify at install" means a well-known permissive license that wasn't
-re-checked.
+Last verified: 2026-10-11. Platform licenses come from the installed
+packages (`pnpm -r licenses list`). Other rows were checked against upstream
+LICENSE/COPYING files, the npm registry, or official terms.
+
+**Machine-read.** `scripts/check-register.ts` reads this page in CI. A direct
+dependency counts as registered when its exact npm name appears in backticks
+in the Component or Version cell of a row whose Mode starts with "reused" or
+"adapted". `@types/*`-style patterns are allowed. The same script generates
+`NOTICE` and the `/about` page from these tables.
 
 CheckMate Core license: **AGPL-3.0-or-later**. This is not legal advice.
 Compliance is self-administered through the checklist at the end of this
@@ -34,9 +38,9 @@ page. A paid review happens only at the triggers in
 |---|---|---|---|---|---|---|
 | lila (Lichess) | github.com/lichess-org/lila | master @ build time | AGPL-3.0-or-later | adapted: editor castling/ep logic, puzzle `moveTest.ts`, Advice win-chance constants, puzzle theme keys/groups · reference: `ui/analyse`, `ui/ceval`, explorer panel | P1-P2 | Attribution header with upstream path and commit in every adapted file; Core stays AGPL; Source link |
 | chessground | github.com/lichess-org/chessground | `@lichess-org/chessground` 10.4.2 | GPL-3.0-or-later | reused | `<Board>` | README: source must be released to site users. Satisfied by the AGPL Source link |
-| chessops | github.com/niklasf/chessops | 0.15.1 | GPL-3.0-or-later | reused | `packages/chess` | Same as above. No Zobrist module (we use EPD keys) |
+| chessops (`chessops`) | github.com/niklasf/chessops | 0.15.1 | GPL-3.0-or-later | reused | `packages/chess` | Same as above. No Zobrist module (we use EPD keys) |
 | lila-openingexplorer | github.com/lichess-org/lila-openingexplorer | 3.0.0 | AGPL-3.0-or-later | reused, unmodified, separate service · `import-master.py` rules mirrored (avg Elo ≥ 2200, terminal-position + year dedup) | P2 explorer | Link upstream source on `/about`; publish the fork if ever patched |
-| stockfish (npm, stockfish.js) | github.com/nmrugg/stockfish.js | 19.0.0 (Stockfish 19) | GPL-3.0 (engine); MIT (non-engine code) | reused | browser `AnalysisProvider` | Ship/offer corresponding source for the WASM build we serve |
+| stockfish.js (`stockfish`) | github.com/nmrugg/stockfish.js | 19.0.1 (Stockfish 19) | GPL-3.0 (engine); MIT (non-engine code) | reused | browser `AnalysisProvider` | Ship/offer corresponding source for the WASM build we serve |
 | OpeningTree | github.com/openingtree/openingtree | master | GPL-3.0 | reference (UX, filters, perspective) | P3 | No code copied. It is React 16 class components and computes in the browser only |
 | pgn-viewer | github.com/lichess-org/pgn-viewer | 2.7.3 | GPL-3.0-or-later | not used | — | snabbdom-based; our analysis board covers viewing |
 | stockfish-web | github.com/lichess-org/stockfish-web | 0.5.0 | LICENSE says GPL-3.0; package.json says AGPL-3.0-or-later | not used | — | Lichess-specific; its README points third parties to stockfish.js |
@@ -45,31 +49,35 @@ page. A paid review happens only at the triggers in
 
 ## Platform and tooling
 
-| Component | Version (2026-10-10) | License | Mode | Notes |
+| Component | Version (2026-10-11) | License | Mode | Notes |
 |---|---|---|---|---|
-| Next.js | 16.4.0 | MIT (re-verify at install) | reused | `proxy.ts` replaces `middleware.ts` |
-| React | 19.x | MIT (re-verify) | reused | |
-| Tailwind CSS | 4.3.3 | MIT (re-verify) | reused | |
-| shadcn/ui | CLI 4.21.4 | MIT (re-verify) | reused (components vendored) | |
-| Lucide icons | latest | ISC (re-verify) | reused | |
-| sonner | latest | MIT (re-verify) | reused | |
-| next-themes | latest | MIT (re-verify) | reused | Light/dark/system without flash (P1-UI-02) |
-| Better Auth | 1.7.7 | MIT | reused | Vercel-owned since 2026-07-07. `haveIBeenPwned` plugin enabled (P1-AC-01) |
-| nodemailer | latest | MIT-0 (re-verify) | reused | SMTP for `sendEmail`. Without SMTP env, links go to the server log (2026-10-11-03) |
-| ESLint + typescript-eslint + eslint-config-next | latest | MIT (re-verify) | reused (dev only) | Boundary rules via `no-restricted-imports` (2026-10-11-01) |
-| Prettier | latest | MIT (re-verify) | reused (dev only) | |
-| Drizzle ORM / drizzle-kit | 0.45.4 / 0.31.11 | Apache-2.0 (re-verify) | reused | 1.0 is an RC; migration-folder change pending |
-| pg-boss | 12.37.1 | MIT (re-verify) | reused | Node 22.12+, Postgres 13+ |
-| pnpm / Turborepo | 12.10.1 / 2.11.7 | MIT (re-verify) | reused | |
-| Vitest / Playwright | 5.0.3 / 1.64.0 | MIT / Apache-2.0 (re-verify) | reused | |
-| zod | latest | MIT (re-verify) | reused | `/api/v1` input/output schemas |
-| axe-core (+ Playwright integration) | latest | MPL-2.0 (re-verify) | reused (tests only) | a11y checks |
+| Next.js (`next`) | 16.4.0 | MIT | reused | `proxy.ts` replaces `middleware.ts` |
+| React (`react`, `react-dom`) | 19.3.0 | MIT | reused | |
+| Tailwind CSS (`tailwindcss`, `@tailwindcss/postcss`) | 4.3.3 | MIT | reused | |
+| shadcn/ui (`shadcn`) | 4.21.4 | MIT | reused (components vendored in `apps/web/src/components/ui`, style `radix-nova`) | Dev only: the CLI, plus its `tailwind.css` |
+| shadcn runtime deps (`radix-ui`, `class-variance-authority`, `cn`, `tw-animate-css`) | 1.7.0 / 0.7.1 / 0.4.0 / 1.4.0 | MIT / Apache-2.0 / MIT / MIT | reused | `cn` is shadcn's own replacement for clsx + tailwind-merge |
+| Lucide icons (`lucide-react`) | 1.55.0 | ISC | reused | |
+| sonner (`sonner`) | 2.0.8 | MIT | reused | Toasts (P1-UI-11) |
+| next-themes (`next-themes`) | 0.4.6 | MIT | reused | Light/dark/system without flash (P1-UI-02) |
+| Better Auth (`better-auth`) | 1.7.7 | MIT | reused | Vercel-owned since 2026-07-07. `username` and `haveIBeenPwned` plugins enabled (P1-AC-01) |
+| nodemailer (`nodemailer`) | 10.1.0 | MIT-0 | reused | SMTP for `sendEmail`. Without SMTP env, links go to the server log (2026-10-11-03) |
+| ESLint (`eslint`, `typescript-eslint`, `eslint-config-next`) | 10.12.0 / 8.71.1 / 16.4.0 | MIT | reused (dev only) | Boundary rules via `no-restricted-imports` (2026-10-11-01) |
+| Prettier (`prettier`) | 3.9.10 | MIT | reused (dev only) | |
+| TypeScript (`typescript`) | 6.0.3 | Apache-2.0 | reused (dev only) | 7.x waits for typescript-eslint (peer range `<6.1`) |
+| DefinitelyTyped (`@types/*`) | — | MIT | reused (dev only) | Type definitions |
+| Drizzle ORM / drizzle-kit (`drizzle-orm`, `drizzle-kit`) | 0.45.4 / 0.31.11 | Apache-2.0 / MIT | reused | 1.0 is an RC; migration-folder change pending |
+| node-postgres (`pg`) | 8.23.1 | MIT | reused | Postgres driver for Drizzle; pg-boss uses it too |
+| pg-boss (`pg-boss`) | 12.37.1 | MIT | reused | Node 22.12+, Postgres 13+ |
+| pnpm / Turborepo (`turbo`) | 12.11.2 / 2.11.7 | MIT | reused | pnpm via corepack (`packageManager`) |
+| Vitest / Playwright (`vitest`, `@playwright/test`) | 5.0.3 / 1.64.0 | MIT / Apache-2.0 | reused (dev only) | |
+| zod (`zod`) | 4.6.5 | MIT | reused | `/api/v1` input/output schemas |
+| axe-core (`@axe-core/playwright`) | 4.13.0 | MPL-2.0 | reused (tests only) | a11y checks (M1.6) |
 | testcontainers | — | MIT | not used | The compose `postgres` service runs service tests locally and in CI |
-| Geist font | latest | OFL-1.1 (re-verify) | reused | UI font (P1-UI-10) |
+| Geist font | latest | OFL-1.1 | reused | UI font (P1-UI-10), self-hosted at build by `next/font` |
 | Inter font | — | OFL-1.1 | not used | Geist chosen 2026-10-11 |
-| PostgreSQL (+ `pg_trgm`) | 16+ | PostgreSQL License | reused | |
-| Caddy | 2.x | Apache-2.0 (re-verify) | reused | |
-| Mailpit | latest | MIT (re-verify) | reused (dev only) | |
+| PostgreSQL (+ `pg_trgm`) | 18.6 | PostgreSQL License | reused | Compose image `postgres:18.6-alpine` |
+| Caddy | 2.11.7 | Apache-2.0 | reused | |
+| Mailpit | 1.31.5 | MIT | reused (dev only) | |
 
 ## Datasets and external APIs
 
@@ -136,13 +144,18 @@ public deploy must pass all items. CI checks the ones marked (auto).
      in any `package.json`, or an asset directory, has no row. The same
      parsed tables generate `NOTICE` and `/about`, so this page stays the
      single source.
-   - **Transitive** dependencies get no rows. `pnpm licenses list --json`
-     fails CI on any license outside the allowlist: MIT, MIT-0, ISC,
-     BSD-2/3-Clause, 0BSD, Apache-2.0, MPL-2.0, BlueOak-1.0.0, Python-2.0,
-     Unlicense, CC0-1.0, CC-BY-4.0 (e.g. caniuse-lite; credited on
-     `/about`), OFL-1.1, GPL-3.0(-or-later), AGPL-3.0(-or-later).
-     Extending the allowlist is an edit to this page, reviewed like any
-     other.
+   - **Transitive** dependencies get no rows. `pnpm -r licenses list --json`
+     fails CI on any license outside the allowlist:
+     `MIT` `MIT-0` `ISC` `BSD-2-Clause` `BSD-3-Clause` `0BSD` `Apache-2.0`
+     `MPL-2.0` `BlueOak-1.0.0` `Python-2.0` `Unlicense` `CC0-1.0`
+     `CC-BY-4.0` `OFL-1.1` `GPL-3.0` `GPL-3.0-or-later` `AGPL-3.0`
+     `AGPL-3.0-or-later` `LGPL-3.0-or-later`
+     - CC-BY-4.0: e.g. caniuse-lite, credited on `/about`.
+     - LGPL-3.0-or-later (added 2026-10-11): sharp's prebuilt libvips
+       (`@img/sharp-libvips-*`), pulled in by Next.js image optimization.
+       It is dynamically linked and AGPL-compatible.
+     - Extending the allowlist is an edit to this page, reviewed like any
+       other.
 3. Only allowlisted assets ship (auto: build check, P1-UI-06).
 4. Only `cleared` OTB sources are ingested (auto: P2-EI-21).
 5. `/about` lists every reused or adapted component and every attribution

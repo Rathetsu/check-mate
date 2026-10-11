@@ -1,0 +1,18 @@
+[
+  "openai",
+  "openai/*",
+  "@anthropic-ai/*",
+  "@google/generative-ai",
+  "@google/genai",
+  "langchain",
+  "langchain/*",
+  "@langchain/*",
+  "ai",
+  "@ai-sdk/*",
+  "cohere-ai",
+  "@mistralai/*",
+  "ollama",
+  "llamaindex",
+  "groq-sdk",
+  "replicate"
+]

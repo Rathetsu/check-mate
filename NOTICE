@@ -1,0 +1,51 @@
+CheckMate
+Copyright (C) CheckMate contributors. Licensed under AGPL-3.0-or-later (see LICENSE).
+Source: https://github.com/Rathetsu/check-mate
+
+Generated from docs/wiki/open-source-reuse.md by scripts/check-register.ts. Do not edit.
+
+Third-party components:
+- lila (Lichess) (AGPL-3.0-or-later) https://github.com/lichess-org/lila
+- chessground (GPL-3.0-or-later) https://github.com/lichess-org/chessground
+- chessops (GPL-3.0-or-later) https://github.com/niklasf/chessops
+- lila-openingexplorer (AGPL-3.0-or-later) https://github.com/lichess-org/lila-openingexplorer
+- stockfish.js (GPL-3.0 (engine); MIT (non-engine code)) https://github.com/nmrugg/stockfish.js
+- Next.js (MIT)
+- React (MIT)
+- Tailwind CSS (MIT)
+- shadcn/ui (MIT)
+- shadcn runtime deps (MIT / Apache-2.0 / MIT / MIT)
+- Lucide icons (ISC)
+- sonner (MIT)
+- next-themes (MIT)
+- Better Auth (MIT)
+- nodemailer (MIT-0)
+- ESLint (MIT)
+- Prettier (MIT)
+- TypeScript (Apache-2.0)
+- DefinitelyTyped (MIT)
+- Drizzle ORM / drizzle-kit (Apache-2.0 / MIT)
+- node-postgres (MIT)
+- pg-boss (MIT)
+- pnpm / Turborepo (MIT)
+- Vitest / Playwright (MIT / Apache-2.0)
+- zod (MIT)
+- axe-core (MPL-2.0)
+- Geist font (OFL-1.1)
+- PostgreSQL (+ pg_trgm) (PostgreSQL License)
+- Caddy (Apache-2.0)
+- Mailpit (MIT)
+
+Datasets:
+- Lichess standard rated game dumps (database.lichess.org) (CC0)
+- Lichess puzzle CSV (CC0)
+- Lichess broadcast dumps (CC BY-SA 4.0)
+- lichess-org/chess-openings (CC0)
+- Lichess game export + OAuth API (Lichess ToS; one request at a time; wait ≥60 s after 429)
+- Have I Been Pwned (Pwned Passwords range API) (free, no key; k-anonymity (only a 5-character SHA-1 prefix is sent))
+- Test fixtures (packages/chess/fixtures/) (per file: Lichess game exports CC0, broadcast round CC BY-SA 4.0, our own study and Chess.com games, synthetic malformed files)
+
+Assets requiring attribution:
+- pieces kiwen-suwi, firi (CC BY 4.0)
+- pieces shapes (CC BY-SA 4.0)
+- game-icons.net theme icons (CC BY 3.0)
