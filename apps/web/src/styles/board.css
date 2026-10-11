@@ -1,0 +1,63 @@
+/*
+ * Board look (P1-BD-08, P1-UI-06). chessground's base layout and its brown
+ * highlight colors, plus our own two-color themes drawn with CSS only.
+ * Squares and highlights are reserved colors: never --primary (P1-UI-14).
+ */
+@import '@lichess-org/chessground/assets/chessground.base.css';
+@import '@lichess-org/chessground/assets/chessground.brown.css';
+@import './pieces.css';
+
+/* a8 (top-left) is light whichever way the board faces. */
+.cg-wrap cg-board {
+  background: repeating-conic-gradient(var(--sq-dark) 0 25%, var(--sq-light) 0 50%) 0 0 / 25% 25%;
+}
+.board-brown {
+  --sq-light: #f0d9b5;
+  --sq-dark: #b58863;
+}
+.board-blue {
+  --sq-light: #dee3e6;
+  --sq-dark: #8ca2ad;
+}
+.board-green {
+  --sq-light: #ffffdd;
+  --sq-dark: #86a666;
+}
+.board-grey {
+  --sq-light: #d9d9d9;
+  --sq-dark: #a6a6a6;
+}
+
+/* Coordinates inside the edge squares: chessground's defaults shift the
+   file labels 24px right, past the board, which scrolls phones sideways. */
+.cg-wrap coords {
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+.cg-wrap coords coord {
+  flex: 1 1 0;
+}
+.cg-wrap coords.ranks {
+  top: 0;
+  left: 2px;
+}
+.cg-wrap coords.ranks coord {
+  transform: none;
+  padding-top: 2px;
+}
+.cg-wrap coords.files {
+  left: 0;
+  bottom: 0;
+  height: auto;
+  text-align: right;
+}
+.cg-wrap coords.files coord {
+  padding-right: 3px;
+}
+
+/* P1-BD-04: no animation under reduced motion, whatever the preference. */
+@media (prefers-reduced-motion: reduce) {
+  .cg-wrap piece.anim {
+    transition: none;
+  }
+}

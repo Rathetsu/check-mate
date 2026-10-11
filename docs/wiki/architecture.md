@@ -4,10 +4,10 @@ kind: system
 
 # Architecture
 
-Last verified: 2026-10-11, against the M1.0 code (`apps/web`,
-`apps/worker`, `packages/core`). `packages/chess` arrives in M1.1, and
-`services/*` in M1.2 (tablebase) and Phase 2 (explorer). Rows for parts not
-built yet describe the design.
+Last verified: 2026-10-11, against the M1.1 code (`apps/web`,
+`apps/worker`, `packages/core`, `packages/chess`). `services/*` arrive in
+M1.2 (tablebase) and Phase 2 (explorer). Rows for parts not built yet
+describe the design.
 
 ## System overview
 
@@ -54,7 +54,7 @@ sits above all three.
 |---|---|---|
 | `apps/web` | UI routes, `<Board>`, `/api/v1` handlers, browser engine provider. No direct SQL. Every `/api/v1` handler goes through `src/lib/api.ts`, which resolves the session into a `userId` (CORE-42), validates with zod and returns the CORE-41 error envelope. Better Auth is mounted at `/api/auth/*` | `packages/core`, `packages/chess` |
 | `apps/worker` | All long-running jobs (pg-boss). | `packages/core`, `packages/chess`, external APIs, explorer admin |
-| `packages/chess` | Pure rules/PGN/FEN, `positionKey`, `gameFingerprint` (uploads), `terminalKey` (OTB dedup), opening classifier, `TreeCursor`, `AnalysisProvider` types. **No I/O.** | chessops |
+| `packages/chess` | Pure rules over chessops: `fen.ts` (validation lists every reason), `moves.ts`, `keys.ts` (`positionKey`), `pgn.ts` (game splitting, error locations, export options), `tree.ts` (`TreeCursor`), `analysis.ts` (`AnalysisProvider` + fake provider). Later: `gameFingerprint` (P3), `terminalKey` (P2), opening classifier (M1.2). Its `tsconfig` has no DOM or Node types. Tests and the fixture corpus sit in `test/` and `fixtures/`. **No I/O.** | chessops |
 | `packages/core` | Drizzle schema (`src/schema/`), SQL migrations (`drizzle/`), the Better Auth instance (`src/auth.ts`), `sendEmail`, user-scoped domain services, `ExplorerSource` adapters. Its subpath `@checkmate/core/shared` is pure (zod schemas, preference allowlists), so client components may import it. `db` is not exported. **No React.** | Postgres, explorer |
 | `services/explorer` | Compose and ingestion config for upstream lila-openingexplorer. **No forked code.** | — |
 | `services/tablebase` | Dockerfile for upstream lila-tablebase at a pinned commit, 3-5 piece tablebase files on a read-only volume (2026-10-11-06). **No forked code.** | — |
@@ -97,8 +97,10 @@ sits above all three.
 
 - **Rules:** only `packages/chess` (chessops) decides legality, mate,
   validity and opening names (ADR 02, 07).
-- **Board:** only `<Board>` imports chessground, and board state lives in
-  `TreeCursor`, not in React (ADR 08).
+- **Board:** only `<Board>` (`apps/web/src/components/board/Board.tsx`)
+  imports chessground, and board state lives in `TreeCursor`, not in React
+  (ADR 08). PGN files are indexed in a Web Worker, never on the page's main
+  thread.
 - **Engine:** only the `AnalysisProvider` implementation imports
   `stockfish` or parses UCI. Engine results always carry provenance, and
   browser evals are never persisted as truth (ADR 09). Saved game reviews are

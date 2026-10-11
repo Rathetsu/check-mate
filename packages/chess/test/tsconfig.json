@@ -1,0 +1,6 @@
+{
+  // Tests read fixtures from disk; the package itself stays I/O-free.
+  "extends": "../tsconfig.json",
+  "compilerOptions": { "types": ["node"] },
+  "include": [".", "../src"]
+}

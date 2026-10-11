@@ -8,12 +8,28 @@ Last updated: 2026-10-11
 
 ## Where we are
 
-**Phase 1 has started. Milestone M1.0, the foundation, is built.** People
-can create an account (with a unique username), sign in, reset a forgotten
-password, verify their email, change settings, see and end their sessions,
-and delete their account. The app has its CheckMate look in light and dark,
-plus About, Privacy and Source pages. Every check runs automatically on each
-change. Chess features start with M1.1.
+**Phase 1 is under way. M1.0 (the foundation) and M1.1 (the chessboard) are
+built.**
+- **Accounts:** people can create an account with a unique username, sign
+  in, reset a forgotten password, verify their email, change settings, see
+  and end their sessions, and delete their account.
+- **Look:** the app has its CheckMate look in light and dark, plus About,
+  Privacy and Source pages.
+- **The analysis page** (`/analysis`) has a real chessboard. You can:
+  - drag or click to move, with legal-move dots
+  - pick a promotion piece
+  - draw arrows in four colors
+  - flip the board
+  - step through moves with the arrow keys
+  - type moves
+  - build variations
+  - import a PGN or FEN (a game picker for files with many games, and clear
+    errors with line numbers)
+  - export PGN or FEN, with or without variations, comments and clocks
+- **Board looks:** 11 piece sets, four board colors and four sound sets
+  follow your settings.
+
+Every check runs automatically on each change.
 
 The full plan for the first release (Phases 1-3) is written: what we're
 building, how it fits together, and why each major choice was made. The
@@ -26,15 +42,16 @@ friend.
 
 | Phase | What users get | State |
 |---|---|---|
-| 1. Chess platform | Accounts, analysis board with Stockfish in the browser, endgame tablebase, saved game reviews, board editor, PGN/FEN import and export, studies like Lichess (sharing and live collaboration, no chat), themed puzzle training with saved history | Specified, not started |
+| 1. Chess platform | Accounts, analysis board with Stockfish in the browser, endgame tablebase, saved game reviews, board editor, PGN/FEN import and export, studies like Lichess (sharing and live collaboration, no chat), themed puzzle training with saved history | In progress: accounts and the chessboard with PGN/FEN are built |
 | 2. Opening explorer | Opening statistics from Lichess games and master games combined without double counting, with filters, master game viewer, opening names, and a free download of our master-game dataset | Specified, not started |
 | 3. Personal database | Connect Lichess and Chess.com, import and keep all your games, sync new ones, browse your library, see your personal opening tree and opening results, and compare with the wider database | Specified, not started |
 | 4. AI coach | Conversational coaching grounded in engine and database facts | Not planned yet. Will be a separate, private service |
 
 ## Up next
 
-Phase 1, milestone M1.1: the chessboard, chess rules, and PGN/FEN import
-and export, with a first simple analysis page.
+Phase 1, milestone M1.2: the full analysis board. That means Stockfish in the
+browser, annotations, opening names, the endgame tablebase, saved analysis
+sessions, share links and the `/` command palette.
 
 See docs/stream/2026-10-10-mvp-roadmap.plan.md and the build plan in
 docs/stream/2026-10-11-phase-1-implementation.plan.md.
@@ -84,12 +101,17 @@ docs/stream/2026-10-11-phase-1-implementation.plan.md.
   with up to 5 pieces, served from our own copy of free tablebase files, not
   Lichess's service. It grows to 6 pieces when disk allows (ADR
   2026-10-11-06).
+- **Piece sets:** 11 instead of 12. "Staunton" turned out to exist only as
+  3D-board images, and its 2D cousin has a non-commercial licence.
 - **Every optional Phase 1 item was decided one by one.** The list is in the
   build plan. One is dropped for good: browser back/forward through editor
   edits. Two-factor sign-in waits until later.
 
 ## Waiting on you
 
+- **One manual check (2 minutes):** export a PGN with variations, comments
+  and arrows from `/analysis`, import it into a Lichess study, and confirm it
+  looks the same (pgn-fen spec acceptance criteria).
 - **A contact address (optional):** the Privacy page points to GitHub
   issues for now. Give me an address if you'd rather people email.
 - **Send two permission emails** to unlock historical master games (TWIC

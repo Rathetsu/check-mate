@@ -8,7 +8,6 @@ export const PIECE_SETS = [
   'merida',
   'mono',
   'mpchess',
-  'staunton',
   'fantasy',
   'spatial',
   'celtic',

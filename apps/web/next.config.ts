@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   outputFileTracingRoot: path.join(import.meta.dirname, '../..'),
   // Workspace packages ship TypeScript source (no build step).
-  transpilePackages: ['@checkmate/core'],
+  transpilePackages: ['@checkmate/core', '@checkmate/chess'],
   // AGPL §13 Source link (P1-UI-08). Set at image build time.
   env: { NEXT_PUBLIC_COMMIT_SHA: process.env.COMMIT_SHA ?? 'unknown' },
 };

@@ -1,0 +1,15 @@
+{
+  "name": "@checkmate/chess",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p . && tsc -p test"
+  },
+  "dependencies": {
+    "chessops": "0.15.1"
+  }
+}

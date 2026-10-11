@@ -1,0 +1,32 @@
+[Event "Italian ideas: Main line"]
+[Site "https://lichess.org/study/CmFixt01/Chap0001"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "C54"]
+[Opening "Italian Game: Classical Variation, Greco Gambit"]
+[Annotator "https://lichess.org/@/checkmate-fixtures"]
+[StudyName "Italian ideas"]
+[ChapterName "Main line"]
+[ChapterURL "https://lichess.org/study/CmFixt01/Chap0001"]
+[UTCDate "2026.10.11"]
+[UTCTime "12:00:00"]
+
+{ A short tour of the Italian. [%csl Ge4,Gd4] } 1. e4 e5 2. Nf3 Nc6 3. Bc4 { [%cal Gc4f7] The bishop eyes f7. } 3... Bc5 ( 3... Nf6 { The Two Knights. } 4. Ng5 d5 5. exd5 Na5 ( 5... Nxd5?! 6. Nxf7!? ( { Calmer: } 6. d4 { The Lolli Attack. } ) 6... Kxf7 7. Qf3+ Ke6 8. Nc3 $13 ) 6. Bb5+ c6 ) 4. c3 Nf6 5. d4 exd4 6. cxd4 Bb4+ 7. Bd2 Bxd2+ 8. Nbxd2 d5! { [%cal Gd5e4,Rf6e4] Hitting the centre at once. } 9. exd5 Nxd5 10. Qb3 Nce7 11. O-O O-O 12. Rfe1 c6 $10 *
+
+
+[Event "Italian ideas: Lucena drill"]
+[Site "https://lichess.org/study/CmFixt01/Chap0002"]
+[Result "*"]
+[Variant "From Position"]
+[FEN "1K1k4/1P6/8/8/8/8/r7/2R5 w - - 0 1"]
+[SetUp "1"]
+[Annotator "https://lichess.org/@/checkmate-fixtures"]
+[StudyName "Italian ideas"]
+[ChapterName "Lucena drill"]
+[ChapterURL "https://lichess.org/study/CmFixt01/Chap0002"]
+[Orientation "white"]
+[ChapterMode "gamebook"]
+[UTCDate "2026.10.11"]
+[UTCTime "12:05:00"]
+
+{ White to play and win. [%csl Gb8,Gb7] } 1. Rd1+ { Push the black king away first. } 1... Ke7 2. Rd4! { Building the bridge. [%cal Gd1d4] } 2... Rb2 ( 2... Ke6 3. Kc7 Rc2+ 4. Kb6 Rb2+ 5. Rb4 ) 3. Kc7 Rc2+ 4. Kb6 Rb2+ 5. Rb4 $18 *

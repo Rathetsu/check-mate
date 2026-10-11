@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // CORE-02: no DOM and no Node globals, so this code runs anywhere.
+    "lib": ["ES2023"],
+    "types": []
+  },
+  "include": ["src"]
+}

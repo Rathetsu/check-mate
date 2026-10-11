@@ -69,7 +69,7 @@ Source link) · 2026-10-10-05-typescript-monorepo-nextjs-and-node-worker ·
   - `prefers-reduced-motion` disables piece animation
   - the move list is screen-reader navigable
 - **P1-UI-06 MUST** Only allowlisted assets ship:
-  - **Pieces:** cburnett (default), merida, mono, mpchess, staunton,
+  - **Pieces:** cburnett (default), merida, mono, mpchess,
     fantasy, spatial, celtic, chessnut, rhosgfx, kiwen-suwi, firi.
   - **Boards:** CSS two-color themes we define, plus lila board images
     (AGPL).

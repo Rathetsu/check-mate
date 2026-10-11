@@ -12,9 +12,12 @@ export default async function Home() {
       </h1>
       <p className="text-lg text-muted-foreground">Your chess mate.</p>
       <p className="max-w-prose">
-        A free, open-source place to analyze games, build studies and practice tactics. The analysis board, studies and
-        puzzles are on their way. Their links will appear here as each one is ready.
+        A free, open-source place to analyze games, build studies and practice tactics. Studies and puzzles are on their
+        way. Their links will appear here as each one is ready.
       </p>
+      <Button asChild size="lg">
+        <Link href="/analysis">Analyze a position</Link>
+      </Button>
       {!session && (
         <div className="flex gap-3">
           <Button asChild>

@@ -22,6 +22,9 @@ to `.env` first.
 register:write` regenerates `NOTICE` and the `/about` data
 - `docker compose --profile dev up --build`: full stack behind Caddy at
   https://localhost
+- `scripts/fetch-lila-assets.sh` then `node scripts/gen-piece-css.ts`:
+  re-copy the allowlisted piece and sound sets from lila (pinned commit) and
+  regenerate the piece CSS. Both outputs are committed
 
 Workspace packages ship TypeScript source; nothing is compiled
 (adr/2026-10-11-07). Relative imports use `.ts` extensions, and enums and

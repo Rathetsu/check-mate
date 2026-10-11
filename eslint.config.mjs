@@ -65,7 +65,8 @@ export default defineConfig([
   { files: ['apps/**'], rules: restrict(...BASE, NO_DB) },
   { files: ['apps/web/src/components/board/Board.tsx'], rules: restrict(NO_LLM, NO_STOCKFISH, NO_DB) },
   { files: ['apps/web/src/engine/**'], rules: restrict(NO_LLM, NO_CHESSGROUND, NO_DB) },
-  { files: ['packages/chess/**'], rules: restrict(...BASE, NO_DB, NO_NODE, NO_UPWARD) },
+  { files: ['packages/chess/src/**'], rules: restrict(...BASE, NO_DB, NO_NODE, NO_UPWARD) },
+  { files: ['packages/chess/test/**'], rules: restrict(...BASE, NO_DB, NO_UPWARD) },
   { files: ['packages/core/src/shared/**'], rules: restrict(...BASE, NO_DB, NO_NODE, NO_DB_MODULE) },
   globalIgnores([
     '**/.next/**',
@@ -75,5 +76,7 @@ export default defineConfig([
     'apps/web/src/components/ui/**',
     'apps/web/src/generated/**',
     'apps/web/public/**',
+    'apps/web/playwright-report/**',
+    'apps/web/test-results/**',
   ]),
 ]);

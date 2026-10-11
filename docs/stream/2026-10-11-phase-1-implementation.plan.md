@@ -425,3 +425,24 @@ What changed against this plan while building:
     button.
   - Playwright can use a local Chrome (`PW_CHANNEL=chrome`) when its browser
     download is blocked.
+
+### M1.1 (2026-10-11)
+
+Built per docs/stream/2026-10-11-m1.1-m1.4-build.plan.md. What changed while
+building (details in the chessboard and pgn-fen spec build notes):
+- **Piece sets: 11.** `staunton` is not a 2D set in lila (3D sprites only),
+  and the 2D `staunty` is CC BY-NC-SA. It is removed from the allowlist, the
+  spec and the register.
+- **PGN splitting rules** for files without tags or with stray blank lines,
+  and an unclosed `{` no longer swallows the rest of the file.
+- **Leading comments:** a variation's leading comment moves onto the parent
+  when that variation becomes the mainline move. PGN can't hold it there,
+  and browser and server trees must match for M1.4.
+- **The game picker renders 200 rows at a time.** Rendering 3,000 rows at
+  once was a long task on the main thread.
+- **Benchmarks:**
+  - 5 MB / 3,048 games listed in about 0.8 s with no long tasks
+  - 20,000-node parse + write in about 167 ms (M1.4 decides on lazy
+    `fen`)
+- **Move numbers of 10,000 or more:** chessops reads "10000." as the null
+  move `0000`. The node-limit test writes its moves without numbers.

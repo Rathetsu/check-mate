@@ -5,9 +5,11 @@ RUN corepack enable
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/core/package.json packages/core/
+COPY packages/chess/package.json packages/chess/
 COPY apps/worker/package.json apps/worker/
 RUN pnpm install --frozen-lockfile --prod --filter @checkmate/worker...
 COPY packages/core packages/core
+COPY packages/chess packages/chess
 COPY apps/worker apps/worker
 USER node
 CMD ["node", "apps/worker/src/main.ts"]

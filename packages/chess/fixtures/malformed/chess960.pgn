@@ -1,0 +1,6 @@
+[Event "Malformed: Chess960"]
+[Variant "Chess960"]
+[SetUp "1"]
+[FEN "bnrkqrnb/pppppppp/8/8/8/8/PPPPPPPP/BNRKQRNB w KQkq - 0 1"]
+
+1. e4 e5 *

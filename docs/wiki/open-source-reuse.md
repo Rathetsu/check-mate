@@ -36,7 +36,7 @@ page. A paid review happens only at the triggers in
 
 | Component | Upstream | Version | License | Mode | Where | Obligations / notes |
 |---|---|---|---|---|---|---|
-| lila (Lichess) | github.com/lichess-org/lila | master @ build time | AGPL-3.0-or-later | adapted: editor castling/ep logic, puzzle `moveTest.ts`, Advice win-chance constants, puzzle theme keys/groups · reference: `ui/analyse`, `ui/ceval`, explorer panel | P1-P2 | Attribution header with upstream path and commit in every adapted file; Core stays AGPL; Source link |
+| lila (Lichess) | github.com/lichess-org/lila | assets: `46d24871` (2026-10-11, `scripts/fetch-lila-assets.sh`); ports: commit cited in each file | AGPL-3.0-or-later | adapted: editor castling/ep logic, puzzle `moveTest.ts`, Advice win-chance constants, puzzle theme keys/groups · reference: `ui/analyse`, `ui/ceval`, explorer panel | P1-P2 | Attribution header with upstream path and commit in every adapted file; Core stays AGPL; Source link |
 | chessground | github.com/lichess-org/chessground | `@lichess-org/chessground` 10.4.2 | GPL-3.0-or-later | reused | `<Board>` | README: source must be released to site users. Satisfied by the AGPL Source link |
 | chessops (`chessops`) | github.com/niklasf/chessops | 0.15.1 | GPL-3.0-or-later | reused | `packages/chess` | Same as above. No Zobrist module (we use EPD keys) |
 | lila-openingexplorer | github.com/lichess-org/lila-openingexplorer | 3.0.0 | AGPL-3.0-or-later | reused, unmodified, separate service · `import-master.py` rules mirrored (avg Elo ≥ 2200, terminal-position + year dedup) | P2 explorer | Link upstream source on `/about`; publish the fork if ever patched |
@@ -106,7 +106,7 @@ page. A paid review happens only at the triggers in
 | **Allowed** | pieces cburnett, merida, mono | GPLv2+ |
 | **Allowed** | pieces mpchess | GPLv3+ |
 | **Allowed** | pieces letter, pixel, pirouetti, CubesAndPi; lila board images | AGPLv3+ |
-| **Allowed** | pieces staunton (James Clarke), fantasy, spatial, celtic | MIT |
+| **Allowed** | pieces fantasy, spatial, celtic | MIT |
 | **Allowed** | pieces chessnut | Apache-2.0 |
 | **Allowed** | pieces rhosgfx | CC0 |
 | **Allowed, with attribution** | pieces kiwen-suwi, firi | CC BY 4.0 |
@@ -115,6 +115,7 @@ page. A paid review happens only at the triggers in
 | **Allowed** | sounds futuristic, nes, piano, sfx (Enigmahack) | AGPLv3+ |
 | **Allowed** | fonts Noto Sans, Roboto | Apache-2.0 |
 | **Banned** (non-commercial) | california, maestro, fresca, cardinal, dubrovny, icpieces, tatiana, gioco, horsey, anarcandy, disguised, cooke, monarchy, xkcd; lisp sounds | CC BY-NC-SA |
+| **Not a 2D set** | staunton (James Clarke, MIT): lila's `public/images/staunton` holds 3D-board sprites only. The similar 2D set `staunty` is CC BY-NC-SA (banned) | — |
 | **Banned** (restricted or unclear) | alpha (personal non-commercial); chess7, companion, leipzig (freeware); shahi-ivory-brown (no derivatives); totoy, papercut (listed under non-free); Staunton 3D, reillycraig, riohacha (no license) | — |
 | **Banned** | lichess logo and favicon; "other sounds" (lila default set) and "other artwork" | no license |
 

@@ -35,6 +35,7 @@ test.each([
   ['apps/web/src/components/board/Board.tsx', "import { Chessground } from '@lichess-org/chessground';"],
   ['apps/web/src/engine/browser-stockfish.ts', "import sf from 'stockfish';"],
   ['packages/core/src/db.ts', "import pg from 'pg';"],
+  ['packages/chess/test/pgn.test.ts', "import { readFileSync } from 'node:fs';"],
   ['apps/web/src/app/page.tsx', "import { getMe } from '@checkmate/core';"],
 ])('%s: allows its own import', async (file, code) => {
   expect(await restricted(file, code)).toBe(false);
