@@ -3,7 +3,7 @@
 // The one chessboard (ADR 2026-10-10-08, P1-BD-01..11). The only file that
 // imports chessground. It never decides legality: `dests` and `check` come
 // from packages/chess, and illegal drops snap back without reaching onMove.
-import type { Shape, SquareName } from '@checkmate/chess';
+import { boardSquares, type Shape, type SquareName } from '@checkmate/chess';
 import { Chessground } from '@lichess-org/chessground';
 import type { Api } from '@lichess-org/chessground/api';
 import type { Config } from '@lichess-org/chessground/config';
@@ -111,9 +111,12 @@ export function Board({ ref, ...props }: BoardProps) {
     };
   };
 
+  // chessground calls this a moment after the drop (setTimeout), when a render
+  // may already have reset its pieces, so the mover is read from our FEN.
   function onAfter(from: Key, to: Key) {
     if (latest.current.mode === 'free') return; // reported through `change`
-    const piece = api.current?.state.pieces.get(to);
+    const sq = from.charCodeAt(0) - 97 + (8 - Number(from[1])) * 8; // a8 = 0 … h1 = 63
+    const piece = boardSquares(latest.current.fen)[sq];
     if (piece?.role === 'pawn' && (to[1] === '8' || to[1] === '1')) setPromotion({ from, to, color: piece.color });
     else latest.current.onMove?.(from + to);
   }

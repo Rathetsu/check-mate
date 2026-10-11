@@ -161,12 +161,18 @@ export function AnalysisBoard({
   return (
     <div className="mx-auto grid max-w-7xl gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_24rem]">
       <section aria-label="Board" className="mx-auto w-full max-w-[min(100%,calc(100dvh-9rem))]">
-        <div className="flex gap-2">
+        {/* The eval bar sits in the margin, so turning the engine on or off
+            (or preferences arriving after hydration) never moves the board. */}
+        <div className="relative">
           {engineOn && engineAllowed && (
-            <EvalBar score={best?.score} flipped={orientation === 'black'} className="shrink-0 self-stretch" />
+            <EvalBar
+              score={best?.score}
+              flipped={orientation === 'black'}
+              className="absolute inset-y-0 right-full mr-1 w-2.5"
+            />
           )}
           <Board
-            className="min-w-0 flex-1"
+            className="w-full"
             fen={node.fen}
             orientation={orientation}
             turnColor={board.turn}

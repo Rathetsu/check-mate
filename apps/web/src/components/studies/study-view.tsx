@@ -160,7 +160,12 @@ export function StudyView({ study: initialStudy, chapter: initialChapter, me, my
     followed.current = null;
     const t = setTimeout(() => {
       sent.current = path;
-      void api(`${base}/position`, 'PUT', { chapterId: chapter.id, path }).catch(() => {});
+      // After our own moves are saved, so followers have the move before the
+      // position that points at it (the server publishes ops before answering).
+      void ops
+        .settled()
+        .then(() => api(`${base}/position`, 'PUT', { chapterId: chapter.id, path }))
+        .catch(() => {});
     }, 300);
     return () => clearTimeout(t);
   }, [tree.version, sync]); // eslint-disable-line react-hooks/exhaustive-deps
