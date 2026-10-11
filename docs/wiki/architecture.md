@@ -4,9 +4,9 @@ kind: system
 
 # Architecture
 
-Last verified: 2026-10-11, against the M1.1 code (`apps/web`,
-`apps/worker`, `packages/core`, `packages/chess`). `services/*` arrive in
-M1.2 (tablebase) and Phase 2 (explorer). Rows for parts not built yet
+Last verified: 2026-10-11, against the M1.2 code (`apps/web`,
+`apps/worker`, `packages/core`, `packages/chess`, `services/tablebase`).
+`services/explorer` arrives in Phase 2. Rows for parts not built yet
 describe the design.
 
 ## System overview
@@ -52,21 +52,26 @@ sits above all three.
 
 | Path | Responsibility | Talks to |
 |---|---|---|
-| `apps/web` | UI routes, `<Board>`, `/api/v1` handlers, browser engine provider. No direct SQL. Every `/api/v1` handler goes through `src/lib/api.ts`, which resolves the session into a `userId` (CORE-42), validates with zod and returns the CORE-41 error envelope. Better Auth is mounted at `/api/auth/*` | `packages/core`, `packages/chess` |
-| `apps/worker` | All long-running jobs (pg-boss). | `packages/core`, `packages/chess`, external APIs, explorer admin |
-| `packages/chess` | Pure rules over chessops: `fen.ts` (validation lists every reason), `moves.ts`, `keys.ts` (`positionKey`), `pgn.ts` (game splitting, error locations, export options), `tree.ts` (`TreeCursor`), `analysis.ts` (`AnalysisProvider` + fake provider). Later: `gameFingerprint` (P3), `terminalKey` (P2), opening classifier (M1.2). Its `tsconfig` has no DOM or Node types. Tests and the fixture corpus sit in `test/` and `fixtures/`. **No I/O.** | chessops |
-| `packages/core` | Drizzle schema (`src/schema/`), SQL migrations (`drizzle/`), the Better Auth instance (`src/auth.ts`), `sendEmail`, user-scoped domain services, `ExplorerSource` adapters. Its subpath `@checkmate/core/shared` is pure (zod schemas, preference allowlists), so client components may import it. `db` is not exported. **No React.** | Postgres, explorer |
+| `apps/web` | UI routes, `<Board>`, `AnalysisBoard` (`components/analysis/`, reused by studies), `/api/v1` handlers, and the browser engine provider in `src/engine/` (the only Stockfish and UCI code). No direct SQL. Every `/api/v1` handler goes through `src/lib/api.ts`: `route()` (signed in) or `publicRoute()` (anyone, `userId` may be null). Both resolve the session into a `userId` (CORE-42), validate with zod and return the CORE-41 error envelope. Better Auth is mounted at `/api/auth/*`. `next.config.ts` makes `/analysis` and `/studies` cross-origin isolated (COOP + COEP) for the multi-threaded engine | `packages/core`, `packages/chess` |
+| `apps/worker` | All long-running jobs (pg-boss), one file per job in `src/jobs/`. So far: the daily purge of idle free-analysis sessions | `packages/core`, `packages/chess`, external APIs, explorer admin |
+| `packages/chess` | Pure rules over chessops: `fen.ts` (validation lists every reason), `moves.ts`, `keys.ts` (`positionKey`), `pgn.ts` (game splitting, error locations, export options), `tree.ts` (`TreeCursor`), `ops.ts` (`TreeOp` + `applyOp`, the only way the board changes a tree), `glyphs.ts`, `openings.ts` (`classifyLine` over the generated `data/openings.json`), `advice.ts` (winning chances), `analysis.ts` (`AnalysisProvider` + fake provider). Later: `gameFingerprint` (P3), `terminalKey` (P2). Its `tsconfig` has no DOM or Node types. Tests and the fixture corpus sit in `test/` and `fixtures/`. **No I/O.** | chessops |
+| `packages/core` | Drizzle schema (`src/schema/`), SQL migrations (`drizzle/`), the Better Auth instance (`src/auth.ts`), `sendEmail`, user-scoped domain services (preferences, account, analysis sessions, tablebase lookups), `ExplorerSource` adapters. Its subpath `@checkmate/core/shared` is pure (zod schemas, preference allowlists), so client components may import it. `db` is not exported. **No React.** | Postgres, `packages/chess`, tablebase service, explorer |
 | `services/explorer` | Compose and ingestion config for upstream lila-openingexplorer. **No forked code.** | — |
-| `services/tablebase` | Dockerfile for upstream lila-tablebase at a pinned commit, 3-5 piece tablebase files on a read-only volume (2026-10-11-06). **No forked code.** | — |
+| `services/tablebase` | Dockerfile that builds upstream lila-tablebase at a pinned commit. Compose service `tablebase` (profile `tablebase`) reads the files from `TABLEBASE_DIR` on a read-only volume and is published only on `127.0.0.1:9000`; Caddy never routes to it. `scripts/fetch-tablebases.sh` downloads the 3-5 piece files (2026-10-11-06). **No forked code.** | — |
 
 ## Data flow
 
 1. **Analysis:**
-   - The user moves on `<Board>`, which updates `TreeCursor`, which updates
-     `AnalysisProvider.analyzePosition`.
-   - The provider runs in the Web Worker and streams `EngineLine` +
-     `Provenance` to the engine panel.
-   - The session PGN autosaves to `analysis_sessions`.
+   - A move on `<Board>` becomes an `addNode` op; `applyOp` changes the
+     `TreeCursor`, and the host hears about the op (autosave on
+     `/analysis`, a POST in studies).
+   - The new position goes to `AnalysisProvider.analyzePosition`. The
+     provider runs Stockfish in a Web Worker and streams `EngineLine` +
+     `Provenance`; lines are tagged with their FEN and shown only for it.
+   - For 3-5 pieces, the tablebase panel asks `GET /api/v1/tablebase`,
+     which asks the tablebase service. It is shown apart from the engine.
+   - For a signed-in user, the PGN and current path autosave to
+     `analysis_sessions` 5 s after the last change and on page hide.
 2. **Puzzle attempt:**
    - `GET /puzzles/next` (theme, band) leads to the first user move.
    - `POST /puzzles/:id/attempts` creates the attempt.
@@ -101,8 +106,10 @@ sits above all three.
   imports chessground, and board state lives in `TreeCursor`, not in React
   (ADR 08). PGN files are indexed in a Web Worker, never on the page's main
   thread.
-- **Engine:** only the `AnalysisProvider` implementation imports
-  `stockfish` or parses UCI. Engine results always carry provenance, and
+- **Engine:** only the `AnalysisProvider` implementation
+  (`apps/web/src/engine/`) loads Stockfish or parses UCI. Pages that run
+  it are cross-origin isolated, and links into or out of them are full page
+  loads. Engine results always carry provenance, and
   browser evals are never persisted as truth (ADR 09). Saved game reviews are
   a private, labelled, per-user cache that nothing else reads
   (2026-10-11-05).

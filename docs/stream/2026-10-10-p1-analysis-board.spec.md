@@ -1,7 +1,7 @@
 # Spec: Analysis board and engine analysis
 
 Date: 2026-10-10
-Status: Approved (design; no code yet)
+Status: Approved. M1.2 built 2026-10-11 (see Build notes); M1.2b (game review) not started
 Phase: 1 · Milestones M1.2 (board + engine) and M1.2b (browser game review)
 
 ## Goal
@@ -15,7 +15,7 @@ Decisions: 2026-10-10-09-browser-stockfish-behind-analysis-provider ·
 2026-10-10-11-raw-player-data-append-only-aggregates-derived ·
 2026-10-11-02-analysis-sessions-are-mutable-working-copies ·
 2026-10-11-05-saved-browser-reviews-are-private-labelled-cache ·
-2026-10-11-06-self-hosted-syzygy-tablebase.
+ADR 2026-10-11-06 (self-hosted tablebase).
 Contracts: `AnalysisProvider` and `TreeCursor` (core-architecture spec,
 chessboard spec).
 
@@ -54,15 +54,15 @@ opening explorer panel (P2 adds it as a tab).
   - move numbers are correct after a black-to-move FEN
 - **P1-AN-03 MUST** Context actions: promote variation, make mainline, delete
   from here, copy PGN of the line.
-- **P1-AN-04 MUST** Annotations:
-  - **Move NAGs:** `!`, `?`, `!!`, `??`, `!?`, `?!`.
-  - **Position NAGs:** `=`, `∞`, `⩲`, `⩱`, `±`, `∓`, `+-`, `-+`.
-  - **Observation NAGs** (added 2026-10-11, Lichess parity): Lichess's
-    observation glyph group, with keys and symbols taken verbatim from lila
-    `Glyph.scala` at a pinned commit (novelty, development, initiative,
-    attack, counterplay, time trouble, compensation, with the idea, only
-    move, zugzwang).
-  - **Comments:** one per node.
+- **P1-AN-04 MUST** Annotations, in scalachess `Glyph.scala`'s three groups
+  (ids, symbols and names copied at a pinned commit; reworded 2026-10-11 to
+  match where the glyphs actually live):
+  - **Move** (one at a time): `!`, `?`, `!!`, `??`, `!?`, `?!`, `□` only
+    move, `⨀` zugzwang.
+  - **Position** (one at a time): `=`, `∞`, `⩲`, `⩱`, `±`, `∓`, `+−`, `−+`.
+  - **Observation** (any number): novelty, development, initiative, attack,
+    counterplay, time trouble, with compensation, with the idea.
+  - **Comments:** one per node per author.
   - All are shown inline in the move list.
 - **P1-AN-05 MUST** Arrows and highlights persist per node and are exported
   as `[%cal]/[%csl]`.
@@ -168,7 +168,7 @@ opening explorer panel (P2 adds it as a tab).
     datasets or other features.
   - Anonymous users can review but nothing is saved.
 
-### Tablebase (added 2026-10-11, 2026-10-11-06-self-hosted-syzygy-tablebase)
+### Tablebase (added 2026-10-11, ADR 2026-10-11-06)
 
 - **P1-AN-50 MUST** For legal positions within the installed tablebase piece
   count (3-5 pieces at launch), the panel shows the tablebase result
@@ -189,11 +189,13 @@ opening explorer panel (P2 adds it as a tab).
 
 ```
 analysis_sessions (id uuid PK, user_id FK CASCADE,
-  source_type text  -- 'game' | 'puzzle' | 'study_chapter' | 'upload' | 'free'
-  source_id   text null,
-  initial_fen text, pgn text, last_position_key text,
+  source_type text  -- 'upload' | 'free' (M1.2); 'game' | 'puzzle' | 'study_chapter' later
+  source_id   text null,  -- upload: SHA-256 of the normalized game PGN
+  initial_fen text, pgn text,
+  last_path text,          -- where to resume (added in M1.2)
+  last_position_key text,
   created_at, updated_at timestamptz)
-INDEX (user_id, updated_at DESC)
+INDEX (user_id, updated_at DESC), INDEX (user_id, source_type, source_id)
 
 game_reviews (id uuid PK, user_id FK CASCADE,   -- append-only, one row per run
   line_key text, initial_fen text, moves text[],  -- mainline UCI
@@ -205,13 +207,36 @@ INDEX (user_id, line_key, created_at DESC)
 
 ## API surface
 
-- `POST /api/v1/analysis-sessions` → `{id}`
-- `PATCH /api/v1/analysis-sessions/:id` (pgn, last_position_key)
-- `GET /api/v1/analysis-sessions?source_type=&source_id=`, used to resume
-  the user's last session for a game, puzzle or chapter
+All bodies are JSON; errors use the CORE-41 envelope
+`{error: {code, message, details?}}`. Session routes need a signed-in user;
+another user's session is always `404 NOT_FOUND` (CORE-52).
+
+- `POST /api/v1/analysis-sessions`
+  - body `{sourceType: 'upload' | 'free', sourceId: string | null, pgn, lastPath}`
+  - `201 {id}`. `400` with the PGN error code when the PGN doesn't load
+    through the rules layer (`ILLEGAL_MOVE`, `PGN_SYNTAX`, …); `413
+    TOO_LARGE` over 1 MB.
+  - The server derives `initial_fen` and `last_position_key` from the PGN;
+    `lastPath` is cut back to the nearest move that exists.
+- `PATCH /api/v1/analysis-sessions/:id`
+  - body `{pgn, lastPath}`, same checks. `204`.
+- `GET /api/v1/analysis-sessions?source_type=&source_id=`
+  - `200 {id, sourceType, sourceId, pgn, lastPath, updatedAt}` for the
+    user's latest session for that source, or `404`.
+  - Pages load a session by id on the server (`/analysis?session=<id>`), so
+    there's no `GET /:id` route.
 - `POST /api/v1/game-reviews`; `GET /api/v1/game-reviews?line_key=` (runs,
-  newest first)
-- `GET /api/v1/tablebase?fen=`
+  newest first). M1.2b.
+- `GET /api/v1/tablebase?fen=` (anyone, signed in or not)
+  - `200 {label: 'Tablebase', category, dtz, moves: [{uci, san, category,
+    dtz}]}`. `category` is from the side to move: `win`, `maybe-win` (a win
+    the 50-move rule might turn into a draw), `cursed-win`, `draw`,
+    `blessed-loss`, `maybe-loss`, `loss`. Each move's category is from the
+    side that plays it.
+  - `204` when the position has castling rights, more pieces than
+    `TABLEBASE_MAX_PIECES`, no installed table, or the service is down or
+    unset (1.5 s timeout).
+  - `400 BAD_FEN` for an invalid FEN.
 
 ## Reuse
 
@@ -259,4 +284,51 @@ The provider interface lets a server provider replace browser Stockfish.
 ## Open questions
 
 - Resolved 2026-10-11: tablebase lookup is built self-hosted (P1-AN-50..52,
-  2026-10-11-06-self-hosted-syzygy-tablebase).
+  ADR 2026-10-11-06).
+
+## Build notes
+
+### M1.2 (2026-10-11)
+
+Built per docs/stream/2026-10-11-m1.1-m1.4-build.plan.md.
+- **Layout:** the side panel holds the engine panel and the tablebase
+  section above tabs Moves · Annotate · Info, so engine lines stay visible
+  while you move. On phones the panel stacks under the board instead of a
+  bottom sheet.
+- **One mutation path:** every tree change is a `TreeOp` through
+  `applyOp` (`packages/chess/src/ops.ts`): `addNode`, `deleteNode`,
+  `promote`, `setComment`, `setNags` (a full set), `setShapes`. Each is
+  idempotent. `applyOp` normalizes NAGs (one move glyph, one position
+  glyph) and shapes.
+- **Engine** (`apps/web/src/engine/`):
+  - `browser-stockfish.ts` follows lila's ceval: a new search stops the
+    running one and starts after its `bestmove`; lines are tagged with
+    their FEN and shown only for that FEN.
+  - The multi-threaded build runs when the page is cross-origin isolated
+    (default threads `hardwareConcurrency − 1`, max 8); otherwise the
+    single-threaded build.
+  - Threads, hash and the best-move arrow are per-device settings in
+    localStorage; flavor, lines, depth and on/off stay account preferences.
+  - Isolation (COOP + COEP) covers `/analysis` and `/studies`. Workers
+    started by those pages must carry COEP too, so `/engine/*` and
+    `/_next/static/*` send it. Links across the boundary are full page
+    loads (`NavLink`).
+- **Opening names:** 3,865 named lines from chess-openings, keyed by
+  `positionKey`, loaded on demand (450 KB). The deepest named position along
+  the line wins.
+- **Sessions:** `last_path` was added so a reload resumes on the same move.
+  Uploads are keyed by the SHA-256 of the normalized PGN, so reopening the
+  same game resumes it.
+- **Share:** "Copy link to the whole analysis" in the Export menu; over
+  8,000 characters a dialog offers the position link instead.
+- **Command palette** (`/`) and shortcut help (`?`) are global; pages
+  register their actions.
+- **Tests:** UCI parser on captured engine output, ops, glyphs,
+  `classifyLine`, tablebase mapping against a stub server, sessions
+  (CRUD, cross-user 404, purge), `pgn-link`. Playwright: analysis, engine
+  (real Lite engine, isolated and not, fake provider, stale-eval guard, a
+  10 s long-task check; `LONGTASK_SECONDS=60` runs the full minute) and
+  tablebase.
+- **Acceptance mapping:** "an eval within 2 s" is measured from the engine
+  having loaded; the first download of the WASM is not counted.
+

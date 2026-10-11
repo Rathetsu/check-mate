@@ -69,3 +69,15 @@ export function gameStatus(pos: Chess, keys: string[] = [positionKey(pos)]): Gam
   if (pos.halfmoves >= 100) return 'fifty';
   return 'ongoing';
 }
+
+// A UCI line (an engine PV) as SAN, stopping at the first illegal move.
+export function sanLine(pos: Chess, uci: string[]): string[] {
+  const out: string[] = [];
+  for (const m of uci) {
+    const played = applyUci(pos, m);
+    if (!played) break;
+    out.push(played.san);
+    pos = played.pos;
+  }
+  return out;
+}

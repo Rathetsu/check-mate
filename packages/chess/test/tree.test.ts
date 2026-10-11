@@ -81,7 +81,7 @@ describe('TreeCursor', () => {
     expect(() => t.deleteNode(nf6)).toThrow(ChessError);
   });
 
-  test('comments are one per author; nags set and toggle', () => {
+  test('comments are one per author; nags are a set', () => {
     const t = TreeCursor.fromFen();
     const p = t.play('e2e4');
     t.setComment(p, ' Best by test ');
@@ -92,8 +92,6 @@ describe('TreeCursor', () => {
     expect(t.node.comments).toEqual([{ text: 'Updated', by: 'u1' }]);
     t.setNags(p, [1, 1, 14]);
     expect(t.node.nags).toEqual([1, 14]);
-    t.toggleNag(p, 1);
-    expect(t.node.nags).toEqual([14]);
   });
 
   test('ops on a missing path fail with NODE_GONE; illegal moves with ILLEGAL_MOVE', () => {

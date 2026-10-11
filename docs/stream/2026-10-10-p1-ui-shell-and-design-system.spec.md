@@ -185,3 +185,19 @@ changes. The tab content will come from the AI API.
 
 - Logo: text wordmark until a designer pass. Not blocking.
 - Trademark search for "CheckMate" before monetizing (ADR 17 trigger).
+
+## Build notes
+
+### M1.2 (2026-10-11)
+
+- **P1-UI-04:** `/` opens the command palette (cmdk via shadcn
+  `command`) from any page: routes, plus actions the current page registers
+  (`useRegisterCommands`), such as flip, start/stop the engine, engine
+  settings and import. `?` opens the shortcut list. Both ignore keys typed
+  into fields and dialogs.
+- **P1-UI-12:** isolation is on `/analysis` and `/studies`. Workers started
+  by an isolated page load only when their own script also sends COEP, so
+  `/engine/*` (Stockfish) and `/_next/static/*` (the PGN indexer's chunk)
+  send COEP + CORP `same-origin`. `NavLink` renders a plain `<a>` when a
+  link crosses the boundary.
+

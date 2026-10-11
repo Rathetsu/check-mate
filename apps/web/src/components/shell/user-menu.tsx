@@ -1,7 +1,7 @@
 'use client';
 
 import { CircleUserRound, LogOut, Settings } from 'lucide-react';
-import Link from 'next/link';
+import { NavLink } from './nav-link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +22,7 @@ export function UserMenu({ user, compact = false }: { user: ShellUser | null; co
   if (!user) {
     return (
       <Button asChild size="sm" variant="outline">
-        <Link href="/auth/sign-in">Sign in</Link>
+        <NavLink href="/auth/sign-in">Sign in</NavLink>
       </Button>
     );
   }
@@ -45,9 +45,9 @@ export function UserMenu({ user, compact = false }: { user: ShellUser | null; co
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/settings">
+          <NavLink href="/settings">
             <Settings aria-hidden /> Settings
-          </Link>
+          </NavLink>
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={signOut}>
           <LogOut aria-hidden /> Sign out

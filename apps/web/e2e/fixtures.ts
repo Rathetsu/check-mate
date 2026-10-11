@@ -1,4 +1,5 @@
 import { randomInt, randomUUID } from 'node:crypto';
+import { defaultPreferences } from '@checkmate/core/shared';
 import { test as base, expect, type Page } from '@playwright/test';
 
 export { expect };
@@ -7,7 +8,24 @@ const MAILPIT = process.env.MAILPIT_URL ?? 'http://127.0.0.1:8025';
 
 // Each test looks like its own client IP, so Better Auth's per-IP rate
 // limits (on in every environment, P1-AC-05) don't leak between tests.
-export const test = base.extend<{ ip: string }>({
+// The engine starts off for signed-out visitors unless a test opts in with
+// `test.use({ engine: true })`, so parallel tests don't fight over CPU.
+export const test = base.extend<{ ip: string; engine: boolean; engineDefault: void }>({
+  engine: [false, { option: true }],
+  engineDefault: [
+    async ({ context, engine }, use) => {
+      if (!engine)
+        await context.addInitScript(
+          (prefs) => {
+            if (!localStorage.getItem('checkmate:prefs'))
+              localStorage.setItem('checkmate:prefs', JSON.stringify(prefs));
+          },
+          { ...defaultPreferences, engineEnabled: false },
+        );
+      await use();
+    },
+    { auto: true },
+  ],
   ip: [
     async ({ context }, use) => {
       const ip = `10.${randomInt(256)}.${randomInt(256)}.${randomInt(1, 255)}`;
@@ -36,7 +54,7 @@ export async function signUp(page: Page, user: User) {
   await page.getByLabel('Email').fill(user.email);
   await page.getByLabel('Password').fill(user.password);
   await page.getByRole('button', { name: 'Create account' }).click();
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('/', { timeout: 15_000 }); // includes the breach check over the network
   await expect(page.getByRole('button', { name: 'Account menu' }).first()).toBeVisible();
 }
 

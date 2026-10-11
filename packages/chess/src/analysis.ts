@@ -20,6 +20,7 @@ export type EngineLine = {
   depth: number;
   selDepth?: number;
   nodes: number;
+  nps?: number;
   score: Score;
   pv: string[]; // UCI
   provenance: Provenance; // CORE-21: every result carries it

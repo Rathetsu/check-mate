@@ -229,11 +229,6 @@ export class TreeCursor {
     this.mustGet(path).nags = [...new Set(nags)];
   }
 
-  toggleNag(path: string, nag: number): void {
-    const node = this.mustGet(path);
-    this.setNags(path, node.nags.includes(nag) ? node.nags.filter((n) => n !== nag) : [...node.nags, nag]);
-  }
-
   setShapes(path: string, shapes: Shape[]): void {
     this.mustGet(path).shapes = shapes;
   }

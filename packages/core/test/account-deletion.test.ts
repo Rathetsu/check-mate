@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { eq, sql } from 'drizzle-orm';
 import { beforeEach, expect, test } from 'vitest';
 import { db } from '../src/db.ts';
-import { account, externalAccounts, session, user, userPreferences } from '../src/schema/index.ts';
+import { account, analysisSessions, externalAccounts, session, user, userPreferences } from '../src/schema/index.ts';
 import { defaultPreferences } from '../src/shared/preferences.ts';
 import { createUser, resetDb } from './helpers.ts';
 
@@ -26,6 +26,8 @@ const seeders: Record<string, (userId: string) => Promise<unknown>> = {
   user_preferences: (userId) => db.insert(userPreferences).values({ userId, ...defaultPreferences }),
   external_accounts: (userId) =>
     db.insert(externalAccounts).values({ userId, platform: 'lichess', username: 'someone' }),
+  analysis_sessions: (userId) =>
+    db.insert(analysisSessions).values({ userId, sourceType: 'free', initialFen: 'x', pgn: '*', lastPositionKey: 'x' }),
 };
 
 async function userOwnedTables(): Promise<string[]> {

@@ -8,24 +8,31 @@ Last updated: 2026-10-11
 
 ## Where we are
 
-**Phase 1 is under way. M1.0 (the foundation) and M1.1 (the chessboard) are
-built.**
+**Phase 1 is under way. M1.0 (the foundation), M1.1 (the chessboard) and
+M1.2 (the analysis board) are built.**
 - **Accounts:** people can create an account with a unique username, sign
   in, reset a forgotten password, verify their email, change settings, see
   and end their sessions, and delete their account.
 - **Look:** the app has its CheckMate look in light and dark, plus About,
   Privacy and Source pages.
-- **The analysis page** (`/analysis`) has a real chessboard. You can:
-  - drag or click to move, with legal-move dots
-  - pick a promotion piece
-  - draw arrows in four colors
-  - flip the board
-  - step through moves with the arrow keys
-  - type moves
-  - build variations
-  - import a PGN or FEN (a game picker for files with many games, and clear
-    errors with line numbers)
-  - export PGN or FEN, with or without variations, comments and clocks
+- **The analysis board** (`/analysis`):
+  - a real chessboard: drag or click to move, promotion, arrows in four
+    colors, flip, arrow keys, typed moves, variations
+  - Stockfish 19 in the browser: an eval bar, up to five lines, a best-move
+    arrow, and a choice of the small Lite engine or the full one. It uses
+    several cores when the browser allows
+  - the endgame tablebase for positions with up to 5 pieces, shown apart
+    from the engine
+  - glyphs and comments, a right-click menu on moves (promote, make
+    mainline, delete, copy the line), collapsible variations
+  - the opening name for the current line, and checkmate, stalemate and
+    draw messages
+  - import a PGN or FEN, export PGN or FEN, a link to the position, and a
+    link that carries the whole analysis
+  - signed-in users' analysis saves itself and picks up where they left off
+    (Home shows "Continue your last analysis")
+- **Shortcuts:** `/` opens a command palette on every page, `?` lists the
+  keys.
 - **Board looks:** 11 piece sets, four board colors and four sound sets
   follow your settings.
 
@@ -42,16 +49,15 @@ friend.
 
 | Phase | What users get | State |
 |---|---|---|
-| 1. Chess platform | Accounts, analysis board with Stockfish in the browser, endgame tablebase, saved game reviews, board editor, PGN/FEN import and export, studies like Lichess (sharing and live collaboration, no chat), themed puzzle training with saved history | In progress: accounts and the chessboard with PGN/FEN are built |
+| 1. Chess platform | Accounts, analysis board with Stockfish in the browser, endgame tablebase, saved game reviews, board editor, PGN/FEN import and export, studies like Lichess (sharing and live collaboration, no chat), themed puzzle training with saved history | In progress: accounts, the chessboard with PGN/FEN, and the analysis board with engine and tablebase are built |
 | 2. Opening explorer | Opening statistics from Lichess games and master games combined without double counting, with filters, master game viewer, opening names, and a free download of our master-game dataset | Specified, not started |
 | 3. Personal database | Connect Lichess and Chess.com, import and keep all your games, sync new ones, browse your library, see your personal opening tree and opening results, and compare with the wider database | Specified, not started |
 | 4. AI coach | Conversational coaching grounded in engine and database facts | Not planned yet. Will be a separate, private service |
 
 ## Up next
 
-Phase 1, milestone M1.2: the full analysis board. That means Stockfish in the
-browser, annotations, opening names, the endgame tablebase, saved analysis
-sessions, share links and the `/` command palette.
+Phase 1, milestone M1.3: the board editor (set up any position, check it's
+legal, and open it on the analysis board).
 
 See docs/stream/2026-10-10-mvp-roadmap.plan.md and the build plan in
 docs/stream/2026-10-11-phase-1-implementation.plan.md.

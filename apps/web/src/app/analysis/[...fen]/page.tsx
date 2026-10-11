@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { AnalysisView } from '@/components/analysis/analysis-view';
 import { StateView } from '@/components/shell/state-view';
 import { Button } from '@/components/ui/button';
+import { getSession } from '@/lib/session';
 
 export const metadata: Metadata = { title: 'Analysis board' };
 
@@ -24,5 +25,5 @@ export default async function AnalysisFenPage({ params }: PageProps<'/analysis/[
         </Button>
       </StateView>
     );
-  return <AnalysisView key={result.fen} fen={result.fen} />;
+  return <AnalysisView key={result.fen} fen={result.fen} signedIn={!!(await getSession())} />;
 }

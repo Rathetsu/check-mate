@@ -15,6 +15,8 @@ import { usePrefs } from '@/lib/prefs';
 import '@/styles/board.css';
 
 type Color = 'white' | 'black';
+// Engine and hover arrows may use chessground's pale brushes too.
+export type AutoShape = { orig: SquareName; dest?: SquareName; brush: Shape['brush'] | 'paleBlue' | 'paleGrey' };
 export type BoardProps = {
   fen: string;
   orientation: Color;
@@ -23,7 +25,7 @@ export type BoardProps = {
   lastMove?: [SquareName, SquareName];
   check?: boolean | Color;
   shapes?: Shape[];
-  autoShapes?: Shape[];
+  autoShapes?: AutoShape[];
   mode?: 'play' | 'view';
   movable?: 'both' | Color | 'none';
   onMove?: (uci: string) => void;
@@ -36,7 +38,7 @@ const PROMOTIONS: Role[] = ['queen', 'rook', 'bishop', 'knight'];
 const ROLE_CHAR: Partial<Record<Role, string>> = { queen: 'q', rook: 'r', bishop: 'b', knight: 'n' };
 const BRUSHES = new Set(['green', 'red', 'yellow', 'blue']);
 
-const toDraw = (s: Shape): DrawShape => ({ orig: s.orig, dest: s.dest, brush: s.brush });
+const toDraw = (s: AutoShape): DrawShape => ({ orig: s.orig, dest: s.dest, brush: s.brush });
 const fromDraw = (shapes: DrawShape[]): Shape[] =>
   shapes
     .filter((s) => s.brush && BRUSHES.has(s.brush))

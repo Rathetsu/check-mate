@@ -5,6 +5,8 @@
 import { legalDests, positionOf, TreeCursor, type SquareName } from '@checkmate/chess';
 import { useCallback, useMemo, useReducer, useState } from 'react';
 
+export type GameTree = ReturnType<typeof useGameTree>;
+
 export function useGameTree(init: () => TreeCursor) {
   const [cursor, setCursor] = useState(init);
   const [version, bump] = useReducer((n: number) => n + 1, 0);

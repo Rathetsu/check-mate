@@ -1,7 +1,7 @@
 'use client';
 
 import type { Me } from '@checkmate/core';
-import { BOARD_THEMES, PIECE_SETS, SOUND_SETS, type Preferences } from '@checkmate/core/shared';
+import { BOARD_THEMES, PIECE_SETS, SOUND_SETS } from '@checkmate/core/shared';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -17,15 +17,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { EngineFields, label, PrefSelect, PrefSwitch } from '@/components/prefs/pref-fields';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { authClient } from '@/lib/auth-client';
-import { usePrefs } from '@/lib/prefs';
-
-const label = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, ' ');
 
 export function Settings({ me, currentSessionId }: { me: Me; currentSessionId: string }) {
   return (
@@ -69,20 +64,7 @@ export function Settings({ me, currentSessionId }: { me: Me; currentSessionId: s
         />
       </TabsContent>
       <TabsContent value="engine" className="grid gap-5">
-        <PrefSwitch name="engineEnabled" label="Turn the engine on when I open the analysis board" />
-        <PrefSelect
-          name="engineFlavor"
-          label="Engine"
-          options={['lite', 'full']}
-          format={(v) => (v === 'lite' ? 'Stockfish Lite (fast to load)' : 'Stockfish Full (about 94 MB download)')}
-        />
-        <PrefSelect name="engineMultipv" label="Lines shown" options={[1, 2, 3, 4, 5]} />
-        <PrefSelect
-          name="engineDepth"
-          label="Search depth"
-          options={[null, 16, 20, 24, 30, 40]}
-          format={(v) => (v === null ? 'Unlimited' : String(v))}
-        />
+        <EngineFields />
       </TabsContent>
       <TabsContent value="sessions">
         <Sessions currentSessionId={currentSessionId} />
@@ -91,66 +73,6 @@ export function Settings({ me, currentSessionId }: { me: Me; currentSessionId: s
         <DeleteAccount />
       </TabsContent>
     </Tabs>
-  );
-}
-
-type Opt = string | number | null;
-const encode = (v: Opt) => (v === null ? 'none' : String(v));
-
-// Values are validated again by the server (preferencesSchema).
-function PrefSelect({
-  name,
-  label: text,
-  options,
-  format = (v) => label(String(v)),
-}: {
-  name: keyof Preferences;
-  label: string;
-  options: readonly Opt[];
-  format?: (v: Opt) => string;
-}) {
-  const { prefs, update } = usePrefs();
-  const id = `pref-${name}`;
-  return (
-    <div className="grid gap-1.5">
-      <Label htmlFor={id}>{text}</Label>
-      <Select
-        value={encode(prefs[name] as Opt)}
-        onValueChange={(raw) => {
-          const value = options.find((o) => encode(o) === raw);
-          if (value !== undefined) save(update, { [name]: value });
-        }}
-      >
-        <SelectTrigger id={id} className="w-full sm:w-72">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((o) => (
-            <SelectItem key={encode(o)} value={encode(o)}>
-              {format(o)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-  );
-}
-
-function PrefSwitch({ name, label: text }: { name: keyof Preferences; label: string }) {
-  const { prefs, update } = usePrefs();
-  const id = `pref-${name}`;
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <Label htmlFor={id}>{text}</Label>
-      <Switch id={id} checked={prefs[name] === true} onCheckedChange={(v) => save(update, { [name]: v })} />
-    </div>
-  );
-}
-
-function save(update: (p: Partial<Preferences>) => Promise<void>, patch: Record<string, unknown>) {
-  update(patch as Partial<Preferences>).then(
-    () => toast.success('Saved'),
-    (err: Error) => toast.error(err.message),
   );
 }
 

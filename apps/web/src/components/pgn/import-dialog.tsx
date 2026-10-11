@@ -28,8 +28,19 @@ const title = (g: GameSummary) => {
     .join(' · ');
 };
 
-export function ImportDialog({ onLoad }: { onLoad: (cursor: TreeCursor) => void }) {
-  const [open, setOpen] = useState(false);
+// `open`/`onOpenChange` are optional, so the command palette can open it.
+export function ImportDialog({
+  onLoad,
+  open: controlled,
+  onOpenChange,
+}: {
+  onLoad: (cursor: TreeCursor, from: 'pgn' | 'fen') => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}) {
+  const [own, setOwn] = useState(false);
+  const open = controlled ?? own;
+  const setOpen = onOpenChange ?? setOwn;
   const [text, setText] = useState('');
   const [games, setGames] = useState<GameSummary[] | null>(null);
   const [error, setError] = useState('');
@@ -42,8 +53,8 @@ export function ImportDialog({ onLoad }: { onLoad: (cursor: TreeCursor) => void 
     setError('');
     setShown(PAGE);
   };
-  const finish = (cursor: TreeCursor) => {
-    onLoad(cursor);
+  const finish = (cursor: TreeCursor, from: 'pgn' | 'fen' = 'pgn') => {
+    onLoad(cursor, from);
     setOpen(false);
     setText('');
     reset();
@@ -63,7 +74,7 @@ export function ImportDialog({ onLoad }: { onLoad: (cursor: TreeCursor) => void 
     // A single line that parses as a position is a FEN.
     if (!value.includes('\n') && !value.includes('[')) {
       const fen = validateSetup(value);
-      if (fen.ok) return finish(TreeCursor.fromFen(fen.fen));
+      if (fen.ok) return finish(TreeCursor.fromFen(fen.fen), 'fen');
       if (!/\d\./.test(value)) return setError(fen.reasons.map((r) => r.message).join(' '));
     }
     setBusy(true);

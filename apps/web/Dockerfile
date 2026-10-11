@@ -7,6 +7,8 @@ COPY packages/core/package.json packages/core/
 COPY packages/chess/package.json packages/chess/
 COPY apps/web/package.json apps/web/
 COPY apps/worker/package.json apps/worker/
+# The web postinstall copies the Stockfish builds into public/engine.
+COPY scripts/copy-stockfish.ts scripts/
 RUN pnpm install --frozen-lockfile
 COPY tsconfig.base.json ./
 COPY packages/core packages/core
@@ -23,6 +25,7 @@ WORKDIR /app
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 NEXT_TELEMETRY_DISABLED=1
 COPY --from=build /app/apps/web/.next/standalone ./
 COPY --from=build /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=build /app/apps/web/public ./apps/web/public
 USER node
 EXPOSE 3000
 CMD ["node", "apps/web/server.js"]

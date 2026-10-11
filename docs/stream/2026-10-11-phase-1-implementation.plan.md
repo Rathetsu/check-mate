@@ -446,3 +446,29 @@ building (details in the chessboard and pgn-fen spec build notes):
     `fen`)
 - **Move numbers of 10,000 or more:** chessops reads "10000." as the null
   move `0000`. The node-limit test writes its moves without numbers.
+
+### M1.2 (2026-10-11)
+
+Built per docs/stream/2026-10-11-m1.1-m1.4-build.plan.md. What changed while
+building (details in the analysis and ui-shell spec build notes):
+- **Side panel:** engine and tablebase sit above the tabs (Moves · Annotate
+  · Info), so engine lines stay visible while moving. On phones the panel
+  stacks under the board; no bottom sheet.
+- **COEP reaches workers:** an isolated page can only start a worker whose
+  script also sends COEP. `/engine/*` and `/_next/static/*` send COEP + CORP.
+- **Device settings:** engine threads, hash and the best-move arrow are kept
+  per browser, not per account (they depend on the machine).
+- **Sessions gain `last_path`,** so a reload resumes on the same move.
+- **Web image fix:** the runtime image now copies `public/` (pieces,
+  sounds, engine). M1.1's image left it out.
+- **The tablebase image** builds lila-tablebase itself; upstream's
+  Dockerfile switches to a user it never creates. The mirror's HTTPS
+  certificate has lapsed, so `fetch-tablebases.sh` downloads over HTTP and
+  checks every file against an md5 list whose SHA-256 is pinned.
+- **Long-task check:** CI runs 10 s; the full 60 s is
+  `LONGTASK_SECONDS=60 pnpm e2e -g "long tasks"` (passed once locally, no
+  nightly job yet).
+- **e2e:** the engine starts off for signed-out test pages unless a test
+  opts in (`test.use({ engine: true })`), so parallel tests don't compete
+  for CPU.
+

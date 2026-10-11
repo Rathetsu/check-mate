@@ -2,6 +2,7 @@
 #   docker compose --profile dev up -d postgres mailpit   # then: pnpm dev
 # Full stack behind Caddy:
 #   docker compose --profile dev up --build
+# Add `--profile tablebase` for endgame tables (scripts/fetch-tablebases.sh first).
 name: checkmate
 
 services:
@@ -55,8 +56,18 @@ services:
     environment:
       DATABASE_URL: postgres://checkmate:${POSTGRES_PASSWORD:-checkmate}@postgres:5432/checkmate
       BETTER_AUTH_URL: https://${SITE_ADDRESS:-localhost}
+      TABLEBASE_URL: http://tablebase:9000 # unreachable without the profile: the panel hides
     depends_on:
       migrate: { condition: service_completed_successfully }
+
+  tablebase: # endgame tablebase (P1-AN-50). Optional: the stack runs without it
+    build: services/tablebase
+    profiles: [tablebase]
+    restart: unless-stopped
+    volumes:
+      - ${TABLEBASE_DIR:-./data/tablebase}:/tablebase:ro
+    ports:
+      - 127.0.0.1:9000:9000 # for `pnpm dev`; Caddy never routes here
 
   caddy: # the only public service (ADR 16)
     image: caddy:2.11.7-alpine

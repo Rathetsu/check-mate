@@ -8,3 +8,8 @@ export const NAV: NavItem[] = [
   { href: '/', label: 'Home', icon: House },
   { href: '/analysis', label: 'Analysis', icon: Microscope },
 ];
+
+// Pages that run the engine are cross-origin isolated (COOP/COEP in
+// next.config.ts). Isolation is fixed when a document loads, so links across
+// this boundary must be full page loads, not client navigations (P1-UI-12).
+export const isEngineRoute = (path: string) => /^\/(analysis|studies)(\/|$|\?)/.test(path);

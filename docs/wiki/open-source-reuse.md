@@ -36,11 +36,13 @@ page. A paid review happens only at the triggers in
 
 | Component | Upstream | Version | License | Mode | Where | Obligations / notes |
 |---|---|---|---|---|---|---|
-| lila (Lichess) | github.com/lichess-org/lila | assets: `46d24871` (2026-10-11, `scripts/fetch-lila-assets.sh`); ports: commit cited in each file | AGPL-3.0-or-later | adapted: editor castling/ep logic, puzzle `moveTest.ts`, Advice win-chance constants, puzzle theme keys/groups · reference: `ui/analyse`, `ui/ceval`, explorer panel | P1-P2 | Attribution header with upstream path and commit in every adapted file; Core stays AGPL; Source link |
+| lila (Lichess) | github.com/lichess-org/lila | `46d24871` (2026-10-11): assets (`scripts/fetch-lila-assets.sh`) and every port so far; each port cites its commit | AGPL-3.0-or-later | adapted: winning chances (`packages/chess/src/advice.ts`), editor castling/ep logic, puzzle `moveTest.ts`, Advice classification, puzzle theme keys/groups · reference: `ui/analyse`, `ui/ceval` (search handling in `browser-stockfish.ts`), explorer panel | P1-P2 | Attribution header with upstream path and commit in every adapted file; Core stays AGPL; Source link |
 | chessground | github.com/lichess-org/chessground | `@lichess-org/chessground` 10.4.2 | GPL-3.0-or-later | reused | `<Board>` | README: source must be released to site users. Satisfied by the AGPL Source link |
 | chessops (`chessops`) | github.com/niklasf/chessops | 0.15.1 | GPL-3.0-or-later | reused | `packages/chess` | Same as above. No Zobrist module (we use EPD keys) |
 | lila-openingexplorer | github.com/lichess-org/lila-openingexplorer | 3.0.0 | AGPL-3.0-or-later | reused, unmodified, separate service · `import-master.py` rules mirrored (avg Elo ≥ 2200, terminal-position + year dedup) | P2 explorer | Link upstream source on `/about`; publish the fork if ever patched |
-| stockfish.js (`stockfish`) | github.com/nmrugg/stockfish.js | 19.0.1 (Stockfish 19) | GPL-3.0 (engine); MIT (non-engine code) | reused | browser `AnalysisProvider` | Ship/offer corresponding source for the WASM build we serve |
+| stockfish.js (`stockfish`) | github.com/nmrugg/stockfish.js/releases/tag/v19.0.1 | 19.0.1 (Stockfish 19) | GPL-3.0 (engine); MIT (non-engine code) | reused | browser `AnalysisProvider`; the four Lite/Full, single/multi-threaded builds are copied to `public/engine/` by `scripts/copy-stockfish.ts` | Corresponding source: the upstream link is the exact release we serve |
+| scalachess | github.com/lichess-org/scalachess | commit `2ab0a403` (2026-10-05) | MIT | adapted: annotation glyph table (ids, symbols, names, groups) | `packages/chess/src/glyphs.ts` | Commit cited in the file header |
+| lila-tablebase | github.com/lichess-org/lila-tablebase | commit `5eaf8271` (2026-08-02) | AGPL-3.0-or-later | reused, unmodified, separate service built by `services/tablebase/Dockerfile` | endgame tablebase (P1-AN-50) | Link upstream source on `/about`; publish the fork if ever patched |
 | OpeningTree | github.com/openingtree/openingtree | master | GPL-3.0 | reference (UX, filters, perspective) | P3 | No code copied. It is React 16 class components and computes in the browser only |
 | pgn-viewer | github.com/lichess-org/pgn-viewer | 2.7.3 | GPL-3.0-or-later | not used | — | snabbdom-based; our analysis board covers viewing |
 | stockfish-web | github.com/lichess-org/stockfish-web | 0.5.0 | LICENSE says GPL-3.0; package.json says AGPL-3.0-or-later | not used | — | Lichess-specific; its README points third parties to stockfish.js |
@@ -58,6 +60,7 @@ page. A paid review happens only at the triggers in
 | shadcn runtime deps (`radix-ui`, `class-variance-authority`, `cn`, `tw-animate-css`) | 1.7.0 / 0.7.1 / 0.4.0 / 1.4.0 | MIT / Apache-2.0 / MIT / MIT | reused | `cn` is shadcn's own replacement for clsx + tailwind-merge |
 | Lucide icons (`lucide-react`) | 1.55.0 | ISC | reused | |
 | sonner (`sonner`) | 2.0.8 | MIT | reused | Toasts (P1-UI-11) |
+| cmdk (`cmdk`) | 1.1.1 | MIT | reused | Under shadcn `command`: the `/` command palette (P1-UI-04) |
 | next-themes (`next-themes`) | 0.4.6 | MIT | reused | Light/dark/system without flash (P1-UI-02) |
 | Better Auth (`better-auth`) | 1.7.7 | MIT | reused | Vercel-owned since 2026-07-07. `username` and `haveIBeenPwned` plugins enabled (P1-AC-01) |
 | nodemailer (`nodemailer`) | 10.1.0 | MIT-0 | reused | SMTP for `sendEmail`. Without SMTP env, links go to the server log (2026-10-11-03) |
@@ -86,7 +89,7 @@ page. A paid review happens only at the triggers in
 | Lichess standard rated game dumps (database.lichess.org) | CC0 | **cleared** | explorer `lichess` index | 8.22B games. We ingest a sized subset |
 | Lichess puzzle CSV | CC0 | **cleared** | puzzles | 6,157,341 puzzles (2026-10-05). Attribution optional; given anyway |
 | Lichess broadcast dumps | CC BY-SA 4.0 | **cleared, with obligations** | explorer `masters` index | Attribution in UI. Share-alike is met by the monthly CC BY-SA masters dump on `/about/data` (P2-EI-35) |
-| lichess-org/chess-openings | CC0 | **cleared** | opening classifier | Vendored at a pinned commit |
+| lichess-org/chess-openings | CC0 | **cleared** | opening classifier (P1-AN-07) | Commit `a6189a30` (2026-10-06), replayed into `packages/chess/src/data/openings.json` by `scripts/gen-openings.ts` |
 | Lichess Masters database | no license; not downloadable | **excluded** (data) | — | ~3M OTB games, curated privately by Lichess (Rotella base, 2016; manual batch updates). We copy the *method*, not the data (2026-10-10-19-curated-masters-set-deduped-by-terminal-position) |
 | Lichess explorer API (explorer.lichess.org) | Lichess ToS; OAuth required since 2026-03-03; 20 req/min per user | optional (COULD) | `lichess-account` source, user's own token only | Never with a shared server token; cache responses |
 | Lichess game export + OAuth API | Lichess ToS; one request at a time; wait ≥60 s after 429 | **cleared** | P3 imports | PKCE public client, no scopes; anonymous export is being throttled |

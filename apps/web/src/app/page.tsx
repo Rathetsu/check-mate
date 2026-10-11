@@ -1,10 +1,13 @@
+import { latestAnalysisSession } from '@checkmate/core';
 import Link from 'next/link';
+import { NavLink } from '@/components/shell/nav-link';
 import { Wordmark } from '@/components/shell/wordmark';
 import { Button } from '@/components/ui/button';
 import { getSession } from '@/lib/session';
 
 export default async function Home() {
   const session = await getSession();
+  const last = session ? await latestAnalysisSession(session.user.id) : null;
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 px-4 py-16 text-center">
       <h1 className="text-4xl">
@@ -15,9 +18,16 @@ export default async function Home() {
         A free, open-source place to analyze games, build studies and practice tactics. Studies and puzzles are on their
         way. Their links will appear here as each one is ready.
       </p>
-      <Button asChild size="lg">
-        <Link href="/analysis">Analyze a position</Link>
-      </Button>
+      <div className="flex flex-wrap justify-center gap-3">
+        <Button asChild size="lg">
+          <NavLink href="/analysis">Analyze a position</NavLink>
+        </Button>
+        {last && (
+          <Button asChild size="lg" variant="outline">
+            <NavLink href={`/analysis?session=${last.id}`}>Continue your last analysis</NavLink>
+          </Button>
+        )}
+      </div>
       {!session && (
         <div className="flex gap-3">
           <Button asChild>

@@ -4,7 +4,7 @@
       "name": "lila (Lichess)",
       "upstream": "github.com/lichess-org/lila",
       "license": "AGPL-3.0-or-later",
-      "mode": "adapted: editor castling/ep logic, puzzle moveTest.ts, Advice win-chance constants, puzzle theme keys/groups"
+      "mode": "adapted: winning chances (packages/chess/src/advice.ts), editor castling/ep logic, puzzle moveTest.ts, Advice classification, puzzle theme keys/groups"
     },
     {
       "name": "chessground",
@@ -26,9 +26,21 @@
     },
     {
       "name": "stockfish.js",
-      "upstream": "github.com/nmrugg/stockfish.js",
+      "upstream": "github.com/nmrugg/stockfish.js/releases/tag/v19.0.1",
       "license": "GPL-3.0 (engine); MIT (non-engine code)",
       "mode": "reused"
+    },
+    {
+      "name": "scalachess",
+      "upstream": "github.com/lichess-org/scalachess",
+      "license": "MIT",
+      "mode": "adapted: annotation glyph table (ids, symbols, names, groups)"
+    },
+    {
+      "name": "lila-tablebase",
+      "upstream": "github.com/lichess-org/lila-tablebase",
+      "license": "AGPL-3.0-or-later",
+      "mode": "reused, unmodified, separate service built by services/tablebase/Dockerfile"
     },
     {
       "name": "Next.js",
@@ -62,6 +74,11 @@
     },
     {
       "name": "sonner",
+      "license": "MIT",
+      "mode": "reused"
+    },
+    {
+      "name": "cmdk",
       "license": "MIT",
       "mode": "reused"
     },
@@ -175,7 +192,7 @@
     {
       "name": "lichess-org/chess-openings",
       "terms": "CC0",
-      "notes": "Vendored at a pinned commit"
+      "notes": "Commit a6189a30 (2026-10-06), replayed into packages/chess/src/data/openings.json by scripts/gen-openings.ts"
     },
     {
       "name": "Lichess game export + OAuth API",

@@ -9,7 +9,9 @@ Third-party components:
 - chessground (GPL-3.0-or-later) https://github.com/lichess-org/chessground
 - chessops (GPL-3.0-or-later) https://github.com/niklasf/chessops
 - lila-openingexplorer (AGPL-3.0-or-later) https://github.com/lichess-org/lila-openingexplorer
-- stockfish.js (GPL-3.0 (engine); MIT (non-engine code)) https://github.com/nmrugg/stockfish.js
+- stockfish.js (GPL-3.0 (engine); MIT (non-engine code)) https://github.com/nmrugg/stockfish.js/releases/tag/v19.0.1
+- scalachess (MIT) https://github.com/lichess-org/scalachess
+- lila-tablebase (AGPL-3.0-or-later) https://github.com/lichess-org/lila-tablebase
 - Next.js (MIT)
 - React (MIT)
 - Tailwind CSS (MIT)
@@ -17,6 +19,7 @@ Third-party components:
 - shadcn runtime deps (MIT / Apache-2.0 / MIT / MIT)
 - Lucide icons (ISC)
 - sonner (MIT)
+- cmdk (MIT)
 - next-themes (MIT)
 - Better Auth (MIT)
 - nodemailer (MIT-0)

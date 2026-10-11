@@ -1,97 +1,101 @@
 'use client';
 
-// The M1.1 analysis page: board, navigation, move list, import/export.
-// M1.2 grows it into the full AnalysisBoard (engine, annotations, sessions).
-import { TreeCursor } from '@checkmate/chess';
-import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, FlipVertical2 } from 'lucide-react';
-import { useState } from 'react';
+// The /analysis page: AnalysisBoard plus import, export, share links and the
+// signed-in user's autosaved session (P1-AN-20..33).
+import { loadGame, makePgn, TreeCursor } from '@checkmate/chess';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Board } from '@/components/board/Board';
-import { MoveInput } from '@/components/board/move-input';
 import { ExportMenu } from '@/components/pgn/export-menu';
 import { ImportDialog } from '@/components/pgn/import-dialog';
-import { Button } from '@/components/ui/button';
-import { usePrefs } from '@/lib/prefs';
-import { playMoveSound } from '@/lib/sound';
+import { useRegisterCommands } from '@/lib/commands';
+import { decodePgn } from '@/lib/pgn-link';
+import { useAutosave, type SessionSource } from '@/lib/use-autosave';
 import { useGameTree } from '@/lib/use-game-tree';
-import { useShortcuts } from '@/lib/use-shortcuts';
-import { MoveList } from './move-list';
+import { AnalysisBoard } from './analysis-board';
 
-export function AnalysisView({ fen }: { fen: string }) {
-  const { prefs } = usePrefs();
-  const tree = useGameTree(() => TreeCursor.fromFen(fen));
-  const [orientation, setOrientation] = useState<'white' | 'black'>(tree.board.turn);
-  const { cursor, node, board, act } = tree;
+export type SavedSession = { id: string; sourceType: string; sourceId: string | null; pgn: string; lastPath: string };
+type Session = SessionSource & { id: string | null };
 
-  const play = (uci: string) => {
-    try {
-      act((c) => c.play(uci));
-      playMoveSound(prefs.soundSet, cursor.node.san.includes('x'));
-    } catch (err) {
-      toast.error((err as Error).message);
-    }
-  };
-  const flip = () => setOrientation((o) => (o === 'white' ? 'black' : 'white'));
+const FREE: Session = { id: null, sourceType: 'free', sourceId: null };
 
-  useShortcuts({
-    ArrowLeft: () => act((c) => c.prev()),
-    ArrowRight: () => act((c) => c.next()),
-    Home: () => act((c) => c.first()),
-    End: () => act((c) => c.last()),
-    ArrowUp: () => act((c) => c.prevVariation()),
-    ArrowDown: () => act((c) => c.nextVariation()),
-    f: flip,
+function restore(pgn: string, path: string): TreeCursor | null {
+  const r = loadGame(pgn);
+  if (!r.ok) return null;
+  r.cursor.goto(r.cursor.existingPath(path));
+  return r.cursor;
+}
+
+async function sha256(text: string) {
+  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+export function AnalysisView({ fen, saved, signedIn }: { fen: string; saved?: SavedSession; signedIn: boolean }) {
+  const tree = useGameTree(() => (saved && restore(saved.pgn, saved.lastPath)) || TreeCursor.fromFen(fen));
+  const [session, setSession] = useState<Session>(() =>
+    saved
+      ? { id: saved.id, sourceType: saved.sourceType as SessionSource['sourceType'], sourceId: saved.sourceId }
+      : FREE,
+  );
+
+  const [importing, setImporting] = useState(false);
+  useRegisterCommands(() => [{ group: 'Analysis', label: 'Import a PGN or FEN', run: () => setImporting(true) }]);
+
+  // A full-analysis link (#pgn=…) loads once, then leaves the URL.
+  useEffect(() => {
+    const hash = /^#pgn=([\w-]+)$/.exec(location.hash)?.[1];
+    if (!hash) return;
+    history.replaceState(null, '', location.pathname);
+    decodePgn(hash)
+      .then((pgn) => {
+        const r = loadGame(pgn);
+        if (!r.ok) throw new Error(r.error.message);
+        tree.replace(r.cursor);
+      })
+      .catch(() => toast.error("This link is damaged, so it can't be opened."));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useAutosave({
+    enabled: signedIn,
+    version: tree.version,
+    id: session.id,
+    source: session,
+    ready: () => session.sourceType !== 'free' || tree.cursor.nodeCount > 1,
+    snapshot: () => ({ pgn: makePgn(tree.cursor, { extensions: true }), lastPath: tree.cursor.path }),
+    onCreated: (id) => {
+      setSession((s) => ({ ...s, id }));
+      history.replaceState(null, '', `/analysis?session=${id}`);
+    },
   });
 
-  const nav = [
-    { label: 'First move', icon: ChevronFirst, run: () => act((c) => c.first()) },
-    { label: 'Previous move', icon: ChevronLeft, run: () => act((c) => c.prev()) },
-    { label: 'Next move', icon: ChevronRight, run: () => act((c) => c.next()) },
-    { label: 'Last move', icon: ChevronLast, run: () => act((c) => c.last()) },
-  ];
+  // An uploaded game resumes the user's earlier session for it (P1-AN-30).
+  const onImport = async (cursor: TreeCursor, from: 'pgn' | 'fen') => {
+    history.replaceState(null, '', '/analysis');
+    if (!signedIn || from === 'fen') {
+      tree.replace(cursor);
+      return setSession(FREE);
+    }
+    const sourceId = await sha256(makePgn(cursor, { extensions: true }));
+    const res = await fetch(`/api/v1/analysis-sessions?source_type=upload&source_id=${sourceId}`).catch(() => null);
+    const found = res?.ok ? ((await res.json()) as SavedSession) : null;
+    const resumed = found && restore(found.pgn, found.lastPath);
+    tree.replace(resumed || cursor);
+    setSession({ id: resumed ? found.id : null, sourceType: 'upload', sourceId });
+    if (resumed) {
+      history.replaceState(null, '', `/analysis?session=${found.id}`);
+      toast.success('Picked up your earlier analysis of this game.');
+    }
+  };
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
-      <section aria-label="Board" className="mx-auto w-full max-w-[min(100%,calc(100dvh-9rem))]">
-        <Board
-          fen={node.fen}
-          orientation={orientation}
-          turnColor={board.turn}
-          dests={board.dests}
-          lastMove={board.lastMove}
-          check={board.check}
-          shapes={node.shapes}
-          onMove={play}
-          onShapesChange={(shapes) => act((c) => c.setShapes(c.path, shapes))}
-          announce={node.san}
-        />
-        <div className="mt-2 flex items-center justify-between gap-2">
-          <div className="flex gap-1">
-            {nav.map(({ label, icon: Icon, run }) => (
-              <Button key={label} variant="ghost" size="icon" aria-label={label} onClick={run}>
-                <Icon aria-hidden />
-              </Button>
-            ))}
-          </div>
-          <Button variant="ghost" size="icon" aria-label="Flip board" onClick={flip}>
-            <FlipVertical2 aria-hidden />
-          </Button>
-        </div>
-      </section>
-
-      <aside aria-label="Moves and tools" className="flex min-w-0 flex-col gap-3">
-        <div className="flex gap-2">
-          <ImportDialog onLoad={(c) => tree.replace(c)} />
-          <ExportMenu cursor={cursor} />
-        </div>
-        <div className="max-h-[50dvh] overflow-y-auto rounded-md border lg:max-h-[60dvh]">
-          <MoveList root={cursor.root} current={cursor.path} onSelect={(p) => act((c) => c.goto(p))} />
-        </div>
-        <MoveInput pos={board.pos} onMove={play} />
-        <p className="font-mono text-xs break-all text-muted-foreground" data-testid="fen">
-          {node.fen}
-        </p>
-      </aside>
-    </div>
+    <AnalysisBoard
+      tree={tree}
+      toolbar={
+        <>
+          <ImportDialog onLoad={onImport} open={importing} onOpenChange={setImporting} />
+          <ExportMenu cursor={tree.cursor} />
+        </>
+      }
+    />
   );
 }
