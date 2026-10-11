@@ -95,8 +95,12 @@ sits above all three.
 - **AI boundary:** no LLM, prompt or coaching code lives in this repo. The
   AI service talks to Core only via `/api/v1`, never the DB, and never links
   GPL/AGPL code (ADR 03).
+- **Lint boundaries:** the dependency direction and import rules above are
+  enforced by ESLint `no-restricted-imports`, plus a no-DOM, no-Node
+  tsconfig for `packages/chess` (2026-10-11-01).
 - **Raw data:**
-  - Raw player data is append-only.
+  - Raw player data is append-only. Analysis sessions are the exception:
+    they are mutable working copies (2026-10-11-02).
   - Aggregates and indexes are derived, with a rebuild job.
   - Every player row has exactly one `user_id`.
   - All access is user-scoped through `packages/core` (ADR 11).
@@ -119,7 +123,7 @@ sits above all three.
 | database.lichess.org | puzzle refresh, explorer ingestion | Monthly job retries; stale data is acceptable |
 | explorer.lichess.org (optional) | `lichess-account` source | Source shows "unavailable/rate limited"; others still work |
 | lila-openingexplorer (self-hosted) | explorer stats | Explorer panel degrades; board and analysis unaffected |
-| SMTP provider | verification, reset | Sign-up verification is delayed |
+| SMTP provider (optional until launch, 2026-10-11-03) | verification, reset, email change | Not configured: links go to the server log and the operator passes them on. Verification is not required, so sign-up never blocks |
 
 ## Key decisions
 
@@ -141,4 +145,7 @@ sits above all three.
 - docs/adr/2026-10-10-17-self-administered-license-compliance.md
 - docs/adr/2026-10-10-18-import-own-chesscom-games-accepted-risk.md
 - docs/adr/2026-10-10-19-curated-masters-set-deduped-by-terminal-position.md
+- docs/adr/2026-10-11-01-eslint-prettier-enforce-boundaries.md
+- docs/adr/2026-10-11-02-analysis-sessions-are-mutable-working-copies.md
+- docs/adr/2026-10-11-03-soft-launch-without-email-service.md
 - Cross-cutting contracts: docs/stream/2026-10-10-core-architecture.spec.md

@@ -13,7 +13,8 @@ documentation system (ai-dev-docs).
 - [wiki/architecture.md](wiki/architecture.md): system map, module boundaries, invariants (orientation page)
 - [stream/2026-10-10-core-architecture.spec.md](stream/2026-10-10-core-architecture.spec.md): layout, `AnalysisProvider`, `ExplorerSource`, `/api/v1` conventions, authz, jobs
 - [wiki/open-source-reuse.md](wiki/open-source-reuse.md): every dependency, dataset and asset, with its license, status and obligations. Check it before adding anything.
-- [adr/](adr/): why things are the way they are (19 ADRs, 2026-10-10)
+- [adr/](adr/): why things are the way they are (22 ADRs, 2026-10-10 and
+  2026-10-11)
 
 ## Feature specs (`docs/stream/`)
 
@@ -57,6 +58,9 @@ documentation system (ai-dev-docs).
 | 17 | [self-administered-license-compliance](adr/2026-10-10-17-self-administered-license-compliance.md) |
 | 18 | [import-own-chesscom-games-accepted-risk](adr/2026-10-10-18-import-own-chesscom-games-accepted-risk.md) |
 | 19 | [curated-masters-set-deduped-by-terminal-position](adr/2026-10-10-19-curated-masters-set-deduped-by-terminal-position.md) |
+| 2026-10-11-01 | [eslint-prettier-enforce-boundaries](adr/2026-10-11-01-eslint-prettier-enforce-boundaries.md) |
+| 2026-10-11-02 | [analysis-sessions-are-mutable-working-copies](adr/2026-10-11-02-analysis-sessions-are-mutable-working-copies.md) |
+| 2026-10-11-03 | [soft-launch-without-email-service](adr/2026-10-11-03-soft-launch-without-email-service.md) |
 
 ## Conventions
 

@@ -1,7 +1,7 @@
 # Keep raw player data append-only; aggregates are derived
 
 Date: 2026-10-10
-Status: Accepted
+Status: Accepted · analysis sessions refined by 2026-10-11-02-analysis-sessions-are-mutable-working-copies
 
 ## Decision
 

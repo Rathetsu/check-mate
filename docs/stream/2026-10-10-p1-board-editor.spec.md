@@ -65,7 +65,8 @@ recognition.
   - inconsistent castling or en passant
 - **P1-ED-10 MUST** "Analyze" (to `/analysis/<fen>`), "Continue from here"
   (same, with the tree root at this FEN), and "Save as study chapter" are
-  disabled while invalid. A tooltip lists the reasons.
+  disabled while invalid. A tooltip lists the reasons. "Save as study
+  chapter" lands with M1.4, once studies exist.
 - **P1-ED-11 MUST** URL stays in sync (`/editor/<fen>`) so positions are
   shareable. Browser back/forward walks the edit history (COULD) or at least
   the last committed FEN.

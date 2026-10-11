@@ -4,11 +4,12 @@ kind: status
 
 # Status
 
-Last updated: 2026-10-10
+Last updated: 2026-10-11
 
 ## Where we are
 
-**Planning is complete. No product is built yet.**
+**Planning is complete and reviewed for Phase 1. No product is built yet.**
+The 2026-10-11 readiness review settled the last decisions M1.0 needed.
 
 The full plan for the first release (Phases 1-3) is written: what we're
 building, how it fits together, and why each major choice was made. The
@@ -56,12 +57,28 @@ See docs/stream/2026-10-10-mvp-roadmap.plan.md.
 - **Brand:** the name is CheckMate. The accent color is "Mate Violet"
   (#664CDD light / #A29DFF dark).
 
+## Decided (2026-10-11)
+
+- **Soft launch:** the first release is for fewer than 5 users, with no
+  domain and no email service. Email verification is sent but not required.
+  Without email settings, verification and reset links go to the server log
+  and you pass them on. Account data export waits until launch. All of this
+  flips before marketing starts (ADR 2026-10-11-03).
+- **Code checks:** ESLint + Prettier enforce the architecture rules
+  (ADR 2026-10-11-01).
+- **Analysis sessions** keep the latest version only, not a history
+  (ADR 2026-10-11-02).
+- **Small picks:** Geist font, `next-themes`, breached-password check via
+  Have I Been Pwned, GitHub Actions for CI.
+
 ## Waiting on you
 
 - **Send two permission emails** to unlock historical master games (TWIC
   1994 to now, and PGN Mentor). Drafts and tracking are in
   docs/stream/2026-10-10-masters-data-permission-requests.plan.md.
 - **Logo (optional):** a text wordmark is used until one is designed.
+- **Before marketing:** buy a domain, pick an email service, then turn on
+  required verification and ship data export (ADR 2026-10-11-03).
 
 ## Deployed
 

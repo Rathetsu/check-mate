@@ -10,7 +10,8 @@ merged** (2026-10-10-04-license-core-agpl-3-or-later). A dataset may be
 ingested only when its row says **cleared**
 (2026-10-10-14-self-hosted-opening-explorer-from-licensed-data).
 
-Last verified: 2026-10-10. Licenses were checked against upstream
+Last verified: 2026-10-10 (rows added 2026-10-11 are marked "re-verify at
+install"). Licenses were checked against upstream
 LICENSE/COPYING files, package.json, the npm registry, or official terms.
 "Re-verify at install" means a well-known permissive license that wasn't
 re-checked.
@@ -52,15 +53,20 @@ page. A paid review happens only at the triggers in
 | shadcn/ui | CLI 4.21.4 | MIT (re-verify) | reused (components vendored) | |
 | Lucide icons | latest | ISC (re-verify) | reused | |
 | sonner | latest | MIT (re-verify) | reused | |
-| Better Auth | 1.7.7 | MIT | reused | Vercel-owned since 2026-07-07 |
+| next-themes | latest | MIT (re-verify) | reused | Light/dark/system without flash (P1-UI-02) |
+| Better Auth | 1.7.7 | MIT | reused | Vercel-owned since 2026-07-07. `haveIBeenPwned` plugin enabled (P1-AC-01) |
+| nodemailer | latest | MIT-0 (re-verify) | reused | SMTP for `sendEmail`. Without SMTP env, links go to the server log (2026-10-11-03) |
+| ESLint + typescript-eslint + eslint-config-next | latest | MIT (re-verify) | reused (dev only) | Boundary rules via `no-restricted-imports` (2026-10-11-01) |
+| Prettier | latest | MIT (re-verify) | reused (dev only) | |
 | Drizzle ORM / drizzle-kit | 0.45.4 / 0.31.11 | Apache-2.0 (re-verify) | reused | 1.0 is an RC; migration-folder change pending |
 | pg-boss | 12.37.1 | MIT (re-verify) | reused | Node 22.12+, Postgres 13+ |
 | pnpm / Turborepo | 12.10.1 / 2.11.7 | MIT (re-verify) | reused | |
 | Vitest / Playwright | 5.0.3 / 1.64.0 | MIT / Apache-2.0 (re-verify) | reused | |
 | zod | latest | MIT (re-verify) | reused | `/api/v1` input/output schemas |
 | axe-core (+ Playwright integration) | latest | MPL-2.0 (re-verify) | reused (tests only) | a11y checks |
-| testcontainers | latest | MIT (re-verify) | reused (tests only) | Postgres for service tests |
-| Inter or Geist font | latest | OFL-1.1 (re-verify) | candidate | Pick one in M1.0 |
+| testcontainers | — | MIT | not used | The compose `postgres` service runs service tests locally and in CI |
+| Geist font | latest | OFL-1.1 (re-verify) | reused | UI font (P1-UI-10) |
+| Inter font | — | OFL-1.1 | not used | Geist chosen 2026-10-11 |
 | PostgreSQL (+ `pg_trgm`) | 16+ | PostgreSQL License | reused | |
 | Caddy | 2.x | Apache-2.0 (re-verify) | reused | |
 | Mailpit | latest | MIT (re-verify) | reused (dev only) | |
@@ -76,6 +82,8 @@ page. A paid review happens only at the triggers in
 | Lichess Masters database | no license; not downloadable | **excluded** (data) | — | ~3M OTB games, curated privately by Lichess (Rotella base, 2016; manual batch updates). We copy the *method*, not the data (2026-10-10-19-curated-masters-set-deduped-by-terminal-position) |
 | Lichess explorer API (explorer.lichess.org) | Lichess ToS; OAuth required since 2026-03-03; 20 req/min per user | optional (COULD) | `lichess-account` source, user's own token only | Never with a shared server token; cache responses |
 | Lichess game export + OAuth API | Lichess ToS; one request at a time; wait ≥60 s after 429 | **cleared** | P3 imports | PKCE public client, no scopes; anonymous export is being throttled |
+| Have I Been Pwned (Pwned Passwords range API) | free, no key; k-anonymity (only a 5-character SHA-1 prefix is sent) | **cleared** | password breach check at sign-up and password change (P1-AC-01) | Disclosed on `/privacy` |
+| Test fixtures (`packages/chess/fixtures/`) | per file: Lichess game exports CC0, broadcast round CC BY-SA 4.0, our own study and Chess.com games, synthetic malformed files | **cleared** | PGN/FEN tests | Sources and licenses listed in the fixture README. No other players' Chess.com data |
 | Chess.com PubAPI | User Agreement §2(C), §2(D), §4(D) | **accepted risk**: personal import only (2026-10-10-18-import-own-chesscom-games-accepted-risk) | P3 imports, owner-private | Linked usernames only (max 3 per user); serial requests; User-Agent with contact; ETag caching; kill switch `CHESSCOM_IMPORT_ENABLED`. **Never** in shared stats or datasets |
 | TWIC | "free for personal use only… for your online project, please get in touch" | **pending permission** (draft not yet sent) | `masters` once cleared | Contact mdcrowth@btinternet.com. Tracking: 2026-10-10-masters-data-permission-requests.plan.md |
 | Lumbra's GigaBase | CC BY-NC 4.0 (from Oct 2026) | **excluded** | — | Non-commercial |
@@ -123,8 +131,18 @@ public deploy must pass all items. CI checks the ones marked (auto).
 
 1. The repo is public. `LICENSE` is AGPL-3.0-or-later. The footer Source
    link resolves to the deployed commit (auto: smoke test).
-2. Every dependency, asset and dataset in the build has a row here (auto:
-   lockfile and asset-directory diff against the register).
+2. Every dependency, asset and dataset in the build has a row here (auto).
+   - A script reads this page's tables and fails if a **direct** dependency
+     in any `package.json`, or an asset directory, has no row. The same
+     parsed tables generate `NOTICE` and `/about`, so this page stays the
+     single source.
+   - **Transitive** dependencies get no rows. `pnpm licenses list --json`
+     fails CI on any license outside the allowlist: MIT, MIT-0, ISC,
+     BSD-2/3-Clause, 0BSD, Apache-2.0, MPL-2.0, BlueOak-1.0.0, Python-2.0,
+     Unlicense, CC0-1.0, CC-BY-4.0 (e.g. caniuse-lite; credited on
+     `/about`), OFL-1.1, GPL-3.0(-or-later), AGPL-3.0(-or-later).
+     Extending the allowlist is an edit to this page, reviewed like any
+     other.
 3. Only allowlisted assets ship (auto: build check, P1-UI-06).
 4. Only `cleared` OTB sources are ingested (auto: P2-EI-21).
 5. `/about` lists every reused or adapted component and every attribution
@@ -133,8 +151,10 @@ public deploy must pass all items. CI checks the ones marked (auto).
    `/about/data` (from P2).
 7. The shipped Stockfish WASM build links to its exact source (stockfish.js
    release).
-8. `/privacy` is current and linked. Account deletion and data export work
-   (auto: e2e).
+8. `/privacy` is current and linked. Account deletion works (auto: e2e).
+   Data export is deferred until the
+   2026-10-11-03-soft-launch-without-email-service trigger, and then must
+   work too.
 9. Chess.com import mitigations are in place: cap, linked-only, kill switch
    (auto: P3 tests).
 10. No LLM/AI code in the repo (auto: dependency denylist, ADR 03).

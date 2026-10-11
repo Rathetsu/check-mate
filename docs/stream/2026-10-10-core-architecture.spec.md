@@ -51,7 +51,7 @@ services/explorer Compose config + ingestion config for lila-openingexplorer
 ```
 
 Requirements:
-- **CORE-01 MUST** Dependency direction `packages/chess` ← `packages/core` ← `apps/*`; enforced by lint boundary rules.
+- **CORE-01 MUST** Dependency direction `packages/chess` ← `packages/core` ← `apps/*`; enforced by ESLint `no-restricted-imports` per-folder overrides, plus a `packages/chess` tsconfig with no DOM `lib` and `types: []` for CORE-02 (2026-10-11-01-eslint-prettier-enforce-boundaries).
 - **CORE-02 MUST** `packages/chess` has no I/O, no DOM, no Node APIs — importable by browser, server, worker.
 - **CORE-03 MUST** Apps access the DB only via `packages/core` services.
 - **CORE-04 MUST** No LLM SDKs, prompts or coaching logic anywhere in this repo.
@@ -164,7 +164,7 @@ ingestion_runs (id uuid PK, dataset text,  -- 'puzzles' | 'explorer-lichess' | '
 
 ## Testing strategy
 
-- Vitest: `packages/chess` (heavy), `packages/core` services against a real Postgres (testcontainers or compose service), API handlers.
+- Vitest: `packages/chess` (heavy), `packages/core` services against a real Postgres (the compose `postgres` service, locally and in CI), API handlers.
 - Playwright: each phase's deliverables as end-to-end scenarios (see 2026-10-10-mvp-roadmap.plan.md).
 - Fixture corpus in `packages/chess/fixtures/`: Lichess study export, Lichess game export, Chess.com monthly archive PGN, broadcast round, malformed PGNs.
 

@@ -1,7 +1,7 @@
 # Self-administered license compliance; paid legal review only at triggers
 
 Date: 2026-10-10
-Status: Accepted
+Status: Accepted · export obligation deferred by 2026-10-11-03-soft-launch-without-email-service
 
 ## Decision
 

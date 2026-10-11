@@ -12,7 +12,8 @@ browser. The engine never blocks the UI.
 
 Decisions: 2026-10-10-09-browser-stockfish-behind-analysis-provider ·
 2026-10-10-08-single-chessground-board-component ·
-2026-10-10-11-raw-player-data-append-only-aggregates-derived.
+2026-10-10-11-raw-player-data-append-only-aggregates-derived ·
+2026-10-11-02-analysis-sessions-are-mutable-working-copies.
 Contracts: `AnalysisProvider` and `TreeCursor` (core-architecture spec,
 chessboard spec).
 
@@ -102,25 +103,27 @@ explorer panel (P2 adds it as a tab).
   encodes the FEN of the current node. A full-PGN link is COULD (size
   limits).
 - **P1-AN-22 MUST** "Save to study" creates a new chapter, or overwrites a
-  chosen chapter after confirmation (studies spec).
+  chosen chapter after confirmation (studies spec). Lands with M1.4, once
+  studies exist.
 - **P1-AN-23 MUST** "Open in editor" with the current position.
   "Continue from here" from the editor lands here.
 
-### Analysis sessions (raw data for Phase 4)
+### Analysis sessions (working copies for Phase 4)
 
 - **P1-AN-30 MUST** For signed-in users, opening the board from a source
   creates an `analysis_sessions` row. Sources are a library game (P3), a
   puzzle, a study chapter, or an uploaded PGN.
-- **P1-AN-31 MUST** The session autosaves (debounced 5 s, and on page hide):
+- **P1-AN-31 MUST** The session is a mutable working copy
+  (2026-10-11-02-analysis-sessions-are-mutable-working-copies). Autosave
+  (debounced 5 s, and on page hide) overwrites:
   - the PGN of the user's tree, including their own variations and comments
   - the last position key
   - `updated_at`
 - **P1-AN-32 MUST** Engine evaluations are **not** persisted
   (2026-10-10-11; Phase 4 recomputes server-side).
 - **P1-AN-33 SHOULD** Free analysis with no source creates a session only
-  when the user makes at least 1 move. Sessions older than 90 days with no
-  source and no edits are purged by a job. This is the only exception to
-  append-only, because these rows have no source.
+  when the user makes at least 1 move. Free sessions not updated for 90 days
+  are purged by a job.
 
 ### Browser game review (SHOULD, M1.2b)
 

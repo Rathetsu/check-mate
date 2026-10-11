@@ -25,7 +25,8 @@ docs/stream/2026-10-10-mvp-roadmap.plan.md).
 - Register every new dependency, asset or dataset in
   docs/wiki/open-source-reuse.md **before** merging. Banned assets stay out
   (adr/2026-10-10-04).
-- Raw player data is append-only. Aggregates are derived and rebuildable.
+- Raw player data is append-only (analysis sessions are mutable working
+  copies, adr/2026-10-11-02). Aggregates are derived and rebuildable.
   Every player row has `user_id`, and all access is user-scoped via
   `packages/core` (adr/2026-10-10-11).
 - Chess.com data never enters shared stats or datasets. Import only

@@ -36,17 +36,18 @@ parallel.
 
 | Milestone | Content | Done when |
 |---|---|---|
-| M1.0 Scaffold | monorepo, compose (web, worker, postgres, caddy, mailpit), CI (lint, typecheck, Vitest, Playwright), AGPL `LICENSE`, `NOTICE`/`/about` from the reuse register, footer Source link, `/privacy` page, brand tokens (Mate Violet), Better Auth, preferences, app shell + theme | register/verify/sign-in e2e green in CI |
+| M1.0 Scaffold | monorepo, compose (web, worker, postgres, caddy, mailpit), CI on GitHub Actions (ESLint + Prettier, typecheck, Vitest, Playwright, register check), AGPL `LICENSE`, `NOTICE`/`/about` from the reuse register, footer Source link, `/privacy` page, brand tokens (Mate Violet), Better Auth (`sendEmail` with log fallback), preferences, app shell + theme | register/sign-in e2e green in CI; verification and reset e2e via Mailpit |
 | M1.1 Board + rules + PGN/FEN | `packages/chess`, `<Board>`, `TreeCursor`, PGN/FEN library + fixture corpus | chessboard and PGN/FEN acceptance criteria |
-| M1.2 Analysis + engine | analysis board, browser Stockfish provider, sessions | analysis acceptance criteria |
+| M1.2 Analysis + engine | analysis board, browser Stockfish provider, sessions | analysis acceptance criteria, except P1-AN-22 (moves to M1.4) |
 | M1.2b Game review (SHOULD) | per-ply review, classifications | P1-AN-40..42 |
-| M1.3 Board editor | editor | editor acceptance criteria |
-| M1.4 Studies | studies CRUD + chapters + export | studies acceptance criteria |
-| M1.5 Puzzles | import job, theme catalog, solving, attempts, history | puzzles acceptance criteria |
+| M1.3 Board editor | editor | editor acceptance criteria, except "Save as study chapter" in P1-ED-10 (moves to M1.4) |
+| M1.4 Studies | studies CRUD + chapters + export; analysis "Save to study" (P1-AN-22); editor "Save as study chapter" (P1-ED-10) | studies acceptance criteria, except "From puzzle" in P1-ST-02 (moves to M1.5) |
+| M1.5 Puzzles | import job, theme catalog, solving, attempts, history; study chapter "From puzzle" (P1-ST-02) | puzzles acceptance criteria |
 | M1.6 Polish | responsive pass, a11y (axe), asset allowlist check, performance | UI shell acceptance criteria |
 
 **Phase 1 exit scenarios** (Playwright, from brief §5 deliverables):
-1. Create an account, verify the email, sign in (P1-AC).
+1. Create an account, sign in, and verify the email through the Mailpit
+   link (P1-AC; verification is not required to use the app).
 2. Open `/analysis`, play moves, branch a variation, annotate (P1-AN, P1-BD).
 3. Turn on Stockfish and get an eval with provenance (P1-AN-10..18).
 4. Import a multi-game PGN, export PGN and FEN (P1-PG).
@@ -147,9 +148,15 @@ parallel.
 | Chess.com objects to persisted personal imports | Chess.com sync off (kill switch); PGN upload fallback | accepted risk, ADR 18 |
 | Lichess may restrict anonymous tablebase/export further | already designed around (OAuth import; no tablebase dependency) | — |
 | Paid legal review | only at ADR 17 triggers (money, investment, Phase 4 launch, complaint, trademark) | user, when a trigger fires |
+| First deploy has no domain or email service (soft launch, under 5 users) | HTTPS is still required: multi-threaded Stockfish needs a secure context, and auth cookies are `Secure`. A free `<server-ip>.sslip.io` hostname plus Caddy's automatic TLS works with no signup. Email links go to the server log | user, at first deploy; email and verification flip at the 2026-10-11-03-soft-launch-without-email-service trigger |
 
 Resolved 2026-10-10: legal posture (ADR 17), Chess.com import (ADR 18),
 masters sourcing (ADR 19), brand (UI shell spec, Brand section).
+
+Resolved 2026-10-11 (Phase 1 readiness review): lint toolchain
+(2026-10-11-01), analysis session storage (2026-10-11-02), soft launch without
+an email service, with verification optional and export deferred
+(2026-10-11-03), and the milestone moves above.
 
 ## Phase 4 (not started)
 

@@ -18,7 +18,7 @@ Source link) · 2026-10-10-05-typescript-monorepo-nextjs-and-node-worker ·
 
 | Route | Page | Phase |
 |---|---|---|
-| `/` | Home: quick links (Analyze, Puzzles, Studies, Explorer, My Games), resume last activity | 1 |
+| `/` | Home: quick links (Analyze, Puzzles, Studies; Explorer from P2, My Games from P3), resume last activity. Links to unshipped phases are hidden, so there are no dead ends | 1 |
 | `/analysis`, `/analysis/[...fen]` | Analysis board | 1 |
 | `/editor`, `/editor/[...fen]` | Board editor | 1 |
 | `/studies`, `/studies/[id]`, `/studies/[id]/[chapterId]` | Studies | 1 |
@@ -45,8 +45,9 @@ Source link) · 2026-10-10-05-typescript-monorepo-nextjs-and-node-worker ·
 - **P1-UI-01 MUST** shadcn/ui components on Tailwind CSS 4. Design tokens
   (color, radius, spacing, typography) are OKLCH CSS variables defined in one
   theme file. No ad hoc colors in components.
-- **P1-UI-02 MUST** Light, dark and system themes. No flash of the wrong
-  theme on load. Board themes are independent of the app theme.
+- **P1-UI-02 MUST** Light, dark and system themes via `next-themes`. No
+  flash of the wrong theme on load. Board themes are independent of the app
+  theme.
 - **P1-UI-03 MUST** Responsive at the three breakpoints above with no
   horizontal scroll. Touch targets ≥ 44px on touch devices.
 - **P1-UI-04 MUST** Global keyboard shortcuts, at parity with Lichess where
@@ -83,21 +84,29 @@ Source link) · 2026-10-10-05-typescript-monorepo-nextjs-and-node-worker ·
   BY-SA broadcasts).
 - **P1-UI-09 MUST** A consistent empty / loading / error state component.
   Errors show the API `error.message`, never a raw stack.
-- **P1-UI-10 SHOULD** Typography: one variable sans font (e.g. Inter or
-  Geist, OFL) plus tabular numerals for evals and stats. Icons from Lucide
-  (ISC).
+- **P1-UI-10 SHOULD** Typography: Geist (variable sans, OFL; the
+  `create-next-app` default) plus tabular numerals for evals and stats.
+  Icons from Lucide (ISC).
 - **P1-UI-11 SHOULD** Toasts via `sonner` (the shadcn default; `toast` is
   deprecated).
 - **P1-UI-12 MUST** COOP/COEP headers only on engine routes (`/analysis`,
   `/studies/*`, `/games/[id]`, `/explorer`), per
   2026-10-10-09-browser-stockfish-behind-analysis-provider. Those pages
   embed no third-party resources that lack CORP.
+  - Cross-origin isolation is fixed when a document loads, so links into
+    and out of engine routes use full-page navigation (a plain `<a>`, not
+    Next `<Link>`). Otherwise the engine runs single-threaded after a soft
+    navigation, and pages left by soft navigation keep the strict COEP
+    document.
 - **P1-UI-13 MUST** A `/privacy` page in plain language covering:
   - what is stored (account, preferences, studies, puzzle attempts, analysis
     sessions, imported games, linked accounts)
   - why it's stored
   - that nothing is sold or shared
-  - how to export (P1-AC-12) and delete (P1-AC-10)
+  - how to delete (P1-AC-10), and that export (P1-AC-12) is coming
+    (2026-10-11-03-soft-launch-without-email-service)
+  - that new passwords are checked against known breaches by sending a
+    5-character hash prefix to Have I Been Pwned (P1-AC-01)
   - a contact address
   - Linked from the footer and the sign-up form
     (2026-10-10-17-self-administered-license-compliance).
@@ -147,7 +156,7 @@ Source link) · 2026-10-10-05-typescript-monorepo-nextjs-and-node-worker ·
 
 | Component | Mode |
 |---|---|
-| shadcn/ui, Tailwind, Lucide | reused |
+| shadcn/ui, Tailwind, Lucide, next-themes, Geist | reused |
 | Lichess layout and shortcuts | functional reference only |
 | Lichess piece and board assets | reused per allowlist |
 
