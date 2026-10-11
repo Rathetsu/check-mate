@@ -36,6 +36,7 @@ export function ShareMenu({
   cursor,
   orientation,
   canExport,
+  embeddable,
 }: {
   studyId: string;
   chapterId: string;
@@ -43,6 +44,7 @@ export function ShareMenu({
   cursor: TreeCursor;
   orientation: 'white' | 'black';
   canExport: boolean;
+  embeddable: boolean;
 }) {
   const { prefs } = usePrefs();
   const [extensions, setExtensions] = useState(false);
@@ -74,6 +76,18 @@ export function ShareMenu({
           Copy position link
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => copy(cursor.node.fen, 'FEN')}>Copy FEN</DropdownMenuItem>
+        {embeddable && (
+          <DropdownMenuItem
+            onSelect={() =>
+              copy(
+                `<iframe src="${location.origin}/embed/study/${studyId}/${chapterId}" width="600" height="400" frameborder="0" title="${chapterName.replace(/"/g, '&quot;')}"></iframe>`,
+                'Embed code',
+              )
+            }
+          >
+            Copy embed code
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         {canExport && (
           <>

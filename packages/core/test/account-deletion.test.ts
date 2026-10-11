@@ -10,6 +10,7 @@ import {
   externalAccounts,
   session,
   studies,
+  studyLikes,
   user,
   userPreferences,
 } from '../src/schema/index.ts';
@@ -37,6 +38,11 @@ const seeders: Record<string, (userId: string) => Promise<unknown>> = {
   analysis_sessions: (userId) =>
     db.insert(analysisSessions).values({ userId, sourceType: 'free', initialFen: 'x', pgn: '*', lastPositionKey: 'x' }),
   studies: (userId) => db.insert(studies).values({ userId, name: 'S' }),
+  // A like needs a study to like; the user likes their own here.
+  study_likes: async (userId) => {
+    const [s] = await db.insert(studies).values({ userId, name: 'Liked' }).returning({ id: studies.id });
+    await db.insert(studyLikes).values({ studyId: s!.id, userId });
+  },
 };
 
 async function userOwnedTables(): Promise<string[]> {
@@ -72,13 +78,15 @@ test('deleting a user removes their rows from every user-owned table', async () 
     await seeders[t]!(kept);
   }
 
+  const count = async (t: string, userId: string) =>
+    (await db.execute(sql.raw(`SELECT 1 FROM "${t}" WHERE user_id = '${userId}'`))).rows.length;
+  const keptBefore = Object.fromEntries(await Promise.all(tables.map(async (t) => [t, await count(t, kept)])));
+
   await db.delete(user).where(eq(user.id, doomed));
 
+  // Some seeders add parent rows (a like needs a study), so counts, not lists.
   for (const t of tables) {
-    const { rows } = await db.execute<{ user_id: string }>(sql.raw(`SELECT user_id FROM "${t}"`));
-    expect(
-      rows.map((r) => r.user_id),
-      t,
-    ).toEqual([kept]);
+    expect(await count(t, doomed), `${t}: rows left for the deleted user`).toBe(0);
+    expect(await count(t, kept), `${t}: the other user's rows`).toBe(keptBefore[t]);
   }
 });

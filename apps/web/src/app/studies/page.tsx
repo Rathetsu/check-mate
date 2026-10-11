@@ -1,64 +1,90 @@
-import { listStudies } from '@checkmate/core';
+import { listStudies, STUDIES_PER_PAGE, STUDY_SORTS, STUDY_TABS } from '@checkmate/core';
+import { cn } from 'cn';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { MiniBoard } from '@/components/board/mini-board';
-import { StateView } from '@/components/shell/state-view';
 import { NewStudy } from '@/components/studies/new-study';
-import { Button } from '@/components/ui/button';
+import { StudyGrid } from '@/components/studies/study-grid';
 import { getSession } from '@/lib/session';
 
 export const metadata: Metadata = { title: 'Studies' };
 
-// P1-ST-10: name, chapters, owner, updated time and a thumbnail of chapter 1.
+const TAB_LABEL = { mine: 'My studies', liked: 'Liked', public: 'Public' } as const;
+const SORT_LABEL = { hot: 'Hot', newest: 'Newest', updated: 'Recently updated', liked: 'Most liked', name: 'Name' };
+const pick = <T extends string>(v: unknown, allowed: readonly T[], fallback: T): T =>
+  allowed.includes(v as T) ? (v as T) : fallback;
+
+// P1-ST-22: my studies, liked, public; hot, newest, updated, most liked, name.
 export default async function StudiesPage({ searchParams }: PageProps<'/studies'>) {
   const session = await getSession();
-  if (!session)
-    return (
-      <StateView
-        kind="empty"
-        title="Studies"
-        message="Sign in to build studies: chapters of analysis you can annotate and share."
-      >
-        <Button asChild>
-          <Link href="/auth/sign-in">Sign in</Link>
-        </Button>
-      </StateView>
-    );
-  const { q } = await searchParams;
-  const studies = await listStudies(session.user.id, { q: typeof q === 'string' ? q : undefined });
+  const params = await searchParams;
+  const tabs = session ? STUDY_TABS : (['public'] as const);
+  const tab = pick(params.tab, tabs, tabs[0]);
+  const sort = pick(params.sort, STUDY_SORTS, tab === 'mine' ? 'updated' : 'hot');
+  const q = typeof params.q === 'string' ? params.q : '';
+  const page = Math.max(0, Number(params.page) || 0);
+  const studies = await listStudies(session?.user.id ?? null, { tab, sort, q, page });
+  const href = (p: Record<string, string | number>) =>
+    `/studies?${new URLSearchParams({ tab, sort, ...(q ? { q } : {}), ...Object.fromEntries(Object.entries(p).map(([k, v]) => [k, String(v)])) })}`;
+
   return (
-    <div className="mx-auto grid max-w-6xl gap-6 p-4">
+    <div className="mx-auto grid max-w-6xl gap-5 p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">My studies</h1>
-        <NewStudy />
+        <h1 className="text-2xl font-semibold">Studies</h1>
+        {session && <NewStudy />}
       </div>
-      <form className="max-w-sm" role="search">
+      <nav aria-label="Study lists" className="flex flex-wrap gap-1">
+        {tabs.map((t) => (
+          <Link
+            key={t}
+            href={`/studies?tab=${t}`}
+            aria-current={t === tab ? 'page' : undefined}
+            className={cn('rounded-md px-3 py-1.5 text-sm hover:bg-accent', t === tab && 'bg-accent font-medium')}
+          >
+            {TAB_LABEL[t]}
+          </Link>
+        ))}
+      </nav>
+      <form className="flex flex-wrap gap-2" role="search">
+        <input type="hidden" name="tab" value={tab} />
         <input
           name="q"
-          defaultValue={typeof q === 'string' ? q : ''}
-          aria-label="Search my studies"
-          placeholder="Search my studies"
-          className="h-9 w-full rounded-md border bg-transparent px-3 text-sm"
+          defaultValue={q}
+          aria-label="Search studies"
+          placeholder="Search by name"
+          className="h-9 w-full max-w-sm rounded-md border bg-transparent px-3 text-sm"
         />
-      </form>
-      {studies.length === 0 ? (
-        <p className="text-muted-foreground">{q ? 'No study matches.' : 'No studies yet. Create one to start.'}</p>
-      ) : (
-        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4" aria-label="Studies">
-          {studies.map((s) => (
-            <li key={s.id}>
-              <Link href={`/studies/${s.id}`} className="grid gap-2 rounded-md border p-2 hover:bg-accent">
-                {s.previewFen && <MiniBoard fen={s.previewFen} />}
-                <span className="truncate font-medium">{s.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  {s.chapters} {s.chapters === 1 ? 'chapter' : 'chapters'} · updated{' '}
-                  {s.updatedAt.toLocaleDateString('en', { dateStyle: 'medium' })}
-                </span>
-              </Link>
-            </li>
+        <select
+          name="sort"
+          defaultValue={sort}
+          aria-label="Sort"
+          className="h-9 rounded-md border bg-background px-2 text-sm"
+        >
+          {STUDY_SORTS.map((s) => (
+            <option key={s} value={s}>
+              {SORT_LABEL[s]}
+            </option>
           ))}
-        </ul>
-      )}
+        </select>
+        <button type="submit" className="h-9 rounded-md border px-3 text-sm hover:bg-accent">
+          Search
+        </button>
+      </form>
+      <StudyGrid
+        studies={studies}
+        empty={q ? 'No study matches.' : tab === 'mine' ? 'No studies yet. Create one to start.' : 'Nothing here yet.'}
+      />
+      <div className="flex gap-2">
+        {page > 0 && (
+          <Link className="text-sm text-primary hover:underline" href={href({ page: page - 1 })}>
+            Previous page
+          </Link>
+        )}
+        {studies.length === STUDIES_PER_PAGE && (
+          <Link className="text-sm text-primary hover:underline" href={href({ page: page + 1 })}>
+            Next page
+          </Link>
+        )}
+      </div>
     </div>
   );
 }

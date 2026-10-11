@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { index, integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { user } from './auth.ts';
 
 // Studies (studies spec). Chapters belong to their study and have no user_id:
@@ -36,7 +36,11 @@ export const studies = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
   },
-  (t) => [index('studies_user_updated').on(t.userId, t.updatedAt.desc())],
+  (t) => [
+    index('studies_user_updated').on(t.userId, t.updatedAt.desc()),
+    index('studies_topics').using('gin', t.topics),
+    index('studies_name_trgm').using('gin', sql`${t.name} gin_trgm_ops`), // search (P1-ST-22)
+  ],
 );
 
 export const studyChapters = pgTable(
@@ -62,4 +66,20 @@ export const studyChapters = pgTable(
   },
   // ponytail: `ord` is a sort key, not unique; ties fall back to created_at.
   (t) => [index('study_chapters_study_ord').on(t.studyId, t.ord)],
+);
+
+// One like per user per study (P1-ST-21). Counts are computed on read, so a
+// deleted account's likes can't leave a stale counter.
+export const studyLikes = pgTable(
+  'study_likes',
+  {
+    studyId: uuid('study_id')
+      .notNull()
+      .references(() => studies.id, { onDelete: 'cascade' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.studyId, t.userId] }), index('study_likes_user').on(t.userId)],
 );

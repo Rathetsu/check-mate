@@ -22,6 +22,13 @@
       "when": 1791729796469,
       "tag": "0002_studies",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791731009865,
+      "tag": "0003_study_sharing",
+      "breakpoints": true
     }
   ]
 }

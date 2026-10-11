@@ -6,7 +6,8 @@
 // editors on "Preview".
 import { applyOp, loadGame, makePgn, TreeCursor, type TreeOp } from '@checkmate/chess';
 import type { ChapterDetail, StudyDetail } from '@checkmate/core';
-import { Eye, Pencil, Plus, Settings } from 'lucide-react';
+import { Copy, Eye, Heart, Pencil, Plus, Settings } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -107,6 +108,10 @@ export function StudyView({ study: initialStudy, chapter: initialChapter, me }: 
   const next = study.chapters[at + 1];
   const goNext = next ? () => router.push(`/studies/${study.id}/${next.id}`) : undefined;
   const orientation = chapter.orientation as 'white' | 'black';
+  const canClone =
+    study.role === 'owner' ||
+    study.settings.cloneable === 'everyone' ||
+    (study.settings.cloneable === 'contributors' && study.role === 'contributor');
   const canExport =
     study.role === 'owner' ||
     study.settings.shareable === 'everyone' ||
@@ -144,6 +149,49 @@ export function StudyView({ study: initialStudy, chapter: initialChapter, me }: 
             {study.owner && ` · by ${study.owner}`}
           </p>
         </div>
+        {study.topics.length > 0 && (
+          <span className="flex flex-wrap gap-1">
+            {study.topics.map((t) => (
+              <Link
+                key={t}
+                href={`/studies/topic/${encodeURIComponent(t)}`}
+                className="rounded bg-muted px-1.5 text-xs hover:underline"
+              >
+                {t}
+              </Link>
+            ))}
+          </span>
+        )}
+        {me && (
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-pressed={study.liked}
+            aria-label={study.liked ? 'Unlike' : 'Like'}
+            onClick={() =>
+              api<{ likes: number; liked: boolean }>(`${base}/like`, 'PUT', { liked: !study.liked }).then(
+                (r) => setStudy((s) => ({ ...s, ...r })),
+                (err: Error) => toast.error(err.message),
+              )
+            }
+          >
+            <Heart aria-hidden className={study.liked ? 'fill-current' : ''} /> {study.likes}
+          </Button>
+        )}
+        {me && canClone && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() =>
+              api<{ id: string }>(`${base}/clone`, 'POST').then(
+                ({ id }) => router.push(`/studies/${id}`),
+                (err: Error) => toast.error(err.message),
+              )
+            }
+          >
+            <Copy aria-hidden /> Clone
+          </Button>
+        )}
         {editable && (
           <span role="status" className="text-xs text-muted-foreground" data-testid="save-state">
             {ops.saving ? 'Saving…' : 'Saved'}
@@ -167,6 +215,7 @@ export function StudyView({ study: initialStudy, chapter: initialChapter, me }: 
           cursor={tree.cursor}
           orientation={orientation}
           canExport={canExport}
+          embeddable={study.visibility !== 'private'}
         />
         {study.role === 'owner' && (
           <Button variant="ghost" size="icon" aria-label="Study settings" onClick={() => setSettings(true)}>

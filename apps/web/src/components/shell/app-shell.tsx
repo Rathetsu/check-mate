@@ -14,6 +14,8 @@ import { Wordmark } from './wordmark';
 export function AppShell({ user, children }: { user: ShellUser | null; children: React.ReactNode }) {
   const pathname = usePathname();
   const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
+  // Embeds (P1-ST-24) live inside other sites: no navigation or palette.
+  if (pathname.startsWith('/embed/')) return <main id="main">{children}</main>;
 
   return (
     <div className="flex min-h-dvh">

@@ -24,12 +24,17 @@ const nextConfig: NextConfig = {
     const corp = { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' };
     const isolate = [{ key: 'Cross-Origin-Opener-Policy', value: 'same-origin' }, coep];
     return [
+      // Only our own pages may frame us (no clickjacking of settings or account
+      // deletion); embeds, below, may be framed anywhere (P1-ST-24). For the
+      // same header, the last matching rule wins.
+      { source: '/:path*', headers: [{ key: 'Content-Security-Policy', value: "frame-ancestors 'self'" }] },
       { source: '/analysis/:path*', headers: isolate },
       { source: '/studies/:path*', headers: isolate },
       // Workers started by an isolated page (Stockfish, the PGN indexer)
       // load only when their own script carries COEP too.
       { source: '/engine/:path*', headers: [coep, corp] },
       { source: '/_next/static/:path*', headers: [coep, corp] },
+      { source: '/embed/:path*', headers: [{ key: 'Content-Security-Policy', value: 'frame-ancestors *' }] },
     ];
   },
 };

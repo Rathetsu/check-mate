@@ -15,8 +15,8 @@ import {
 import { and, asc, count, desc, eq, inArray, max, sql } from 'drizzle-orm';
 import { db } from '../db.ts';
 import { DomainError } from '../errors.ts';
-import { publish, type StudyEvent } from '../pubsub.ts';
-import { studies, studyChapters, user } from '../schema/index.ts';
+import { closeStudy, publish, type StudyEvent } from '../pubsub.ts';
+import { studies, studyChapters, studyLikes, user } from '../schema/index.ts';
 import { isUuid, requireStudy, type StudyRole, type StudyRow } from './study-access.ts';
 
 export const MAX_CHAPTERS = 64;
@@ -149,20 +149,65 @@ export type StudySummary = {
   name: string;
   owner: string | null;
   visibility: string;
+  topics: string[];
   chapters: number;
+  likes: number;
   previewFen: string | null;
+  createdAt: Date;
   updatedAt: Date;
 };
+export const STUDY_TABS = ['mine', 'liked', 'public'] as const;
+export const STUDY_SORTS = ['hot', 'newest', 'updated', 'liked', 'name'] as const;
+export type StudyListOpts = {
+  tab?: (typeof STUDY_TABS)[number];
+  q?: string;
+  topic?: string;
+  sort?: (typeof STUDY_SORTS)[number];
+  page?: number;
+};
+export const STUDIES_PER_PAGE = 24;
 
-export async function listStudies(userId: string, opts: { q?: string } = {}): Promise<StudySummary[]> {
+const likeCount = sql<number>`(SELECT count(*)::int FROM ${studyLikes} l WHERE l.study_id = ${studies.id})`;
+// lila Study.Rank.compute at commit 46d24871 (AGPL-3.0-or-later): the creation
+// time pushed forward by min(int(5·ln(likes) + 1), likes) days.
+const hotRank = sql`${studies.createdAt} + make_interval(hours => CASE WHEN ${likeCount} < 1 THEN 0
+  ELSE LEAST(floor(5 * ln(${likeCount}) + 1)::int, ${likeCount}) * 24 END)`;
+const ORDER = {
+  hot: desc(hotRank),
+  newest: desc(studies.createdAt),
+  updated: desc(studies.updatedAt),
+  liked: desc(likeCount),
+  name: asc(sql`lower(${studies.name})`),
+};
+
+// P1-ST-10, P1-ST-22. `mine` and `liked` need a user; `public` lists only
+// public studies. A liked study shows only while its reader can still read it.
+export async function listStudies(userId: string | null, opts: StudyListOpts = {}): Promise<StudySummary[]> {
+  const tab = opts.tab ?? 'mine';
+  if (!userId && tab !== 'public') return [];
   const q = opts.q?.trim();
-  const rows = await db
+  const where = and(
+    tab === 'mine'
+      ? eq(studies.userId, userId!)
+      : tab === 'liked'
+        ? and(
+            sql`EXISTS (SELECT 1 FROM ${studyLikes} l WHERE l.study_id = ${studies.id} AND l.user_id = ${userId})`,
+            sql`(${studies.visibility} <> 'private' OR ${studies.userId} = ${userId})`,
+          )
+        : eq(studies.visibility, 'public'),
+    q ? sql`${studies.name} ILIKE ${`%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`}` : undefined,
+    opts.topic ? sql`${studies.topics} @> ARRAY[${opts.topic}]::text[]` : undefined,
+  );
+  return db
     .select({
       id: studies.id,
       name: studies.name,
       owner: username,
       visibility: studies.visibility,
+      topics: studies.topics,
+      createdAt: studies.createdAt,
       updatedAt: studies.updatedAt,
+      likes: likeCount,
       chapters: sql<number>`(SELECT count(*)::int FROM ${studyChapters} c WHERE c.study_id = ${studies.id})`,
       previewFen: sql<
         string | null
@@ -170,10 +215,70 @@ export async function listStudies(userId: string, opts: { q?: string } = {}): Pr
     })
     .from(studies)
     .leftJoin(user, eq(user.id, studies.userId))
-    .where(and(eq(studies.userId, userId), q ? sql`${studies.name} ILIKE ${`%${q}%`}` : undefined))
-    .orderBy(desc(studies.updatedAt))
-    .limit(200);
-  return rows;
+    .where(where)
+    .orderBy(ORDER[opts.sort ?? (tab === 'mine' ? 'updated' : 'hot')], desc(studies.createdAt))
+    .limit(STUDIES_PER_PAGE)
+    .offset(Math.max(0, opts.page ?? 0) * STUDIES_PER_PAGE);
+}
+
+// P1-ST-21: anyone who can read a study can like it.
+export async function likeStudy(userId: string, studyId: string, liked: boolean) {
+  await requireStudy(userId, studyId, 'read');
+  if (liked) await db.insert(studyLikes).values({ studyId, userId }).onConflictDoNothing();
+  else await db.delete(studyLikes).where(and(eq(studyLikes.studyId, studyId), eq(studyLikes.userId, userId)));
+  return likes(userId, studyId);
+}
+
+async function likes(userId: string | null, studyId: string) {
+  const [row] = await db
+    .select({
+      likes: count(),
+      liked: sql<boolean>`coalesce(bool_or(${studyLikes.userId} = ${userId}), false)`,
+    })
+    .from(studyLikes)
+    .where(eq(studyLikes.studyId, studyId));
+  return { likes: row?.likes ?? 0, liked: row?.liked ?? false };
+}
+
+// P1-ST-20: a private copy with every chapter, when the study allows it.
+export async function cloneStudy(userId: string, studyId: string): Promise<{ id: string }> {
+  const { role, study } = await requireStudy(userId, studyId, 'read');
+  if (role !== 'owner' && !allows(study.settings.cloneable, role))
+    throw new DomainError('FORBIDDEN', 403, "This study's owner doesn't allow copying it.");
+  const rows = await db
+    .select()
+    .from(studyChapters)
+    .where(eq(studyChapters.studyId, studyId))
+    .orderBy(asc(studyChapters.ord), asc(studyChapters.createdAt));
+  return db.transaction(async (tx) => {
+    const [{ n } = { n: 0 }] = await tx.select({ n: count() }).from(studies).where(eq(studies.userId, userId));
+    if (n >= MAX_OWNED_STUDIES)
+      throw new DomainError(
+        'TOO_MANY_STUDIES',
+        400,
+        `You can own up to ${MAX_OWNED_STUDIES} studies. Delete one first.`,
+      );
+    const [copy] = await tx
+      .insert(studies)
+      .values({
+        userId,
+        name: study.name,
+        description: study.description,
+        settings: study.settings,
+        topics: study.topics,
+      })
+      .returning({ id: studies.id });
+    await tx.insert(studyChapters).values(
+      rows.map(({ id, studyId: _, createdAt: __, updatedAt: ___, version: ____, ...c }, ord) => ({
+        ...c,
+        ord,
+        studyId: copy!.id,
+        sourceType: 'copy',
+        sourceId: id,
+      })),
+    );
+    return { id: copy!.id };
+  });
 }
 
 // A new study starts with one chapter: blank, or the given source's first
@@ -221,7 +326,7 @@ export type ChapterSummary = {
 export type StudyDetail = Pick<
   StudyRow,
   'id' | 'name' | 'description' | 'visibility' | 'settings' | 'topics' | 'position' | 'createdAt' | 'updatedAt'
-> & { owner: string | null; role: StudyRole; chapters: ChapterSummary[] };
+> & { owner: string | null; role: StudyRole; chapters: ChapterSummary[]; likes: number; liked: boolean };
 
 export async function getStudy(userId: string | null, studyId: string): Promise<StudyDetail> {
   const { role, study } = await requireStudy(userId, studyId, 'read');
@@ -240,7 +345,7 @@ export async function getStudy(userId: string | null, studyId: string): Promise<
     .where(eq(studyChapters.studyId, studyId))
     .orderBy(asc(studyChapters.ord), asc(studyChapters.createdAt));
   const { userId: _, ...rest } = study;
-  return { ...rest, owner: owner?.name ?? null, role, chapters };
+  return { ...rest, owner: owner?.name ?? null, role, chapters, ...(await likes(userId, studyId)) };
 }
 
 export type StudyPatch = Partial<Pick<StudyRow, 'name' | 'description' | 'visibility' | 'settings' | 'topics'>>;
@@ -252,6 +357,8 @@ export async function updateStudy(userId: string, studyId: string, patch: StudyP
     .set({ ...patch, updatedAt: new Date() })
     .where(eq(studies.id, studyId));
   publish(studyId, { type: 'meta' });
+  // Who may read may have changed: open streams reconnect and check again.
+  if (patch.visibility || patch.settings) closeStudy(studyId);
 }
 
 export async function deleteStudy(userId: string, studyId: string): Promise<void> {

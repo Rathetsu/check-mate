@@ -1,7 +1,8 @@
 'use client';
 
-// Study settings, owner only (P1-ST-01): name, description, delete.
-import type { StudyDetail } from '@checkmate/core';
+// Study settings, owner only (P1-ST-01, P1-ST-11, P1-ST-21): name,
+// description, visibility, what others may do, topics, delete.
+import type { StudyDetail, StudySettings } from '@checkmate/core';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -16,6 +17,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { api } from './api';
 
@@ -33,11 +36,23 @@ export function StudySettingsDialog({
   const router = useRouter();
   const [name, setName] = useState(study.name);
   const [description, setDescription] = useState(study.description);
+  const [visibility, setVisibility] = useState(study.visibility);
+  const [settings, setSettings] = useState<StudySettings>(study.settings);
+  const [topics, setTopics] = useState(study.topics.join(', '));
   const [error, setError] = useState('');
 
   const save = async () => {
     try {
-      await api(`/api/v1/studies/${study.id}`, 'PATCH', { name, description });
+      await api(`/api/v1/studies/${study.id}`, 'PATCH', {
+        name,
+        description,
+        visibility,
+        settings,
+        topics: topics
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean),
+      });
       onOpenChange(false);
       onSaved();
     } catch (err) {
@@ -76,6 +91,57 @@ export function StudySettingsDialog({
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
+        <Choice
+          id="study-visibility"
+          label="Who can see it"
+          value={visibility}
+          onChange={setVisibility}
+          options={[
+            ['private', 'Only me and invited members'],
+            ['unlisted', 'Anyone with the link'],
+            ['public', 'Everyone (listed in public studies)'],
+          ]}
+        />
+        <Choice
+          id="study-cloneable"
+          label="Who can copy it"
+          value={settings.cloneable}
+          onChange={(cloneable) => setSettings((s) => ({ ...s, cloneable: cloneable as StudySettings['cloneable'] }))}
+          options={RULES}
+        />
+        <Choice
+          id="study-shareable"
+          label="Who can export it"
+          value={settings.shareable}
+          onChange={(shareable) => setSettings((s) => ({ ...s, shareable: shareable as StudySettings['shareable'] }))}
+          options={RULES}
+        />
+        <div className="flex items-center justify-between gap-4">
+          <Label htmlFor="study-computer">Computer analysis for others</Label>
+          <Switch
+            id="study-computer"
+            checked={settings.computer}
+            onCheckedChange={(computer) => setSettings((s) => ({ ...s, computer }))}
+          />
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <Label htmlFor="study-sticky">Members follow the shared position</Label>
+          <Switch
+            id="study-sticky"
+            checked={settings.sticky}
+            onCheckedChange={(sticky) => setSettings((s) => ({ ...s, sticky }))}
+          />
+        </div>
+        <div className="grid gap-1.5">
+          <Label htmlFor="study-topics">Topics</Label>
+          <Input
+            id="study-topics"
+            placeholder="Sicilian, endgames, tactics"
+            value={topics}
+            onChange={(e) => setTopics(e.target.value)}
+          />
+          <p className="text-xs text-muted-foreground">Up to 10, separated by commas.</p>
+        </div>
         {error && (
           <p role="alert" className="text-sm text-destructive">
             {error}
@@ -91,5 +157,43 @@ export function StudySettingsDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+const RULES: [string, string][] = [
+  ['everyone', 'Everyone who can see it'],
+  ['contributors', 'Contributors only'],
+  ['nobody', 'Only me'],
+];
+
+function Choice({
+  id,
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: [string, string][];
+}) {
+  return (
+    <div className="grid gap-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger id={id} className="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map(([v, text]) => (
+            <SelectItem key={v} value={v}>
+              {text}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
