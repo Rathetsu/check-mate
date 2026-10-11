@@ -14,7 +14,7 @@ scope:
   before puzzles.
 - **Accounts:** unique usernames from M1.0.
 - **Every SHOULD/COULD has a decision** (table below), including two
-  additions beyond the specs: a self-hosted Syzygy tablebase, and game
+  additions beyond the specs: a self-hosted endgame tablebase, and game
   reviews saved per account.
 
 All of this goes into the docs before code (step 0), then into the doc gate
@@ -26,6 +26,8 @@ Sources of truth for each milestone:
 - Contracts: `docs/stream/2026-10-10-core-architecture.spec.md`
 - Specs: `docs/stream/2026-10-10-p1-*.spec.md`
 - Register: `docs/wiki/open-source-reuse.md`
+- Detailed build order for M1.1-M1.4 (files, tests, decisions taken while
+  planning): `docs/stream/2026-10-11-m1.1-m1.4-build.plan.md`
 
 ## How the work runs
 
@@ -85,7 +87,7 @@ Sources of truth for each milestone:
 | P1-UI-04 `/` command palette | build | M1.2 |
 | P1-AN-33 free session after 1st move + 90-day purge | build | M1.2 |
 | P1-AN-21 full-PGN share link | build: **size check first**; over the cap, a clear friendly message offers the FEN link or "share as study" | M1.2 |
-| Tablebase (analysis spec "COULD later") | build, **self-hosted Syzygy, no Lichess API**, 3-5 pieces now | M1.2 |
+| Tablebase (analysis spec "COULD later") | build, **self-hosted, no Lichess API**, 3-5 pieces now | M1.2 |
 | P1-ED-03 swap colors | build | M1.3 |
 | P1-ED-11 edit history in back/forward | **won't do**, never planned | — |
 | P1-ED-12 open in editor · P1-ED-13 mobile palette | build | M1.3 |
@@ -140,9 +142,8 @@ Sources of truth for each milestone:
     - Never read by anything except the owner's review UI.
 15. **Tablebase:**
     - An unmodified upstream lila-tablebase container, built from source at a pinned commit, internal only.
-    - Syzygy 3-5 files sit on a read-only volume, downloaded by `scripts/fetch-syzygy.sh` from a non-Lichess mirror with checksum verification.
-    - `/api/v1/tablebase?fen=` validates the FEN through `packages/chess`, queries only positions with ≤ the configured piece count, and labels results "Syzygy tablebase".
-    - **Gate:** the register row for the Syzygy files must say *cleared* before the first download. The generator is GPL-2.0, but the files' terms still need checking (ADR 14 rule).
+    - The 3-5 piece tablebase files sit on a read-only volume, downloaded by `scripts/fetch-tablebases.sh` from a non-Lichess mirror with checksum verification.
+    - `/api/v1/tablebase?fen=` validates the FEN through `packages/chess`, queries only positions with ≤ the configured piece count, and labels results "Tablebase".
 16. **PNG/GIF export:** `components/board/board-image.ts` draws a position to canvas from the same piece and board assets. PNG for the position, GIF of the mainline via `gifenc` (MIT, new register row). No server service.
 
 ## Repository layout (end of Phase 1)
@@ -151,7 +152,7 @@ Sources of truth for each milestone:
 package.json · pnpm-workspace.yaml · turbo.json · tsconfig.base.json · eslint.config.mjs
 .prettierrc · .gitignore · .nvmrc · .env.example · LICENSE (AGPL-3.0) · NOTICE (generated)
 docker-compose.yml · Caddyfile · .github/workflows/ci.yml
-scripts/  check-register.ts · fetch-lila-assets.sh · fetch-syzygy.sh · gen-piece-css.ts · gen-openings.ts · copy-stockfish.ts
+scripts/  check-register.ts · fetch-lila-assets.sh · fetch-tablebases.sh · gen-piece-css.ts · gen-openings.ts · copy-stockfish.ts
 services/tablebase/  Dockerfile (lila-tablebase @ pinned commit)
 apps/web/       next.config.ts · Dockerfile · playwright.config.ts · e2e/*.spec.ts
   src/app/      routes per ui-shell route map (+ study browse/embed) · api/auth/[...all] · api/v1/**
@@ -257,7 +258,7 @@ packages/core/  drizzle.config.ts · drizzle/ · src/{db,auth,email,errors,migra
    - `nav-link.tsx` uses a plain `<a>` across the engine-route boundary
 3. **Tablebase** (decision 15):
    - `services/tablebase/Dockerfile` and a compose `tablebase` service on the internal network
-   - `fetch-syzygy.sh`
+   - `fetch-tablebases.sh`
    - core `services/tablebase.ts`
    - `/api/v1/tablebase`
    - an analysis panel section showing the result (win/draw/loss + DTZ) and per-move outcomes, with click-to-play, shown only when the piece count is covered
@@ -282,7 +283,7 @@ packages/core/  drizzle.config.ts · drizzle/ · src/{db,auth,email,errors,migra
 - **Board free mode:** `<Board mode="free">` gains spare pieces and delete on drop-off.
 - **Editor UI:** `/editor` pages, tools, options, two-way FEN field, inline reasons, URL sync (no history walking, P1-ED-11 won't do).
 - **Phone layout:** the palette is a scrollable row with tap-to-place (P1-ED-13).
-- **Actions:** Analyze and Continue from here are disabled while invalid. "Open in editor" is added to analysis (P1-AN-23/ED-12).
+- **Actions:** Analyze is disabled while invalid ("Continue from here" is won't do, 2026-10-11). "Open in editor" is added to analysis (P1-AN-23/ED-12).
 - **Playwright:** the editor criteria, the FEN round trip, and swap colors.
 
 ## M1.4 Studies: Lichess parity minus chat (+ P1-AN-22, P1-ED-10)
@@ -389,7 +390,7 @@ Three slices, each committed separately. Roughly 3-4 weeks.
 | Better Auth IP header behind Caddy and in e2e | M1.0 | `advanced.ipAddress` config |
 | chessops gives no PGN line/column | M1.1 | our own token offset tracking |
 | stockfish 19.0.1 build file names | M1.2 | read `node_modules/stockfish` at install |
-| Syzygy file license unclear, or a mirror offline | M1.2 | the tablebase ships disabled until the register row says cleared; alternate mirror (Bojun Guo) |
+| Tablebase mirror offline | M1.2 | alternate mirror (the files are free to use, owner 2026-10-11) |
 | lila-tablebase has no published Docker image or documented flags | M1.2 | build from source; read `--help` at the pinned commit |
 | SSE through Caddy (buffering, idle timeouts) | M1.4.3 | heartbeats every 15 s; Caddy `flush_interval -1` |
 | Parse+write PGN per op is too slow on 500 KB chapters | M1.4.1 | cache the parsed tree per chapter in-process, keyed by version |

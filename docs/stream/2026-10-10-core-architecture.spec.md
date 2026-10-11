@@ -32,7 +32,7 @@ Decisions this spec relies on (read for the why):
 |---|---|---|
 | Rules | `packages/chess` (chessops) | implemented anywhere else |
 | Analysis | `AnalysisProvider` (browser Stockfish now) | called except through the interface |
-| Knowledge/Data | `packages/core` (Postgres) + `services/explorer` + `services/tablebase` (Syzygy, 2026-10-11-06) | invented or estimated |
+| Knowledge/Data | `packages/core` (Postgres) + `services/explorer` + `services/tablebase` (2026-10-11-06) | invented or estimated |
 
 ## Repository layout
 
@@ -49,7 +49,7 @@ packages/core     Drizzle schema + migrations, domain services, ExplorerSource
 services/explorer Compose config + ingestion config for lila-openingexplorer
                   (Phase 2). No forked upstream code.
 services/tablebase Dockerfile building upstream lila-tablebase at a pinned
-                  commit; Syzygy files on a read-only volume (Phase 1,
+                  commit; tablebase files on a read-only volume (Phase 1,
                   2026-10-11-06-self-hosted-syzygy-tablebase). No forked code.
 ```
 

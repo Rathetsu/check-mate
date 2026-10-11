@@ -30,7 +30,7 @@ recognition.
 2. Set options in the side panel.
 3. The FEN field updates live, and pasting a FEN updates the board.
 4. Validation reasons appear inline as the user edits.
-5. "Analyze" and "Continue from here" enable when the position is valid.
+5. "Analyze" enables when the position is valid.
 
 ## Requirements
 
@@ -64,10 +64,12 @@ recognition.
   - pawn on the 1st or 8th rank
   - too many pieces
   - inconsistent castling or en passant
-- **P1-ED-10 MUST** "Analyze" (to `/analysis/<fen>`), "Continue from here"
-  (same, with the tree root at this FEN), and "Save as study chapter" are
-  disabled while invalid. A tooltip lists the reasons. "Save as study
-  chapter" lands with M1.4, once studies exist.
+- **P1-ED-10 MUST** "Analyze" (to `/analysis/<fen>`, with the tree root at
+  this FEN) and "Save as study chapter" are disabled while invalid. A tooltip
+  lists the reasons. "Save as study chapter" lands with M1.4, once studies
+  exist. "Continue from here" is **won't do** (user decision 2026-10-11): in
+  CheckMate it would open the same page as "Analyze". Lichess uses it for
+  play modes CheckMate doesn't have.
 - **P1-ED-11 MUST** URL stays in sync (`/editor/<fen>`) so positions are
   shareable, by replacing the history entry. Browser back/forward does
   **not** walk the edit history: **won't do** (user decision 2026-10-11; not

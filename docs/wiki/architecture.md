@@ -34,7 +34,7 @@ call Core's `/api/v1`. Core never calls the AI service's internals.
 │ worker (Node 24, pg-boss): imports, sync, puzzle load,   │                     │
 │   explorer ingestion, position indexing ─────────────────┤                     │
 │ explorer (lila-openingexplorer, RocksDB) ◄── internal only, admin never public │
-│ tablebase (lila-tablebase, Syzygy files on a read-only volume) ◄── internal    │
+│ tablebase (lila-tablebase, tablebase files, read-only volume) ◄── internal     │
 └───────────┬────────────────────────────────────────────────────────────────────┘
             ▼ outbound
    lichess.org API · explorer.lichess.org (optional, user token) ·
@@ -57,7 +57,7 @@ sits above all three.
 | `packages/chess` | Pure rules/PGN/FEN, `positionKey`, `gameFingerprint` (uploads), `terminalKey` (OTB dedup), opening classifier, `TreeCursor`, `AnalysisProvider` types. **No I/O.** | chessops |
 | `packages/core` | Drizzle schema (`src/schema/`), SQL migrations (`drizzle/`), the Better Auth instance (`src/auth.ts`), `sendEmail`, user-scoped domain services, `ExplorerSource` adapters. Its subpath `@checkmate/core/shared` is pure (zod schemas, preference allowlists), so client components may import it. `db` is not exported. **No React.** | Postgres, explorer |
 | `services/explorer` | Compose and ingestion config for upstream lila-openingexplorer. **No forked code.** | — |
-| `services/tablebase` | Dockerfile for upstream lila-tablebase at a pinned commit, Syzygy 3-5 pieces on a read-only volume (2026-10-11-06). **No forked code.** | — |
+| `services/tablebase` | Dockerfile for upstream lila-tablebase at a pinned commit, 3-5 piece tablebase files on a read-only volume (2026-10-11-06). **No forked code.** | — |
 
 ## Data flow
 
@@ -130,7 +130,7 @@ sits above all three.
 - **Masters index:** rebuilt from the `explorer_otb_games` registry, never
   edited in place. Upstream can't delete games (ADR 19).
 - **Explorer admin routes:** never routed publicly (ADR 16).
-- **Tablebase:** results come only from the self-hosted Syzygy service, never
+- **Tablebase:** results come only from the self-hosted tablebase service, never
   the Lichess API. Positions outside the installed piece count show nothing
   (2026-10-11-06).
 
@@ -143,7 +143,7 @@ sits above all three.
 | database.lichess.org | puzzle refresh, explorer ingestion | Monthly job retries; stale data is acceptable |
 | explorer.lichess.org (optional) | `lichess-account` source | Source shows "unavailable/rate limited"; others still work |
 | lila-openingexplorer (self-hosted) | explorer stats | Explorer panel degrades; board and analysis unaffected |
-| lila-tablebase (self-hosted) + Syzygy mirror (one-off download) | endgame results ≤5 pieces | Tablebase section hidden; board and engine unaffected |
+| lila-tablebase (self-hosted) + tablebase file mirror (one-off download) | endgame results ≤5 pieces | Tablebase section hidden; board and engine unaffected |
 | SMTP provider (optional until launch, 2026-10-11-03) | verification, reset, email change | Not configured: links go to the server log and the operator passes them on. Verification is not required, so sign-up never blocks |
 
 ## Key decisions

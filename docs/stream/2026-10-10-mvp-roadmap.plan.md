@@ -39,7 +39,7 @@ parallel.
 |---|---|---|
 | M1.0 Scaffold | monorepo, compose (web, worker, postgres, caddy, mailpit), CI on GitHub Actions (ESLint + Prettier, typecheck, Vitest, Playwright, register check), AGPL `LICENSE`, `NOTICE`/`/about` from the reuse register, footer Source link, `/privacy` page, brand tokens (Mate Violet), Better Auth (`sendEmail` with log fallback, unique usernames), preferences, app shell + theme | register/sign-in e2e green in CI; verification and reset e2e via Mailpit |
 | M1.1 Board + rules + PGN/FEN | `packages/chess`, `<Board>`, `TreeCursor`, PGN/FEN library + fixture corpus | chessboard and PGN/FEN acceptance criteria |
-| M1.2 Analysis + engine + tablebase | analysis board, browser Stockfish provider, sessions, command palette, self-hosted Syzygy tablebase (3-5 pieces) | analysis acceptance criteria, except P1-AN-22 (moves to M1.4) and P1-AN-40..43 (M1.2b) |
+| M1.2 Analysis + engine + tablebase | analysis board, browser Stockfish provider, sessions, command palette, self-hosted endgame tablebase (3-5 pieces) | analysis acceptance criteria, except P1-AN-22 (moves to M1.4) and P1-AN-40..43 (M1.2b) |
 | M1.2b Saved game review (runs after M1.5) | per-ply review, classifications, saved per user with every run kept (2026-10-11-05) | P1-AN-40..43 |
 | M1.3 Board editor | editor | editor acceptance criteria, except "Save as study chapter" in P1-ED-10 (moves to M1.4) |
 | M1.4 Studies (Lichess parity minus chat) | studies CRUD + chapters + export; single-user tools and chapter modes; sharing (public/unlisted, clone, likes, topics, browse, embed); collaboration (members, live sync) (2026-10-11-04); analysis "Save to study" (P1-AN-22); editor "Save as study chapter" (P1-ED-10) | studies acceptance criteria, except "From puzzle" in P1-ST-02 (moves to M1.5) |
@@ -159,7 +159,7 @@ Milestone order: M1.0 → M1.1 → M1.2 → M1.3 → M1.4 → M1.5 → M1.2b →
 | Lichess dump subset size vs VPS disk | explorer coverage | M2.1 sizing review |
 | Chess.com objects to persisted personal imports | Chess.com sync off (kill switch); PGN upload fallback | accepted risk, ADR 18 |
 | Lichess may restrict anonymous tablebase/export further | already designed around (OAuth import; tablebase self-hosted, 2026-10-11-06) | — |
-| Syzygy table files' license not yet verified | tablebase ships disabled until the register row says cleared | M1.2 |
+| Tablebase files: licence | resolved 2026-10-11: free to use (owner), no gate | — |
 | Paid legal review | only at ADR 17 triggers (money, investment, Phase 4 launch, complaint, trademark) | user, when a trigger fires |
 | First deploy has no domain or email service (soft launch, under 5 users) | HTTPS is still required: multi-threaded Stockfish needs a secure context, and auth cookies are `Secure`. A free `<server-ip>.sslip.io` hostname plus Caddy's automatic TLS works with no signup. Email links go to the server log | user, at first deploy; email and verification flip at the 2026-10-11-03-soft-launch-without-email-service trigger |
 

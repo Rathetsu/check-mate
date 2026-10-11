@@ -23,7 +23,7 @@ chessboard spec).
 
 In: free exploration, variation tree, move list, annotations, engine panel,
 PGN/FEN load and export, share links, save to study, analysis sessions,
-browser game review saved per user (M1.2b), self-hosted Syzygy tablebase
+browser game review saved per user (M1.2b), self-hosted endgame tablebase
 lookup (added 2026-10-11).
 Out: server-side analysis (Phase 4), cloud evals, the Lichess tablebase API,
 opening explorer panel (P2 adds it as a tab).
@@ -118,7 +118,7 @@ opening explorer panel (P2 adds it as a tab).
   chosen chapter after confirmation (studies spec). Lands with M1.4, once
   studies exist.
 - **P1-AN-23 MUST** "Open in editor" with the current position.
-  "Continue from here" from the editor lands here.
+  "Analyze" from the editor lands here.
 
 ### Analysis sessions (working copies for Phase 4)
 
@@ -170,17 +170,20 @@ opening explorer panel (P2 adds it as a tab).
 
 ### Tablebase (added 2026-10-11, 2026-10-11-06-self-hosted-syzygy-tablebase)
 
-- **P1-AN-50 MUST** For legal positions within the installed Syzygy piece
+- **P1-AN-50 MUST** For legal positions within the installed tablebase piece
   count (3-5 pieces at launch), the panel shows the tablebase result
   (win / draw / loss and DTZ) and each legal move's outcome. Clicking a move
   plays it into the tree.
 - **P1-AN-51 MUST** Results come only from the self-hosted lila-tablebase
   service through `GET /api/v1/tablebase?fen=`, which validates the FEN with
-  `packages/chess`. They are labelled "Syzygy tablebase", never mixed into the
+  `packages/chess`. They are labelled "Tablebase", never mixed into the
   engine panel or eval bar. Positions outside coverage show nothing.
-- **P1-AN-52 MUST** If the tablebase service is down or disabled (its dataset
-  is not yet cleared in the register), the section is hidden. The board and
-  engine are unaffected.
+- **P1-AN-52 MUST** If the tablebase service is down or not configured
+  (`TABLEBASE_URL` unset), the section is hidden. The board and engine are
+  unaffected.
+- *2026-10-11 (owner decision):* the tablebase files are free to use. There
+  is no licence gate and no register row for them, and the product calls
+  them "tablebase" only.
 
 ## Data model
 

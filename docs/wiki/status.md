@@ -81,7 +81,7 @@ docs/stream/2026-10-11-phase-1-implementation.plan.md.
   Every run is kept, and it's always labelled as a browser review, never
   treated as fact (ADR 2026-10-11-05).
 - **Endgame tablebase, self-hosted:** perfect endgame answers for positions
-  with up to 5 pieces, served from our own copy of the free Syzygy files, not
+  with up to 5 pieces, served from our own copy of free tablebase files, not
   Lichess's service. It grows to 6 pieces when disk allows (ADR
   2026-10-11-06).
 - **Every optional Phase 1 item was decided one by one.** The list is in the

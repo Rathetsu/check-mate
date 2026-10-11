@@ -16,6 +16,7 @@ documentation system (ai-dev-docs).
 - [adr/](adr/): why things are the way they are (26 ADRs, 2026-10-10 and
   2026-10-11)
 - [stream/2026-10-11-phase-1-implementation.plan.md](stream/2026-10-11-phase-1-implementation.plan.md): Phase 1 build order, file layout, per-milestone checks, and every SHOULD/COULD decision
+- [stream/2026-10-11-m1.1-m1.4-build.plan.md](stream/2026-10-11-m1.1-m1.4-build.plan.md): detailed build plan for M1.1-M1.4 (board, analysis, editor, studies)
 
 ## Feature specs (`docs/stream/`)
 
@@ -36,6 +37,7 @@ documentation system (ai-dev-docs).
 | 3 | [p3-personal-opening-tree](stream/2026-10-10-p3-personal-opening-tree.spec.md) |
 | 2 | [masters-data-permission-requests](stream/2026-10-10-masters-data-permission-requests.plan.md) (plan: email drafts + tracking) |
 | 1 | [phase-1-implementation](stream/2026-10-11-phase-1-implementation.plan.md) (plan: build order M1.0-M1.6) |
+| 1 | [m1.1-m1.4-build](stream/2026-10-11-m1.1-m1.4-build.plan.md) (plan: detailed build of M1.1-M1.4) |
 
 ## ADRs
 
