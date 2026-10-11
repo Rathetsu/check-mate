@@ -1,7 +1,6 @@
 // Studies 4.2 acceptance criteria (p1-studies spec): publish, read signed
 // out, embed, browse.
-import { defaultPreferences } from '@checkmate/core/shared';
-import type { Browser, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { drag, moves } from './board';
 import { expect, newUser, signUp, test } from './fixtures';
 
@@ -14,22 +13,13 @@ async function newStudy(page: Page, name: string) {
   return { id, chapterId };
 }
 
-async function signedOut(browser: Browser) {
-  const ctx = await browser.newContext();
-  await ctx.addInitScript((p) => localStorage.setItem('checkmate:prefs', JSON.stringify(p)), {
-    ...defaultPreferences,
-    engineEnabled: false,
-  });
-  return ctx.newPage();
-}
-
-test('publish a study → a signed-out visitor reads it, read-only (P1-ST-11, P1-ST-23)', async ({ page, browser }) => {
+test('publish a study → a signed-out visitor reads it, read-only (P1-ST-11, P1-ST-23)', async ({ page, another }) => {
   await signUp(page, newUser());
   const s = await newStudy(page, 'Shared openings');
   await drag(page, 'e2', 'e4');
   await expect(page.getByTestId('save-state')).toHaveText('Saved');
 
-  const visitor = await signedOut(browser);
+  const visitor = await another();
   await visitor.goto(`/studies/${s.id}/${s.chapterId}`);
   await expect(visitor.getByRole('heading', { name: 'Page not found' })).toBeVisible(); // private: a 404
 
@@ -66,13 +56,13 @@ test('embed: framable anywhere, every other page only by us (P1-ST-24)', async (
   await expect(page.getByRole('region', { name: 'Engine' })).toHaveCount(0);
 });
 
-test('browse: public list, search, likes, topic pages and clone (P1-ST-20..22)', async ({ page, browser }) => {
+test('browse: public list, search, likes, topic pages and clone (P1-ST-20..22)', async ({ page, another }) => {
   await signUp(page, newUser());
   const tag = `topic-${Date.now()}`;
   const s = await newStudy(page, `Browse me ${tag}`);
   await page.request.patch(`/api/v1/studies/${s.id}`, { data: { visibility: 'public', topics: [tag] } });
 
-  const visitor = await signedOut(browser);
+  const visitor = await another();
   await visitor.goto('/studies');
   await expect(visitor.getByRole('link', { name: 'Public' })).toHaveAttribute('aria-current', 'page');
   await visitor.getByLabel('Search studies').fill(tag);
@@ -84,7 +74,7 @@ test('browse: public list, search, likes, topic pages and clone (P1-ST-20..22)',
   await expect(visitor.getByRole('list', { name: 'Studies' })).toContainText(`Browse me ${tag}`);
 
   // A second account likes and clones it.
-  const fan = await (await browser.newContext()).newPage();
+  const fan = await another();
   await signUp(fan, newUser());
   await fan.goto(`/studies/${s.id}/${s.chapterId}`);
   await fan.getByRole('button', { name: 'Like' }).click();

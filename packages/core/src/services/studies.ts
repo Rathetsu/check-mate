@@ -16,8 +16,9 @@ import { and, asc, count, desc, eq, inArray, max, sql } from 'drizzle-orm';
 import { db } from '../db.ts';
 import { DomainError } from '../errors.ts';
 import { closeStudy, publish, type StudyEvent } from '../pubsub.ts';
-import { studies, studyChapters, studyLikes, user } from '../schema/index.ts';
+import { studies, studyChapters, studyLikes, studyMembers, user } from '../schema/index.ts';
 import { isUuid, requireStudy, type StudyRole, type StudyRow } from './study-access.ts';
+import { listMembers, type StudyMember } from './study-members.ts';
 
 export const MAX_CHAPTERS = 64;
 export const MAX_CHAPTER_PGN = 500_000;
@@ -156,7 +157,7 @@ export type StudySummary = {
   createdAt: Date;
   updatedAt: Date;
 };
-export const STUDY_TABS = ['mine', 'liked', 'public'] as const;
+export const STUDY_TABS = ['mine', 'member', 'invites', 'liked', 'public'] as const;
 export const STUDY_SORTS = ['hot', 'newest', 'updated', 'liked', 'name'] as const;
 export type StudyListOpts = {
   tab?: (typeof STUDY_TABS)[number];
@@ -180,21 +181,28 @@ const ORDER = {
   name: asc(sql`lower(${studies.name})`),
 };
 
-// P1-ST-10, P1-ST-22. `mine` and `liked` need a user; `public` lists only
-// public studies. A liked study shows only while its reader can still read it.
+// P1-ST-10, P1-ST-22. Every tab but `public` needs a user. `member` lists
+// accepted memberships, `invites` pending ones (the name only: an invite
+// gives no access). A liked study shows only while its reader can read it.
 export async function listStudies(userId: string | null, opts: StudyListOpts = {}): Promise<StudySummary[]> {
   const tab = opts.tab ?? 'mine';
   if (!userId && tab !== 'public') return [];
   const q = opts.q?.trim();
+  const membership = (status: string) =>
+    sql`EXISTS (SELECT 1 FROM ${studyMembers} m WHERE m.study_id = ${studies.id} AND m.user_id = ${userId} AND m.status = ${status})`;
   const where = and(
     tab === 'mine'
       ? eq(studies.userId, userId!)
-      : tab === 'liked'
-        ? and(
-            sql`EXISTS (SELECT 1 FROM ${studyLikes} l WHERE l.study_id = ${studies.id} AND l.user_id = ${userId})`,
-            sql`(${studies.visibility} <> 'private' OR ${studies.userId} = ${userId})`,
-          )
-        : eq(studies.visibility, 'public'),
+      : tab === 'member'
+        ? membership('active')
+        : tab === 'invites'
+          ? membership('invited')
+          : tab === 'liked'
+            ? and(
+                sql`EXISTS (SELECT 1 FROM ${studyLikes} l WHERE l.study_id = ${studies.id} AND l.user_id = ${userId})`,
+                sql`(${studies.visibility} <> 'private' OR ${studies.userId} = ${userId} OR ${membership('active')})`,
+              )
+            : eq(studies.visibility, 'public'),
     q ? sql`${studies.name} ILIKE ${`%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`}` : undefined,
     opts.topic ? sql`${studies.topics} @> ARRAY[${opts.topic}]::text[]` : undefined,
   );
@@ -326,7 +334,15 @@ export type ChapterSummary = {
 export type StudyDetail = Pick<
   StudyRow,
   'id' | 'name' | 'description' | 'visibility' | 'settings' | 'topics' | 'position' | 'createdAt' | 'updatedAt'
-> & { owner: string | null; role: StudyRole; chapters: ChapterSummary[]; likes: number; liked: boolean };
+> & {
+  ownerId: string;
+  owner: string | null;
+  role: StudyRole;
+  chapters: ChapterSummary[];
+  likes: number;
+  liked: boolean;
+  members: StudyMember[]; // active ones, plus pending invites for the owner
+};
 
 export async function getStudy(userId: string | null, studyId: string): Promise<StudyDetail> {
   const { role, study } = await requireStudy(userId, studyId, 'read');
@@ -345,7 +361,15 @@ export async function getStudy(userId: string | null, studyId: string): Promise<
     .where(eq(studyChapters.studyId, studyId))
     .orderBy(asc(studyChapters.ord), asc(studyChapters.createdAt));
   const { userId: _, ...rest } = study;
-  return { ...rest, owner: owner?.name ?? null, role, chapters, ...(await likes(userId, studyId)) };
+  return {
+    ...rest,
+    ownerId: study.userId,
+    owner: owner?.name ?? null,
+    role,
+    chapters,
+    ...(await likes(userId, studyId)),
+    members: await listMembers(studyId, role === 'owner'),
+  };
 }
 
 export type StudyPatch = Partial<Pick<StudyRow, 'name' | 'description' | 'visibility' | 'settings' | 'topics'>>;
@@ -680,4 +704,19 @@ export async function exportStudyPgn(
   }
   const base = (opts.chapterId ? `${study.name}-${rows[0]!.name}` : study.name).replace(/[^\p{L}\p{N}._-]+/gu, '_');
   return { filename: `${base || 'study'}.pgn`, pgn: games.join('\n') };
+}
+
+// The first event of a study stream (P1-ST-31): access is checked, and every
+// chapter's version lets the client catch up after a gap or a reconnect.
+export async function studyHello(userId: string | null, studyId: string) {
+  const { role, study } = await requireStudy(userId, studyId, 'read');
+  const rows = await db
+    .select({ id: studyChapters.id, version: studyChapters.version })
+    .from(studyChapters)
+    .where(eq(studyChapters.studyId, studyId));
+  return {
+    role,
+    position: study.position,
+    versions: Object.fromEntries(rows.map((r) => [r.id, r.version])) as Record<string, number>,
+  };
 }

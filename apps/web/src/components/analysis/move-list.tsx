@@ -210,7 +210,9 @@ function Move({
       </span>
       {node.comments.map((c, i) => (
         <span key={i} className="text-xs text-muted-foreground">
-          {c.by && authors && <span className="font-medium">{authors[c.by] ?? 'Deleted user'}: </span>}
+          {c.by && authors && authors[c.by] !== undefined && (
+            <span className="font-medium">{authors[c.by] ?? 'Deleted user'}: </span>
+          )}
           {c.text}
         </span>
       ))}

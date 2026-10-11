@@ -24,5 +24,13 @@ export default async function ChapterPage({ params }: PageProps<'/studies/[id]/[
   const { id, chapterId } = await params;
   const session = await getSession();
   const [study, chapter] = await load(session?.user.id ?? null, id, chapterId);
-  return <StudyView key={chapter.id} study={study} chapter={chapter} me={session?.user.id ?? null} />;
+  return (
+    <StudyView
+      key={chapter.id}
+      study={study}
+      chapter={chapter}
+      me={session?.user.id ?? null}
+      myName={session ? (session.user.displayUsername ?? session.user.username ?? null) : null}
+    />
+  );
 }

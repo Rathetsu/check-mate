@@ -1,6 +1,5 @@
 // Studies 4.1 acceptance criteria (p1-studies spec).
 import { readFileSync } from 'node:fs';
-import { defaultPreferences } from '@checkmate/core/shared';
 import type { Page } from '@playwright/test';
 import { drag, fen, moves } from './board';
 import { expect, newUser, signUp, test } from './fixtures';
@@ -151,19 +150,14 @@ test('practice with the computer judges each move and replies (P1-ST-18)', async
   expect(s.id).toBeTruthy();
 });
 
-test('hide next moves: readers see moves only up to where they are (P1-ST-18)', async ({ page, browser }) => {
+test('hide next moves: readers see moves only up to where they are (P1-ST-18)', async ({ page, another }) => {
   await signUp(page, newUser());
   const s = await newStudy(page, 'Secrets');
   await addChapter(page, 'PGN', '1. e4 e5 2. Nf3 Nc6 *', { name: 'Hidden', mode: 'Hide next moves' });
   const url = page.url();
   await page.request.patch(`/api/v1/studies/${s.id}`, { data: { visibility: 'unlisted' } });
 
-  const ctx = await browser.newContext();
-  await ctx.addInitScript((p) => localStorage.setItem('checkmate:prefs', JSON.stringify(p)), {
-    ...defaultPreferences,
-    engineEnabled: false,
-  });
-  const reader = await ctx.newPage();
+  const reader = await another();
   await reader.goto(url);
   await expect(reader.getByTestId('board').locator('piece').first()).toBeVisible();
   await expect(moves(reader)).not.toContainText('e4');

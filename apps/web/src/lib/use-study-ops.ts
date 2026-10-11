@@ -13,6 +13,7 @@ export function useStudyOps(opts: {
   version: number;
   onRejected: (message: string) => void;
   onAck?: (version: number) => void;
+  onIdle?: () => void; // every op sent so far has been answered
 }) {
   const [clientId] = useState(() => crypto.randomUUID());
   const [saving, setSaving] = useState(false);
@@ -42,7 +43,10 @@ export function useStudyOps(opts: {
           err instanceof TypeError ? "You're offline, so your change wasn't saved." : (err as Error).message,
         );
       } finally {
-        if (--inFlight.current === 0) setSaving(false);
+        if (--inFlight.current === 0) {
+          setSaving(false);
+          latest.current.onIdle?.();
+        }
       }
     });
   };

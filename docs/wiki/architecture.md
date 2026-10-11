@@ -4,7 +4,7 @@ kind: system
 
 # Architecture
 
-Last verified: 2026-10-11, against the M1.3 code (`apps/web`,
+Last verified: 2026-10-11, against the M1.4 code (`apps/web`,
 `apps/worker`, `packages/core`, `packages/chess`, `services/tablebase`).
 `services/explorer` arrives in Phase 2. Rows for parts not built yet
 describe the design.
@@ -55,7 +55,7 @@ sits above all three.
 | `apps/web` | UI routes, `<Board>` (play, view and the editor's free mode), `AnalysisBoard` (`components/analysis/`, reused by studies), `/api/v1` handlers, and the browser engine provider in `src/engine/` (the only Stockfish and UCI code). No direct SQL. Every `/api/v1` handler goes through `src/lib/api.ts`: `route()` (signed in) or `publicRoute()` (anyone, `userId` may be null). Both resolve the session into a `userId` (CORE-42), validate with zod and return the CORE-41 error envelope. Better Auth is mounted at `/api/auth/*`. `next.config.ts` makes `/analysis` and `/studies` cross-origin isolated (COOP + COEP) for the multi-threaded engine | `packages/core`, `packages/chess` |
 | `apps/worker` | All long-running jobs (pg-boss), one file per job in `src/jobs/`. So far: the daily purge of idle free-analysis sessions | `packages/core`, `packages/chess`, external APIs, explorer admin |
 | `packages/chess` | Pure rules over chessops: `fen.ts` (validation lists every reason), `moves.ts`, `keys.ts` (`positionKey`), `pgn.ts` (game splitting, error locations, export options), `tree.ts` (`TreeCursor`), `ops.ts` (`TreeOp` + `applyOp`, the only way the board changes a tree), `editor.ts` (board-editor state, castling and en passant availability), `glyphs.ts`, `openings.ts` (`classifyLine` over the generated `data/openings.json`), `advice.ts` (winning chances), `analysis.ts` (`AnalysisProvider` + fake provider). Later: `gameFingerprint` (P3), `terminalKey` (P2). Its `tsconfig` has no DOM or Node types. Tests and the fixture corpus sit in `test/` and `fixtures/`. **No I/O.** | chessops |
-| `packages/core` | Drizzle schema (`src/schema/`), SQL migrations (`drizzle/`), the Better Auth instance (`src/auth.ts`), `sendEmail`, user-scoped domain services (preferences, account, analysis sessions, tablebase lookups), `ExplorerSource` adapters. Its subpath `@checkmate/core/shared` is pure (zod schemas, preference allowlists), so client components may import it. `db` is not exported. **No React.** | Postgres, `packages/chess`, tablebase service, explorer |
+| `packages/core` | Drizzle schema (`src/schema/`), SQL migrations (`drizzle/`), the Better Auth instance (`src/auth.ts`), `sendEmail`, user-scoped domain services (preferences, account, analysis sessions, tablebase lookups, studies and their members behind the `studyAccess` gate), the in-process study pub/sub (`src/pubsub.ts`), `ExplorerSource` adapters. Its subpath `@checkmate/core/shared` is pure (zod schemas, preference allowlists), so client components may import it. `db` is not exported. **No React.** | Postgres, `packages/chess`, tablebase service, explorer |
 | `services/explorer` | Compose and ingestion config for upstream lila-openingexplorer. **No forked code.** | — |
 | `services/tablebase` | Dockerfile that builds upstream lila-tablebase at a pinned commit. Compose service `tablebase` (profile `tablebase`) reads the files from `TABLEBASE_DIR` on a read-only volume and is published only on `127.0.0.1:9000`; Caddy never routes to it. `scripts/fetch-tablebases.sh` downloads the 3-5 piece files (2026-10-11-06). **No forked code.** | — |
 
@@ -92,11 +92,23 @@ sits above all three.
      reason, when it can't honor a filter.
    - Results are annotated with `classifyOpening`.
 5. **Study edit (shared or collaborative, 2026-10-11-04):**
-   - The client posts a tree op (add move, comment, glyph, …) for a chapter.
-   - `packages/core` checks `studyAccess`, locks the chapter row, applies the
-     op with `TreeCursor`, writes the PGN and bumps `version`.
-   - The op goes out over SSE to every member viewing the study. With sync on,
-     navigation is broadcast the same way.
+   - `AnalysisBoard` applies the op at once; `useStudyOps` posts it to
+     `POST /api/v1/studies/:id/chapters/:chapterId/ops`, one at a time.
+   - `applyChapterOp` waits its turn in a per-chapter in-process queue, then
+     in one transaction checks `studyAccess`, locks the chapter row, loads the
+     PGN, applies the op with `applyOp` (the server stamps the comment
+     author), writes the PGN and bumps `version`.
+   - After the commit the op is published to the study's subscribers
+     (`packages/core/src/pubsub.ts`, a map on `globalThis`), and
+     `GET /api/v1/studies/:id/events` streams it as SSE to every open tab.
+     Each tab applies the next version or reloads the chapter (see the
+     studies spec build notes). With sync on, navigation is shared the same
+     way.
+   - Changing visibility, members or roles closes the study's streams; they
+     reconnect and are checked again.
+   - **Ceiling:** pub/sub and the op queue live in one web process. A second
+     web process needs Postgres `LISTEN/NOTIFY` (and a lock instead of the
+     queue).
 
 ## Invariants and boundaries
 

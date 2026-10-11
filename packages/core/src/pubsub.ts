@@ -10,7 +10,12 @@ export type StudyEvent =
   | { type: 'position'; chapterId: string; path: string; by: string }
   | { type: 'presence'; members: string[]; readers: number };
 
-export type Subscriber = { userId: string | null; send(e: StudyEvent): void; close(): void };
+export type Subscriber = {
+  userId: string | null;
+  member: boolean; // owner, contributor or viewer: shown by name in presence
+  send(e: StudyEvent): void;
+  close(): void;
+};
 
 const g = globalThis as unknown as { __checkmateStudySubs?: Map<string, Set<Subscriber>> };
 const subs = (g.__checkmateStudySubs ??= new Map());
@@ -35,3 +40,10 @@ export function closeStudy(studyId: string): void {
 }
 
 export const subscribers = (studyId: string): Subscriber[] => [...(subs.get(studyId) ?? [])];
+
+// P1-ST-34: which members are here, by id; everyone else as a count.
+export function publishPresence(studyId: string): void {
+  const all = subscribers(studyId);
+  const members = [...new Set(all.filter((s) => s.member && s.userId).map((s) => s.userId!))];
+  publish(studyId, { type: 'presence', members, readers: all.filter((s) => !s.member).length });
+}

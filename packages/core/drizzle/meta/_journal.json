@@ -29,6 +29,13 @@
       "when": 1791731009865,
       "tag": "0003_study_sharing",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791731393978,
+      "tag": "0004_study_members",
+      "breakpoints": true
     }
   ]
 }

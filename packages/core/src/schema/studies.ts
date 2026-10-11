@@ -83,3 +83,22 @@ export const studyLikes = pgTable(
   },
   (t) => [primaryKey({ columns: [t.studyId, t.userId] }), index('study_likes_user').on(t.userId)],
 );
+
+// Members (P1-ST-30): invited by username, active once they accept. No column
+// besides user_id references a user, so the account-deletion cascade stays
+// complete (no "invited_by").
+export const studyMembers = pgTable(
+  'study_members',
+  {
+    studyId: uuid('study_id')
+      .notNull()
+      .references(() => studies.id, { onDelete: 'cascade' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    role: text('role').notNull(), // contributor | viewer
+    status: text('status').notNull().default('invited'), // invited | active
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.studyId, t.userId] }), index('study_members_user').on(t.userId)],
+);

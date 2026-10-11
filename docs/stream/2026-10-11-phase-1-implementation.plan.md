@@ -482,3 +482,20 @@ notes.
   files became one.
 - **Phone layout fix:** the palette row must not set the column's minimum
   width, or the page scrolls sideways at 375 px.
+
+### M1.4 (2026-10-11)
+
+Built per the M1.1-M1.4 build plan in three slices (4.1 single-user, 4.2
+sharing, 4.3 collaboration); details in the studies spec build notes.
+- **No parse cache, no lazy `fen`:** one op on a ~480 KB chapter costs
+  ~110 ms end to end.
+- **Chapter `ord` isn't unique** (Drizzle can't declare a deferrable
+  unique); `preview_fen` added for thumbnails and the multiboard.
+- **Positions are shared only with sync on**, which also decides the
+  remembered position (P1-ST-13).
+- **Every page but `/embed/*` refuses framing** (`frame-ancestors 'self'`),
+  closing the clickjacking gap the embed work exposed.
+- **e2e:** a second browser in a test comes from the `another` fixture (its
+  own client IP, engine off, closed afterwards), and sign-up retries when the
+  breach-check service fails.
+

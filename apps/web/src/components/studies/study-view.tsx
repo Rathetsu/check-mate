@@ -9,15 +9,17 @@ import type { ChapterDetail, StudyDetail } from '@checkmate/core';
 import { Copy, Eye, Heart, Pencil, Plus, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { AnalysisBoard } from '@/components/analysis/analysis-board';
 import { Button } from '@/components/ui/button';
+import { useStudyLive } from '@/lib/study-live';
 import { useGameTree } from '@/lib/use-game-tree';
 import { useStudyOps } from '@/lib/use-study-ops';
 import { api } from './api';
 import { ChapterList } from './chapter-list';
 import { GamebookPlayer, LessonFields } from './gamebook';
+import { MembersPanel } from './members-panel';
 import { NewChapterDialog } from './new-chapter-dialog';
 import { PracticePlayer } from './practice';
 import { ShareMenu } from './share-menu';
@@ -31,9 +33,9 @@ function restore(pgn: string, path = ''): TreeCursor {
   return t;
 }
 
-type Props = { study: StudyDetail; chapter: ChapterDetail; me: string | null };
+type Props = { study: StudyDetail; chapter: ChapterDetail; me: string | null; myName: string | null };
 
-export function StudyView({ study: initialStudy, chapter: initialChapter, me }: Props) {
+export function StudyView({ study: initialStudy, chapter: initialChapter, me, myName }: Props) {
   const router = useRouter();
   const [study, setStudy] = useState(initialStudy);
   const [chapter, setChapter] = useState(initialChapter);
@@ -51,11 +53,17 @@ export function StudyView({ study: initialStudy, chapter: initialChapter, me }: 
       router.push('/studies'); // deleted, or no longer shared with us
     }
   };
+  // The chapter version the local tree reflects. Remote ops apply only in
+  // order; anything else, or a remote change while our own ops are on the
+  // way, reloads the chapter (P1-ST-31).
+  const local = useRef(initialChapter.version);
+  const stale = useRef(false);
   const reloadChapter = async () => {
     try {
       const c = await api<ChapterDetail>(`${base}/chapters/${chapter.id}`, 'GET');
       setChapter(c);
-      tree.replace(restore(c.pgn, tree.cursor.path));
+      local.current = c.version;
+      tree.replace(restore(c.pgn, tree.cursor.path)); // the current move, or its nearest surviving ancestor
     } catch {
       await reloadStudy();
       router.push(`/studies/${study.id}`);
@@ -68,7 +76,17 @@ export function StudyView({ study: initialStudy, chapter: initialChapter, me }: 
     version: chapter.version,
     onRejected: (message) => {
       toast.error(message);
-      void reloadChapter();
+      stale.current = true;
+    },
+    onAck: (version) => {
+      if (version !== local.current + 1) stale.current = true; // someone got in between
+      local.current = version;
+    },
+    onIdle: () => {
+      if (stale.current) {
+        stale.current = false;
+        void reloadChapter();
+      }
     },
   });
 
@@ -82,21 +100,81 @@ export function StudyView({ study: initialStudy, chapter: initialChapter, me }: 
     }
   };
 
+  // Sync (P1-ST-32): with it on, members follow the shared position, and a
+  // contributor's moves through the tree become it.
+  const [sync, setSync] = useState(initialStudy.settings.sticky);
+  const followed = useRef<string | null>(null);
+  const sent = useRef<string | null>(null);
+  const [presence, setPresence] = useState<{ members: string[]; readers: number }>({ members: [], readers: 0 });
+
+  useStudyLive(study.id, {
+    hello(h, first) {
+      if (!first) void reloadStudy(); // a reconnect: roles or settings may have changed
+      const v = h.versions[chapter.id];
+      if (v === undefined) return router.push(`/studies/${study.id}`); // this chapter is gone
+      if (v !== local.current) {
+        if (ops.pending()) stale.current = true;
+        else void reloadChapter();
+      }
+    },
+    op(e) {
+      if (e.chapterId !== chapter.id || e.clientId === ops.clientId) return;
+      if (ops.pending()) stale.current = true;
+      else if (e.version === local.current + 1) {
+        try {
+          tree.act((c) => applyOp(c, e.op, e.by));
+          local.current = e.version;
+        } catch {
+          void reloadChapter();
+        }
+      } else if (e.version > local.current) void reloadChapter();
+    },
+    reset(e) {
+      if (e.chapterId !== chapter.id || e.clientId === ops.clientId) return;
+      if (ops.pending()) stale.current = true;
+      else void reloadChapter();
+    },
+    meta: () => void reloadStudy(),
+    position(e) {
+      if (!sync || e.by === me) return;
+      if (e.chapterId !== chapter.id)
+        return router.push(`/studies/${study.id}/${e.chapterId}#${encodeURIComponent(e.path)}`);
+      followed.current = e.path;
+      tree.act((c) => c.goto(c.existingPath(e.path)));
+    },
+    presence: setPresence,
+  });
+
   // A position link (#<path>) opens on that move.
   useEffect(() => {
     const path = decodeURIComponent(location.hash.slice(1));
     if (path) tree.act((c) => c.goto(c.existingPath(path)));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // P1-ST-13: editors' position is remembered for the next visit.
+  // P1-ST-13 / P1-ST-32: a contributor with sync on shares where they are,
+  // which is also where the study opens next time. Moves made by following
+  // someone else aren't sent back.
   useEffect(() => {
-    if (!editable) return;
-    const t = setTimeout(
-      () => void api(`${base}/position`, 'PUT', { chapterId: chapter.id, path: tree.cursor.path }).catch(() => {}),
-      1_500,
-    );
+    const path = tree.cursor.path;
+    if (!editable || !sync || followed.current === path || sent.current === path) return;
+    followed.current = null;
+    const t = setTimeout(() => {
+      sent.current = path;
+      void api(`${base}/position`, 'PUT', { chapterId: chapter.id, path }).catch(() => {});
+    }, 300);
     return () => clearTimeout(t);
-  }, [tree.version]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tree.version, sync]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Comment authors by name: the chapter's, the members', the owner's, mine.
+  const names = useMemo(
+    () => ({
+      ...chapter.authors,
+      ...Object.fromEntries(study.members.map((m) => [m.userId, m.username])),
+      [study.ownerId]: study.owner,
+      ...(me ? { [me]: myName } : {}),
+    }),
+    [chapter.authors, study.members, study.ownerId, study.owner, me, myName],
+  );
 
   // "Hide next moves" lists moves up to the furthest one reached (P1-ST-18).
   const [furthest, setFurthest] = useState(tree.node.ply);
@@ -192,6 +270,17 @@ export function StudyView({ study: initialStudy, chapter: initialChapter, me }: 
             <Copy aria-hidden /> Clone
           </Button>
         )}
+        {(study.members.length > 0 || presence.members.length > 1) && (
+          <Button
+            variant={sync ? 'secondary' : 'ghost'}
+            size="sm"
+            aria-pressed={sync}
+            title="Follow the shared position"
+            onClick={() => setSync((on) => !on)}
+          >
+            Sync
+          </Button>
+        )}
         {editable && (
           <span role="status" className="text-xs text-muted-foreground" data-testid="save-state">
             {ops.saving ? 'Saving…' : 'Saved'}
@@ -247,7 +336,7 @@ export function StudyView({ study: initialStudy, chapter: initialChapter, me }: 
           engineAllowed={study.role === 'owner' || study.settings.computer}
           onOp={ops.send}
           orientation={orientation}
-          authors={chapter.authors}
+          authors={names}
           maxPly={conceal ? furthest : undefined}
           tabs={[
             { value: 'chapters', label: 'Chapters', content: chapters },
@@ -255,15 +344,28 @@ export function StudyView({ study: initialStudy, chapter: initialChapter, me }: 
               value: 'study',
               label: 'Study',
               content: (
-                <StudyPanel
-                  studyId={study.id}
-                  chapter={chapter}
-                  chapters={study.chapters}
-                  headers={tree.cursor.headers}
-                  editable={editable}
-                  onPatch={patchChapter}
-                  onOp={applyHere}
-                />
+                <>
+                  <MembersPanel
+                    studyId={study.id}
+                    owner={{ id: study.ownerId, name: study.owner }}
+                    members={study.members}
+                    here={presence.members}
+                    readers={presence.readers}
+                    me={me}
+                    isOwner={study.role === 'owner'}
+                    onChanged={reloadStudy}
+                    onLeft={() => router.push('/studies?tab=member')}
+                  />
+                  <StudyPanel
+                    studyId={study.id}
+                    chapter={chapter}
+                    chapters={study.chapters}
+                    headers={tree.cursor.headers}
+                    editable={editable}
+                    onPatch={patchChapter}
+                    onOp={applyHere}
+                  />
+                </>
               ),
             },
           ]}

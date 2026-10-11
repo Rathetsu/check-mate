@@ -1,6 +1,6 @@
 import { randomInt, randomUUID } from 'node:crypto';
 import { defaultPreferences } from '@checkmate/core/shared';
-import { test as base, expect, type Page } from '@playwright/test';
+import { test as base, expect, type BrowserContext, type Page } from '@playwright/test';
 
 export { expect };
 
@@ -10,7 +10,29 @@ const MAILPIT = process.env.MAILPIT_URL ?? 'http://127.0.0.1:8025';
 // limits (on in every environment, P1-AC-05) don't leak between tests.
 // The engine starts off for signed-out visitors unless a test opts in with
 // `test.use({ engine: true })`, so parallel tests don't fight over CPU.
-export const test = base.extend<{ ip: string; engine: boolean; engineDefault: void }>({
+export const test = base.extend<{
+  ip: string;
+  engine: boolean;
+  engineDefault: void;
+  another: () => Promise<Page>;
+}>({
+  // A second browser in the same test (another user, or a signed-out
+  // visitor): its own client IP and the engine off; closed afterwards.
+  another: async ({ browser }, provide) => {
+    const contexts: BrowserContext[] = [];
+    await provide(async () => {
+      const ctx = await browser.newContext({
+        extraHTTPHeaders: { 'x-forwarded-for': `10.${randomInt(256)}.${randomInt(256)}.${randomInt(1, 255)}` },
+      });
+      contexts.push(ctx);
+      await ctx.addInitScript((p) => localStorage.setItem('checkmate:prefs', JSON.stringify(p)), {
+        ...defaultPreferences,
+        engineEnabled: false,
+      });
+      return ctx.newPage();
+    });
+    for (const ctx of contexts) await ctx.close();
+  },
   engine: [false, { option: true }],
   engineDefault: [
     async ({ context, engine }, use) => {
@@ -53,8 +75,17 @@ export async function signUp(page: Page, user: User) {
   await page.getByLabel('Display name').fill(user.name);
   await page.getByLabel('Email').fill(user.email);
   await page.getByLabel('Password').fill(user.password);
-  await page.getByRole('button', { name: 'Create account' }).click();
-  await expect(page).toHaveURL('/', { timeout: 15_000 }); // includes the breach check over the network
+  // The breach check calls Have I Been Pwned; when that service hiccups the
+  // form says so and can simply be sent again.
+  const failed = page.getByRole('alert').filter({ hasText: 'Failed to check password' });
+  for (let attempt = 0; ; attempt++) {
+    await page.getByRole('button', { name: 'Create account' }).click();
+    await expect(page.getByRole('button', { name: 'Account menu' }).first().or(failed)).toBeVisible({
+      timeout: 15_000,
+    });
+    if (!(await failed.isVisible()) || attempt === 2) break;
+  }
+  await expect(page).toHaveURL('/');
   await expect(page.getByRole('button', { name: 'Account menu' }).first()).toBeVisible();
   // Like signed-out pages, new accounts start with the engine off in tests.
   const res = await page.request.put('/api/v1/me/preferences', {

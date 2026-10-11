@@ -11,6 +11,7 @@ import {
   session,
   studies,
   studyLikes,
+  studyMembers,
   user,
   userPreferences,
 } from '../src/schema/index.ts';
@@ -42,6 +43,13 @@ const seeders: Record<string, (userId: string) => Promise<unknown>> = {
   study_likes: async (userId) => {
     const [s] = await db.insert(studies).values({ userId, name: 'Liked' }).returning({ id: studies.id });
     await db.insert(studyLikes).values({ studyId: s!.id, userId });
+  },
+  // Membership in someone else's study is the realistic case; a study of
+  // their own keeps the seeder self-contained.
+  study_members: async (userId) => {
+    const other = await createUser('Owner');
+    const [s] = await db.insert(studies).values({ userId: other, name: 'Theirs' }).returning({ id: studies.id });
+    await db.insert(studyMembers).values({ studyId: s!.id, userId, role: 'viewer', status: 'active' });
   },
 };
 

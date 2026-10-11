@@ -1,10 +1,10 @@
 // The one gate for every study read and write (ADR 2026-10-11-04, studies
 // spec "Roles and access"). `none` is always a 404, so a private study's
 // existence never leaks (CORE-52).
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { db } from '../db.ts';
 import { DomainError } from '../errors.ts';
-import { studies } from '../schema/index.ts';
+import { studies, studyMembers } from '../schema/index.ts';
 
 export type StudyRole = 'owner' | 'contributor' | 'viewer' | 'reader' | 'none';
 export type StudyRow = typeof studies.$inferSelect;
@@ -23,6 +23,16 @@ export async function studyAccess(
   const [study] = await tx.select().from(studies).where(eq(studies.id, studyId));
   if (!study) return { role: 'none', study: null };
   if (userId && study.userId === userId) return { role: 'owner', study };
+  // An invite gives nothing until it is accepted (P1-ST-30).
+  if (userId) {
+    const [member] = await tx
+      .select({ role: studyMembers.role })
+      .from(studyMembers)
+      .where(
+        and(eq(studyMembers.studyId, studyId), eq(studyMembers.userId, userId), eq(studyMembers.status, 'active')),
+      );
+    if (member) return { role: member.role as 'contributor' | 'viewer', study };
+  }
   if (study.visibility !== 'private') return { role: 'reader', study };
   return { role: 'none', study: null };
 }

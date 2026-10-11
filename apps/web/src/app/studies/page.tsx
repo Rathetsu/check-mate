@@ -2,13 +2,20 @@ import { listStudies, STUDIES_PER_PAGE, STUDY_SORTS, STUDY_TABS } from '@checkma
 import { cn } from 'cn';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Invites } from '@/components/studies/invites';
 import { NewStudy } from '@/components/studies/new-study';
 import { StudyGrid } from '@/components/studies/study-grid';
 import { getSession } from '@/lib/session';
 
 export const metadata: Metadata = { title: 'Studies' };
 
-const TAB_LABEL = { mine: 'My studies', liked: 'Liked', public: 'Public' } as const;
+const TAB_LABEL = {
+  mine: 'My studies',
+  member: 'Member of',
+  invites: 'Invitations',
+  liked: 'Liked',
+  public: 'Public',
+} as const;
 const SORT_LABEL = { hot: 'Hot', newest: 'Newest', updated: 'Recently updated', liked: 'Most liked', name: 'Name' };
 const pick = <T extends string>(v: unknown, allowed: readonly T[], fallback: T): T =>
   allowed.includes(v as T) ? (v as T) : fallback;
@@ -69,10 +76,16 @@ export default async function StudiesPage({ searchParams }: PageProps<'/studies'
           Search
         </button>
       </form>
-      <StudyGrid
-        studies={studies}
-        empty={q ? 'No study matches.' : tab === 'mine' ? 'No studies yet. Create one to start.' : 'Nothing here yet.'}
-      />
+      {tab === 'invites' ? (
+        <Invites invites={studies} />
+      ) : (
+        <StudyGrid
+          studies={studies}
+          empty={
+            q ? 'No study matches.' : tab === 'mine' ? 'No studies yet. Create one to start.' : 'Nothing here yet.'
+          }
+        />
+      )}
       <div className="flex gap-2">
         {page > 0 && (
           <Link className="text-sm text-primary hover:underline" href={href({ page: page - 1 })}>
