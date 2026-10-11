@@ -34,7 +34,7 @@ export interface TreeNode {
 
 export const MAX_NODES = 20_000; // P1-PG-31
 
-export type ChessErrorCode = 'ILLEGAL_MOVE' | 'NODE_GONE' | 'TOO_LARGE' | 'BAD_FEN';
+export type ChessErrorCode = 'ILLEGAL_MOVE' | 'NODE_GONE' | 'TOO_LARGE' | 'BAD_FEN' | 'BAD_OP';
 export class ChessError extends Error {
   readonly code: ChessErrorCode;
   constructor(code: ChessErrorCode, message: string) {
@@ -93,6 +93,15 @@ export function countNodes(root: TreeNode): number {
 }
 
 export const parentPath = (path: string): string => path.slice(0, -2);
+
+export function forEachNode(root: TreeNode, fn: (node: TreeNode) => void): void {
+  const stack = [root];
+  while (stack.length) {
+    const node = stack.pop()!;
+    fn(node);
+    for (const c of node.children) stack.push(c);
+  }
+}
 
 // PGN can only put a comment before a variation's first move. When a node
 // becomes the mainline move, its leading comments move onto the parent, the

@@ -15,8 +15,8 @@ export default async function Home() {
       </h1>
       <p className="text-lg text-muted-foreground">Your chess mate.</p>
       <p className="max-w-prose">
-        A free, open-source place to analyze games, build studies and practice tactics. Studies and puzzles are on their
-        way. Their links will appear here as each one is ready.
+        A free, open-source place to analyze games, build studies and practice tactics. Puzzles are on their way; their
+        link will appear here when they&apos;re ready.
       </p>
       <div className="flex flex-wrap justify-center gap-3">
         <Button asChild size="lg">
@@ -25,6 +25,11 @@ export default async function Home() {
         <Button asChild size="lg" variant="outline">
           <NavLink href="/editor">Set up a position</NavLink>
         </Button>
+        {session && (
+          <Button asChild size="lg" variant="outline">
+            <NavLink href="/studies">Your studies</NavLink>
+          </Button>
+        )}
         {last && (
           <Button asChild size="lg" variant="outline">
             <NavLink href={`/analysis?session=${last.id}`}>Continue your last analysis</NavLink>

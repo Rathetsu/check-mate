@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Editor } from '@/components/editor/editor';
 import { StateView } from '@/components/shell/state-view';
 import { Button } from '@/components/ui/button';
+import { getSession } from '@/lib/session';
 
 export const metadata: Metadata = { title: 'Board editor' };
 
@@ -21,5 +22,5 @@ export default async function EditorFenPage({ params }: PageProps<'/editor/[...f
         </Button>
       </StateView>
     );
-  return <Editor key={text} fen={text} />;
+  return <Editor key={text} fen={text} signedIn={!!(await getSession())} />;
 }

@@ -127,3 +127,15 @@ export function initialPly(fen: string): number {
   const setup = parseSetup(fen);
   return setup ? (setup.fullmoves - 1) * 2 + (setup.turn === 'black' ? 1 : 0) : 0;
 }
+
+// The 64 squares from a8 to h1, row by row: what a static board picture draws.
+export function boardSquares(fen: string): ({ role: string; color: 'white' | 'black' } | null)[] {
+  const setup = parseSetup(fen);
+  const out: ({ role: string; color: 'white' | 'black' } | null)[] = [];
+  for (let rank = 7; rank >= 0; rank--)
+    for (let file = 0; file < 8; file++) {
+      const p = setup?.board.get(rank * 8 + file);
+      out.push(p ? { role: p.role, color: p.color } : null);
+    }
+  return out;
+}

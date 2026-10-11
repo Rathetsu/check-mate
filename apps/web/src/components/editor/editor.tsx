@@ -27,6 +27,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SaveToStudyDialog } from '@/components/studies/save-to-study';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { usePrefs } from '@/lib/prefs';
 import { useShortcuts } from '@/lib/use-shortcuts';
@@ -44,7 +45,7 @@ const CASTLING_LABEL: Record<CastlingToggle, string> = {
 };
 const cap = (s: string) => s[0]!.toUpperCase() + s.slice(1);
 
-export function Editor({ fen }: { fen: string }) {
+export function Editor({ fen, signedIn }: { fen: string; signedIn: boolean }) {
   const { prefs } = usePrefs();
   const [state, setState] = useState<EditorState>(() => {
     const r = editorState(fen);
@@ -53,6 +54,7 @@ export function Editor({ fen }: { fen: string }) {
   const [orientation, setOrientation] = useState<Color>('white');
   const [tool, setTool] = useState<Tool>('pointer');
   const [typed, setTyped] = useState<{ text: string; error: string } | null>(null);
+  const [saving, setSaving] = useState(false);
   const board = useRef<BoardHandle>(null);
 
   const out = editorFen(state);
@@ -224,23 +226,39 @@ export function Editor({ fen }: { fen: string }) {
           </ul>
         )}
 
-        <div>
+        <div className="flex flex-wrap gap-2">
           {check.ok ? (
-            <Button asChild>
-              {/* A full page load: the analysis board is cross-origin isolated (P1-UI-12). */}
-              <a href={`/analysis/${fenToUrl(check.fen)}`}>Analyze</a>
-            </Button>
+            <>
+              <Button asChild>
+                {/* A full page load: the analysis board is cross-origin isolated (P1-UI-12). */}
+                <a href={`/analysis/${fenToUrl(check.fen)}`}>Analyze</a>
+              </Button>
+              <Button variant="outline" onClick={() => setSaving(true)}>
+                Save as study chapter
+              </Button>
+            </>
           ) : (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span tabIndex={0} className="inline-block">
+                <span tabIndex={0} className="inline-flex gap-2">
                   <Button disabled>Analyze</Button>
+                  <Button variant="outline" disabled>
+                    Save as study chapter
+                  </Button>
                 </span>
               </TooltipTrigger>
               <TooltipContent>{check.reasons.map((r) => r.message).join(' ')}</TooltipContent>
             </Tooltip>
           )}
         </div>
+        {check.ok && (
+          <SaveToStudyDialog
+            open={saving}
+            onOpenChange={setSaving}
+            signedIn={signedIn}
+            source={() => ({ type: 'fen', fen: check.fen })}
+          />
+        )}
       </aside>
     </div>
   );

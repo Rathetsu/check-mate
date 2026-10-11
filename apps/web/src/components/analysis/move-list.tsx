@@ -22,10 +22,17 @@ export type MoveMenu = {
   copyLine: (path: string) => void;
 };
 
-type Props = { root: TreeNode; current: string; onSelect: (path: string) => void; menu?: MoveMenu };
+type Props = {
+  root: TreeNode;
+  current: string;
+  onSelect: (path: string) => void;
+  menu?: MoveMenu;
+  authors?: Record<string, string | null>; // study comment authors; null = deleted account
+  maxPly?: number; // "hide next moves" (P1-ST-18)
+};
 type LineProps = Omit<Props, 'root' | 'menu'> & { collapsed: Set<string>; toggle: (path: string) => void };
 
-export function MoveList({ root, current, onSelect, menu }: Props) {
+export function MoveList({ root, current, onSelect, menu, authors, maxPly }: Props) {
   const list = useRef<HTMLDivElement>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [target, setTarget] = useState<string | null>(null);
@@ -71,7 +78,16 @@ export function MoveList({ root, current, onSelect, menu }: Props) {
               {c.text}
             </p>
           ))}
-          <Line node={root} path="" current={current} onSelect={onSelect} collapsed={collapsed} toggle={toggle} />
+          <Line
+            node={root}
+            path=""
+            current={current}
+            onSelect={onSelect}
+            collapsed={collapsed}
+            toggle={toggle}
+            authors={authors}
+            maxPly={maxPly}
+          />
         </div>
       </ContextMenuTrigger>
       {menu && target !== null && (
@@ -114,6 +130,7 @@ function Line({ node, path, ...rest }: { node: TreeNode; path: string } & LinePr
   let forceNumber = true;
   while (parent.children.length) {
     const [main, ...variations] = parent.children as [TreeNode, ...TreeNode[]];
+    if (rest.maxPly !== undefined && main.ply > rest.maxPly) break;
     const mainPath = parentPath + main.id;
     items.push(<Move key={mainPath} node={main} path={mainPath} number={forceNumber} {...rest} />);
     forceNumber = main.comments.length > 0;
@@ -158,6 +175,7 @@ function Move({
   number,
   current,
   onSelect,
+  authors,
 }: { node: TreeNode; path: string; number: boolean } & LineProps) {
   const white = node.ply % 2 === 1;
   const label = white ? `${Math.ceil(node.ply / 2)}.` : number ? `${Math.ceil(node.ply / 2)}...` : '';
@@ -192,6 +210,7 @@ function Move({
       </span>
       {node.comments.map((c, i) => (
         <span key={i} className="text-xs text-muted-foreground">
+          {c.by && authors && <span className="font-medium">{authors[c.by] ?? 'Deleted user'}: </span>}
           {c.text}
         </span>
       ))}

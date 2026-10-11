@@ -6,6 +6,7 @@ import {
   loadGame,
   loadOpenings,
   makePgn,
+  practiceVerdict,
   toggleGlyph,
   TreeCursor,
   type TreeOp,
@@ -80,4 +81,69 @@ test('classifyLine names the deepest known position, or nothing', async () => {
   const keys = t.nodesAlong().map((n) => n.positionKey);
   expect(classifyLine(table, keys)).toEqual({ eco: 'B90', name: 'Sicilian Defense: Najdorf Variation, Adams Attack' });
   expect(classifyLine(table, keys.slice(0, 1))).toBeNull(); // the starting position has no name
+});
+
+describe('study ops (M1.4)', () => {
+  const base = () => {
+    const r = loadGame(
+      '[Event "Lesson"]\n[FEN "4k3/8/8/8/8/8/4P3/4K3 w - - 0 1"]\n[SetUp "1"]\n\n1. e4 { Push. } $1 ( 1. e3 { Slow. } ) 1... Kd7 *',
+    );
+    if (!r.ok) throw new Error(r.error.message);
+    return r.cursor;
+  };
+
+  test('setTags replaces the header list but never the starting position', () => {
+    const t = base();
+    applyOp(t, {
+      op: 'setTags',
+      tags: [
+        ['Event', 'Endgames'],
+        ['Annotator', 'Me "the" author'],
+      ],
+    });
+    expect([...t.headers]).toEqual([
+      ['Event', 'Endgames'],
+      ['Annotator', 'Me "the" author'],
+      ['FEN', '4k3/8/8/8/8/8/4P3/4K3 w - - 0 1'],
+      ['SetUp', '1'],
+    ]);
+    expect(() => applyOp(t, { op: 'setTags', tags: [['FEN', '8/8/8/8/8/8/8/K6k w - - 0 1']] })).toThrow(
+      expect.objectContaining({ code: 'BAD_OP' }),
+    );
+    expect(() => applyOp(t, { op: 'setTags', tags: [['Bad Name', 'x']] })).toThrow(
+      expect.objectContaining({ code: 'BAD_OP' }),
+    );
+  });
+
+  test('setGamebook stores lesson text that survives PGN, and empty text removes it', () => {
+    const t = base();
+    const e4 = t.root.children[0]!.id;
+    applyOp(t, { op: 'setGamebook', path: e4, hint: 'Push the pawn.', deviation: 'Too slow.' });
+    const back = loadGame(makePgn(t, { extensions: true }));
+    expect(back.ok && back.cursor.root.children[0]!.ext).toEqual({ hint: 'Push the pawn.', deviation: 'Too slow.' });
+    expect(makePgn(t)).not.toContain('Push the pawn'); // plain export drops it
+    applyOp(t, { op: 'setGamebook', path: e4, hint: '', deviation: '' });
+    expect(t.root.children[0]!.ext).toBeUndefined();
+  });
+
+  test('clearAnnotations and clearVariations', () => {
+    const t = base();
+    t.goto(t.root.children[1]!.id); // inside the variation
+    applyOp(t, { op: 'clearAnnotations' });
+    expect(makePgn(t)).not.toMatch(/\{|\$/);
+    applyOp(t, { op: 'clearVariations' });
+    expect(makePgn(t)).toContain('1. e4 Kd7 *');
+    expect(t.nodeCount).toBe(3);
+    expect(t.path).toBe(''); // the cursor left the deleted variation
+  });
+});
+
+test('practiceVerdict follows lila practiceCtrl thresholds', () => {
+  const cp = (value: number) => ({ kind: 'cp' as const, value, pov: 'white' as const });
+  expect(practiceVerdict('white', cp(30), cp(20))).toBe('good');
+  expect(practiceVerdict('white', cp(30), cp(-30))).toBe('inaccuracy');
+  expect(practiceVerdict('white', cp(30), cp(-120))).toBe('mistake');
+  expect(practiceVerdict('white', cp(30), cp(-400))).toBe('blunder');
+  expect(practiceVerdict('black', cp(30), cp(400))).toBe('blunder');
+  expect(practiceVerdict('black', cp(30), { kind: 'mate', value: -3, pov: 'white' })).toBe('good');
 });

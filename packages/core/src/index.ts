@@ -5,3 +5,7 @@ export { getPreferences, putPreferences } from './services/preferences.ts';
 export { getMe, type Me } from './services/account.ts';
 export * from './services/analysis-sessions.ts';
 export * from './services/tablebase.ts';
+export { closeStudy, publish, subscribe, subscribers, type StudyEvent, type Subscriber } from './pubsub.ts';
+export * from './services/studies.ts';
+export { requireStudy, studyAccess, type StudyRole } from './services/study-access.ts';
+export { defaultStudySettings, type StudySettings } from './schema/studies.ts';

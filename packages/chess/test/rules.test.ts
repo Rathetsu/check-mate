@@ -2,6 +2,7 @@
 import { describe, expect, test } from 'vitest';
 import {
   applySan,
+  boardSquares,
   applyUci,
   fenFromUrl,
   fenToUrl,
@@ -138,4 +139,13 @@ describe('positionKey (CORE-11)', () => {
     const p = applyUci(pos('8/P6k/8/8/8/8/8/K7 w - - 0 1'), 'a7a8q')!;
     expect(positionKey(p.pos)).toBe('Q7/7k/8/8/8/8/8/K7 b - -');
   });
+});
+
+test('boardSquares lists a8 to h1', () => {
+  const sq = boardSquares(INITIAL_FEN);
+  expect(sq).toHaveLength(64);
+  expect(sq[0]).toEqual({ role: 'rook', color: 'black' });
+  expect(sq[60]).toEqual({ role: 'king', color: 'white' });
+  expect(sq[27]).toBeNull();
+  expect(boardSquares('junk').every((s) => s === null)).toBe(true);
 });

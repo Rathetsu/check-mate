@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/command';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { pageCommands, type Command } from '@/lib/commands';
-import { isEngineRoute, NAV } from '@/lib/nav';
+import { NAV, navigate } from '@/lib/nav';
 
 const SHORTCUTS: [string, string][] = [
   ['← →', 'Previous and next move'],
@@ -53,9 +53,7 @@ export function CommandPalette() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  // Crossing into or out of an engine route needs a full load (COOP/COEP).
-  const go = (href: string) =>
-    isEngineRoute(location.pathname) === isEngineRoute(href) ? router.push(href) : location.assign(href);
+  const go = (href: string) => navigate(router, href);
   const run = (fn: () => void) => {
     setOpen(false);
     fn();

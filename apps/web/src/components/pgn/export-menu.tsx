@@ -48,7 +48,7 @@ async function copy(text: string, what: string) {
   }
 }
 
-export function ExportMenu({ cursor }: { cursor: TreeCursor }) {
+export function ExportMenu({ cursor, onSaveToStudy }: { cursor: TreeCursor; onSaveToStudy?: () => void }) {
   const [opts, setOpts] = useState<Required<Pick<PgnOptions, 'variations' | 'comments' | 'clocks'>>>({
     variations: true,
     comments: true,
@@ -110,10 +110,21 @@ export function ExportMenu({ cursor }: { cursor: TreeCursor }) {
             <DialogTitle>This analysis is too big to fit in a link</DialogTitle>
             <DialogDescription>
               Links stay under {MAX_LINK.toLocaleString('en')} characters so chat apps don&apos;t cut them off. You can
-              share the current position instead, or export the PGN.
+              share the current position instead, save the analysis as a study and share that, or export the PGN.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
+            {onSaveToStudy && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setTooBig(false);
+                  onSaveToStudy();
+                }}
+              >
+                Save as study and share
+              </Button>
+            )}
             <Button
               onClick={() => {
                 setTooBig(false);

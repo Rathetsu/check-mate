@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { ExportMenu } from '@/components/pgn/export-menu';
 import { ImportDialog } from '@/components/pgn/import-dialog';
+import { SaveToStudyDialog } from '@/components/studies/save-to-study';
+import { Button } from '@/components/ui/button';
 import { useRegisterCommands } from '@/lib/commands';
 import { decodePgn } from '@/lib/pgn-link';
 import { useAutosave, type SessionSource } from '@/lib/use-autosave';
@@ -39,6 +41,7 @@ export function AnalysisView({ fen, saved, signedIn }: { fen: string; saved?: Sa
   );
 
   const [importing, setImporting] = useState(false);
+  const [saving, setSaving] = useState(false);
   useRegisterCommands(() => [{ group: 'Analysis', label: 'Import a PGN or FEN', run: () => setImporting(true) }]);
 
   // A full-analysis link (#pgn=…) loads once, then leaves the URL.
@@ -93,7 +96,16 @@ export function AnalysisView({ fen, saved, signedIn }: { fen: string; saved?: Sa
       toolbar={
         <>
           <ImportDialog onLoad={onImport} open={importing} onOpenChange={setImporting} />
-          <ExportMenu cursor={tree.cursor} />
+          <ExportMenu cursor={tree.cursor} onSaveToStudy={() => setSaving(true)} />
+          <Button variant="outline" size="sm" onClick={() => setSaving(true)}>
+            Save to study
+          </Button>
+          <SaveToStudyDialog
+            open={saving}
+            onOpenChange={setSaving}
+            signedIn={signedIn}
+            source={() => ({ type: 'pgn', pgn: makePgn(tree.cursor) })}
+          />
         </>
       }
     />

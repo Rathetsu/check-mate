@@ -15,6 +15,13 @@
       "when": 1791724598049,
       "tag": "0001_analysis_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791729796469,
+      "tag": "0002_studies",
+      "breakpoints": true
     }
   ]
 }

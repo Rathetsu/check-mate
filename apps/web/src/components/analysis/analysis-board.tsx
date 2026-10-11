@@ -47,6 +47,12 @@ type Props = {
   onOp?: (op: TreeOp) => void;
   toolbar?: React.ReactNode;
   info?: React.ReactNode;
+  // Studies:
+  orientation?: 'white' | 'black';
+  authors?: Record<string, string | null>; // comment author ids → names
+  maxPly?: number; // "hide next moves": nothing deeper is listed
+  tabs?: { value: string; label: string; content: React.ReactNode }[];
+  annotateExtra?: React.ReactNode;
 };
 
 const STATUS: Record<Exclude<GameStatus, 'ongoing'>, (turn: 'white' | 'black') => string> = {
@@ -57,10 +63,23 @@ const STATUS: Record<Exclude<GameStatus, 'ongoing'>, (turn: 'white' | 'black') =
   fifty: () => 'Draw by the fifty-move rule.',
 };
 
-export function AnalysisBoard({ tree, me, readOnly, engineAllowed = true, onOp, toolbar, info }: Props) {
+export function AnalysisBoard({
+  tree,
+  me,
+  readOnly,
+  engineAllowed = true,
+  onOp,
+  toolbar,
+  info,
+  orientation: initialOrientation,
+  authors,
+  maxPly,
+  tabs = [],
+  annotateExtra,
+}: Props) {
   const { prefs } = usePrefs();
   const { cursor, node, board, act, version } = tree;
-  const [orientation, setOrientation] = useState<'white' | 'black'>(board.turn);
+  const [orientation, setOrientation] = useState<'white' | 'black'>(initialOrientation ?? board.turn);
   // Follows the preference (which may load after hydration) until toggled here.
   const [toggled, setEngineOn] = useState<boolean | null>(null);
   const engineOn = toggled ?? prefs.engineEnabled;
@@ -200,6 +219,11 @@ export function AnalysisBoard({ tree, me, readOnly, engineAllowed = true, onOp, 
         <TablebasePanel fen={node.fen} turn={board.turn} onPlay={readOnly ? () => {} : play} />
         <Tabs defaultValue="moves">
           <TabsList>
+            {tabs.map((t) => (
+              <TabsTrigger key={t.value} value={t.value}>
+                {t.label}
+              </TabsTrigger>
+            ))}
             <TabsTrigger value="moves">Moves</TabsTrigger>
             {!readOnly && <TabsTrigger value="annotate">Annotate</TabsTrigger>}
             <TabsTrigger value="info">Info</TabsTrigger>
@@ -217,6 +241,8 @@ export function AnalysisBoard({ tree, me, readOnly, engineAllowed = true, onOp, 
                 root={cursor.root}
                 current={cursor.path}
                 onSelect={(p) => act((c) => c.goto(p))}
+                authors={authors}
+                maxPly={maxPly}
                 menu={
                   readOnly
                     ? { copyLine }
@@ -248,8 +274,14 @@ export function AnalysisBoard({ tree, me, readOnly, engineAllowed = true, onOp, 
                 value={myComment}
                 onSave={(path, text) => apply({ op: 'setComment', path, text })}
               />
+              {annotateExtra}
             </TabsContent>
           )}
+          {tabs.map((t) => (
+            <TabsContent key={t.value} value={t.value}>
+              {t.content}
+            </TabsContent>
+          ))}
           <TabsContent value="info" className="grid gap-2 text-sm">
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
               {[...cursor.headers]
