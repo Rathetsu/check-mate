@@ -609,11 +609,11 @@ Starter poses and where they go:
 
 | What | Where | Notes |
 |---|---|---|
-| Masters (raw generator output) | `apps/web/brand/`: `mascot.png` (transparent, full body), `favicon.png` (head on emerald) | Versioned, not served. Every served file is built from these |
-| Poses and directions | `apps/web/brand/poses/` | Paste new variations here, named by use (for example `celebrate.png`, `look-left.png`). They're optimized into `apps/web/public/brand/` when a page uses one |
+| Masters (raw generator output) | `apps/web/brand/mascot.png` (transparent, full body) | Versioned, not served. Every served file is built from it or from a pose |
+| Poses and directions | `apps/web/brand/poses/`: `mascot-<pose>.png` (celebrating, encouraging, explaining, look-left, look-right, oops-1..3, peeking, thinking, thinking-2) | Paste new variations here, named by use. They're optimized into `apps/web/public/brand/` when a page uses one |
 | Hero mascot | `apps/web/public/brand/mascot.webp`, 480×851, 48 KB | Alpha snapped (≥240 → opaque, ≤12 → clear; the generator left the body at 253/255), trimmed with 3% padding, `sharp` lanczos3, WebP q88. Rendered with `next/image` `unoptimized`, since it's already sized |
-| Favicon | `apps/web/src/app/icon1.png` (32 px) and `icon2.png` (192 px), with rounded corners | Next 16 icon convention. `icon.svg` (the "CM" monogram) is removed |
-| Apple touch icon | `apps/web/src/app/apple-icon.png`, 180 px, full bleed | iOS rounds it itself |
+| Favicon | `apps/web/src/app/icon1.png` (32 px) and `icon2.png` (192 px), with rounded corners | A bust cropped from the mascot master (the top 56% of the trimmed image: head, collar ring, tie), 84% of the width, bleeding off the bottom edge, on light emerald `#2E8B63`. The ball-on-collar shape says "pawn" even at 16 px. The first head-only favicon (2026-10-12) read as a face, not chess, and on `#156B4A` the vest disappeared into the background |
+| Apple touch icon | `apps/web/src/app/apple-icon.png`, 180 px, full bleed | The same bust; iOS rounds it itself |
 
 In the hero, the mascot stands in front of the board's lower-left corner,
 looking at the board. It's a flat layer outside the 3D rig, positioned
