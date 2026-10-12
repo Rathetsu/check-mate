@@ -432,3 +432,57 @@ than generate from text:
 
 Follow-ups, the favicon and vectorizing work as in revision 2: attach the
 chosen image as the exact reference and change one thing at a time.
+
+## Logo brief, revision 3 vest variant (2026-10-12, experiment)
+
+Revision 3 (scarf) is the approved look: two independent runs came out
+nearly identical. This variant swaps the scarf for a vest. Every other
+section is word-for-word revision 3, so the character stays the same.
+
+An earlier vest made the mascot feel like it needed arms, because it had
+armholes and shoulder corners, which outline a human torso. Here the vest
+is a seamless knitted wrap that follows the pawn's turned form:
+- its top and bottom edges are ribbed bands along the ring curves;
+- no armholes, shoulders or side seams;
+- the checks narrow toward the sides, so it reads as wrapping a round
+  object.
+
+**Prompt:** revision 3's text with the SCARF section replaced by:
+
+> OUTFIT: a fitted sweater vest that wraps the pawn's body like a knitted
+> sleeve, so the pawn's silhouette does not change and nothing suggests
+> shoulders or arms.
+> - The vest covers the body from just below the collar ring down to the
+>   rounded ring at the bottom of the body.
+> - Its top edge is a ribbed band that circles the neck right under the
+>   collar ring, level all the way around and following the neck's
+>   elliptical curve. Its bottom edge is a matching ribbed band that follows
+>   the elliptical curve just above the bottom ring.
+> - Both sides of the vest follow the pawn's outline exactly and continue
+>   around the back. No armholes, no shoulder corners or straps, no side
+>   seams, no sleeves, no buttons.
+> - At the front center, a narrow V-neck is cut into the top band, its point
+>   reaching about a third of the way down the body. A crisp white shirt
+>   collar peeks out of the V, with two small pointed collar tips just under
+>   the collar ring. No other part of the shirt shows.
+> - A small black bow tie sits centered at the top of the V, under the
+>   collar tips: a round knot with two neat triangular wings.
+> - The vest is deep emerald knit with subtle vertical ribbing and the same
+>   cel shading, with a neat checker pattern in the two emeralds. The checks
+>   follow the curve of the body, getting narrower toward the sides, so the
+>   vest visibly wraps around a round form.
+
+**Necktie instead of the bow tie:** replace the bow-tie bullet with:
+
+> - A slim black necktie with a small knot under the collar tips. Its blade
+>   runs down the V and tucks into the vest at the V's point.
+
+**Avoid:**
+
+> flat icon style, uniform line weight, geometric line art, dot eyes,
+> straight-line eyebrows, rosy cheeks, blush, big sparkly eyes, chibi,
+> kawaii, baby proportions, wide grin, arms, hands, armholes, shoulders,
+> shoulder straps, sleeves, side seams, buttons, scarf, hair,
+> photorealistic 3D render, airbrushed gradients, textures, ground shadow,
+> text, letters, chessboard, other chess pieces, crown, lime or neon green,
+> busy background
