@@ -146,9 +146,11 @@ docs/stream/2026-10-11-phase-1-implementation.plan.md.
 - **Send two permission emails** to unlock historical master games (TWIC
   1994 to now, and PGN Mentor). Drafts and tracking are in
   docs/stream/2026-10-10-masters-data-permission-requests.plan.md.
-- **Logo:** you're designing a pawn mascot with an image generator; the
-  prompt is in the UI shell spec's "Logo brief". A text wordmark is used
-  until the SVG files arrive.
+- **Logo:** the pawn mascot is designed: glasses, a checkered emerald
+  vest and a necktie. The final prompt and the favicon, transparent and
+  pose prompts are in docs/stream/2026-10-11-ui-refresh.spec.md ("Logo
+  brief, final"). A text wordmark is used until you send the transparent
+  PNG and the favicon.
 - **Before marketing:** buy a domain, pick an email service, then turn on
   required verification and ship data export (ADR 2026-10-11-03).
 

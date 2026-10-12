@@ -486,3 +486,128 @@ is a seamless knitted wrap that follows the pawn's turned form:
 > photorealistic 3D render, airbrushed gradients, textures, ground shadow,
 > text, letters, chessboard, other chess pieces, crown, lime or neon green,
 > busy background
+
+## Logo brief, final (2026-10-12)
+
+Supersedes every earlier revision. The owner chose the vest variant with
+the **necktie**. Two runs of this exact prompt came out nearly identical,
+and the owner approved both images. The prompt below is verbatim what was
+used.
+
+**Main prompt (final):**
+
+```text
+Generate an image of:
+A mascot logo of a chess pawn character with a nerdy, clever personality, drawn as a polished cartoon illustration with real volume: it reads as a rounded, three-dimensional turned-wood chess piece, not a flat icon.
+
+STYLE
+- Bold black ink outlines, slightly thicker on the outer silhouette and thinner on inner details, like a hand-inked mascot logo.
+- Soft two-tone cel shading: one darker tone per color on the lower-right side of each form, light coming from the upper left, plus small clean highlights.
+- No airbrushed gradients, no textures, no drop shadow on the ground.
+- Colors: cream ivory body (#F6F3ED) shaded with warm darker cream (#E4DCCB); ink (#191610); deep emerald (#156B4A) with a lighter emerald (#2E8B63) for the checker and highlights; white for the shirt collar, the lens glint and the eye catchlights. Plain off-white background (#FAF8F3).
+
+BODY: a classic Staunton pawn, seen from slightly above eye level, so every ring shows a gentle elliptical curve.
+- A smooth spherical head, about a third of the total height and noticeably narrower than the base.
+- Directly under the head, a thick rounded collar ring, like a flattened donut, wider than the neck.
+- A short narrow neck, then a body that flares smoothly with gently concave sides.
+- A rounded ring at the bottom of the body, then a flared skirt ending in the widest rounded bottom rim, with a flat underside.
+- Perfectly upright, with no arms, hands, legs or feet.
+
+HEAD AND FACE: the head is turned about 15 degrees toward the viewer's right, so the face sits slightly right of center and wraps around the sphere.
+- Glasses: thick black rectangular frames with softly rounded corners, slightly oversized, wrapping around the curve of the head. Both temple arms poke out just past the head's silhouette. One curved white glint sits on the upper-left edge of the viewer's left lens.
+- Eyes: half-lidded and smug. Each eye is a thick curved upper eyelid line with a black vertical-oval pupil tucked under it and one tiny white catchlight. Both pupils look slightly toward the viewer's right.
+- Eyebrows: expressive ink brush strokes, thick in the middle and tapering to sharp points at both ends, like calligraphy. The viewer's left eyebrow is raised high in a smooth arch, well above the glasses. The viewer's right eyebrow is lower and angled down toward the nose, its inner end almost touching the top of the frame: a skeptical, know-it-all look.
+- Mouth: a small lopsided closed smirk on the viewer's right side of the face. It is a thin curved ink line rising to the right, ending in a tiny upturned tick. No teeth.
+- No nose, ears, hair, cheeks or blush.
+
+OUTFIT: a fitted sweater vest that wraps the pawn's body like a knitted sleeve, so the pawn's silhouette does not change and nothing suggests shoulders or arms.
+- The vest covers the body from just below the collar ring down to the rounded ring at the bottom of the body.
+- Its top edge is a ribbed band that circles the neck right under the collar ring, level all the way around and following the neck's elliptical curve. Its bottom edge is a matching ribbed band that follows the elliptical curve just above the bottom ring.
+- Both sides of the vest follow the pawn's outline exactly and continue around the back. No armholes, no shoulder corners or straps, no side seams, no sleeves, no buttons.
+- At the front center, a narrow V-neck is cut into the top band, its point reaching about a third of the way down the body. A crisp white shirt collar peeks out of the V, with two small pointed collar tips just under the collar ring. No other part of the shirt shows.
+- A slim black necktie with a small knot under the collar tips. Its blade runs down the V and tucks into the vest at the V's point.
+- The vest is deep emerald knit with subtle vertical ribbing and the same cel shading, with a neat checker pattern in the two emeralds. The checks follow the curve of the body, getting narrower toward the sides, so the vest visibly wraps around a round form.
+
+POSE AND FRAMING: standing, centered, filling about 75% of the canvas height, on a plain off-white background with generous padding. Square 1:1. Logo-ready and readable at small sizes.
+
+EXPRESSION: clever, curious and a little smug, as if it just spotted the winning move.
+
+Avoid:
+flat icon style, uniform line weight, geometric line art, dot eyes, straight-line eyebrows, rosy cheeks, blush, big sparkly eyes, chibi, kawaii, baby proportions, wide grin, arms, hands, armholes, shoulders, shoulder straps, sleeves, side seams, buttons, scarf, hair, photorealistic 3D render, airbrushed gradients, textures, ground shadow, text, letters, chessboard, other chess pieces, crown, lime or neon green, busy background
+```
+
+**Transparent background, from scratch:** the main prompt with three
+edits.
+- In STYLE, replace "Plain off-white background (#FAF8F3)." with "Fully
+  transparent background (PNG with an alpha channel), no background
+  color."
+- In POSE AND FRAMING, replace "on a plain off-white background with
+  generous padding" with "on a fully transparent background with small,
+  even padding".
+- Add "background color, painted checkerboard, white halo, outer glow" to
+  Avoid.
+
+**Follow-ups in the same chat** (ChatGPT sees the history):
+
+Favicon:
+
+```text
+Using the necktie mascot from the images above as the exact reference, create an app icon / favicon.
+- Show only the head: the same cream spherical head, thick black rectangular glasses, half-lidded smug eyes, tapered brush-stroke eyebrows (viewer's left raised in an arch, viewer's right angled down toward the nose) and the lopsided smirk, with the same slight turn toward the viewer's right. No collar ring, vest, tie or body.
+- Simplify it so it still reads at 32×32 and 16×16 pixels. Make the outlines about twice as thick as on the full mascot, reduce the shading to one soft shadow tone, and drop the eye catchlights. Keep one bold glint on the viewer's left lens. Make the glasses and eyebrows slightly larger relative to the head so they survive shrinking.
+- A solid deep emerald (#156B4A) background fills the whole square edge to edge, with no rounded corners and no border. The head is centered, about 78% of the canvas width, and fully inside the central 80% of the canvas.
+- Square 1:1. No text or letters.
+```
+
+Transparent version of the approved image:
+
+```text
+Recreate the last full-body mascot image exactly as it is (same character, pose, proportions, colors and line work) but on a fully transparent background: a PNG with an alpha channel. Remove the off-white background completely and keep small, even padding. The bold black outline is the outer edge, with no white halo, no glow and no ground shadow. Don't draw a checkerboard pattern; the background must be real transparency.
+```
+
+If the result has a painted checkerboard or an off-white backdrop, use
+macOS Finder: right-click the file, then Quick Actions → Remove
+Background. The bold outline makes the cut clean.
+
+**Poses and directions** (a Duolingo-style cast). Work in the same chat,
+in this order:
+
+1. Turnaround sheet. This gives ChatGPT the character from every side.
+
+```text
+Using the necktie mascot from the images above as the exact character reference, create a character turnaround sheet. Show the same character five times in a row, evenly spaced, all the same size and on the same baseline: front view, three-quarter view facing left, side profile facing left, three-quarter view facing right, and back view. Keep everything identical to the reference: pawn shape and proportions, cream color and cel shading, line weight, glasses, brush-stroke eyebrows, half-lidded eyes, smirk, the checkered emerald vest with ribbed bands and V-neck, the white collar and the black necktie. In the side and back views, show the vest wrapping all the way around the body and the glasses' temple arms running back along the head. No arms or hands in any view. The same smug expression in every view. Plain off-white background, no text or labels. Wide 3:2 canvas.
+```
+
+2. Expression sheet:
+
+```text
+Using the same character, create an expression sheet: a 3×3 grid of the head and collar ring only, all turned the same way as the original, at the same size and in the same style. Left to right, top to bottom: smug (the original); happy and proud; thinking (eyes looking up, one brow raised); surprised (brows high, small round mouth); worried (brows tilted up in the middle, small wavy mouth); celebrating (eyes closed in happy arcs, open smile); encouraging (warm soft smile, gentle eyes); disappointed (droopy lids, flat mouth); talking (mouth open mid-word). Keep the glasses, the brush-stroke eyebrow style and the line work identical. No text or labels. Plain off-white background. Square 1:1.
+```
+
+3. One pose per request, from this template:
+
+```text
+Using the necktie mascot from the reference images above, keep the character identical (pawn shape and proportions, colors, cel shading, line weight, glasses, brush-stroke eyebrows, vest, collar and necktie) and draw it in a new pose.
+POSE: [pose]
+EXPRESSION: [expression]
+Rules: no arms or hands, ever. Show the pose only through how the whole piece tilts, leans, hops or squashes and stretches, where the head and eyes point, the eyebrows and mouth, and how the necktie moves. One character, full body, the same size and framing as the reference. Fully transparent background (PNG with an alpha channel). No text.
+```
+
+Starter poses and where they go:
+
+| Pose | POSE / EXPRESSION | Use |
+|---|---|---|
+| Look left / right | head and eyes turned to the viewer's left (or right), body leaning slightly that way / curious | beside text or a CTA it "looks at" |
+| Thinking | still, eyes up to the viewer's left, a small floating question mark above the head / one brow raised | hints |
+| Celebrating | mid-hop, the whole piece tilted 10° and stretched a little taller, necktie flying up, three small emerald sparkles / eyes closed in happy arcs, open smile | puzzle solved, lesson done |
+| Oops | leaning back, glasses slightly askew, one small sweat drop / wincing | wrong move |
+| Encouraging | leaning forward in a small nod / warm soft smile | try again |
+| Explaining | facing the viewer / brows lifted, mouth open mid-word | lessons |
+| Peeking | only the head and glasses rising from the bottom edge of the canvas / curious | empty states, 404 |
+
+- **Stay consistent:** one change per request. If it drifts, re-upload the
+  approved front image and say "match this exactly".
+- **From scratch:** the main prompt, with the HEAD AND FACE direction line,
+  POSE AND FRAMING and EXPRESSION replaced by the pose.
+- **Animation:** talking and blinking come later from a vector rig of the
+  vectorized front view, not from generated frames.
