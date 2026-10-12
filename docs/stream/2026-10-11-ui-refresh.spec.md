@@ -324,3 +324,111 @@ end on separate layers.
 > raised one, mouth), centered on a deep emerald (#156B4A) rounded square.
 > Cream head, ink outline about twice as thick as in the full-body version,
 > simplified to read at 32px. No scarf, no body, no text.
+
+## Logo brief, revision 3 (2026-10-12)
+
+Supersedes revision 2. Revision 2's numeric geometry and "flat vector,
+solid fills, dot eyes" produced a sterile, flat line icon. The owner
+prefers the earlier vest-and-bow-tie generation's look:
+- a cartoon pawn with volume: curved ring edges, soft cel shading and
+  bolder outer lines;
+- the head turned slightly, so the glasses wrap around it;
+- half-lidded smug eyes;
+- tapered brush-stroke eyebrows, one arched and one angled down.
+
+Revision 3 describes that look in visual terms instead of numbers, with the
+scarf in place of the vest.
+
+The most reliable way to keep the look is to edit that earlier image rather
+than generate from text:
+
+> Edit the attached image. Keep the character exactly as it is: the same
+> pawn shape, rendering style, depth and shading, line weight, glasses,
+> eyes, eyebrows, smirk, colors and pose. Make only these changes: remove
+> the sweater vest, the white shirt collar and the bow tie. Instead, wrap a
+> slim deep emerald (#156B4A) knit scarf once around the neck, just below
+> the collar ring, with one end hanging down the front on the viewer's
+> left. Near its tip, the scarf has the same two-tone green checker pattern
+> the vest had. The body below the scarf is plain cream like the rest of
+> the pawn. Keep the plain off-white background.
+
+**Standalone prompt** (from scratch, and as the written character spec):
+
+> Generate an image of: A mascot logo of a chess pawn character with a
+> nerdy, clever personality, drawn as a polished cartoon illustration with
+> real volume: it reads as a rounded, three-dimensional turned-wood chess
+> piece, not a flat icon.
+>
+> STYLE
+> - Bold black ink outlines, slightly thicker on the outer silhouette and
+>   thinner on inner details, like a hand-inked mascot logo.
+> - Soft two-tone cel shading: one darker tone per color on the lower-right
+>   side of each form, light coming from the upper left, plus small clean
+>   highlights.
+> - No airbrushed gradients, no textures, no drop shadow on the ground.
+> - Colors: cream ivory body (#F6F3ED) shaded with warm darker cream
+>   (#E4DCCB); ink (#191610); deep emerald (#156B4A) with a lighter emerald
+>   (#2E8B63) for the checker and highlights; white only for the lens glint
+>   and the eye catchlights. Plain off-white background (#FAF8F3).
+>
+> BODY: a classic Staunton pawn, seen from slightly above eye level, so
+> every ring shows a gentle elliptical curve.
+> - A smooth spherical head, about a third of the total height and
+>   noticeably narrower than the base.
+> - Directly under the head, a thick rounded collar ring, like a flattened
+>   donut, wider than the neck.
+> - A short narrow neck, then a body that flares smoothly with gently
+>   concave sides.
+> - A rounded ring at the bottom of the body, then a flared skirt ending in
+>   the widest rounded bottom rim, with a flat underside.
+> - Perfectly upright, with no arms, hands, legs or feet.
+>
+> HEAD AND FACE: the head is turned about 15 degrees toward the viewer's
+> right, so the face sits slightly right of center and wraps around the
+> sphere.
+> - Glasses: thick black rectangular frames with softly rounded corners,
+>   slightly oversized, wrapping around the curve of the head. Both temple
+>   arms poke out just past the head's silhouette. One curved white glint
+>   sits on the upper-left edge of the viewer's left lens.
+> - Eyes: half-lidded and smug. Each eye is a thick curved upper eyelid line
+>   with a black vertical-oval pupil tucked under it and one tiny white
+>   catchlight. Both pupils look slightly toward the viewer's right.
+> - Eyebrows: expressive ink brush strokes, thick in the middle and tapering
+>   to sharp points at both ends, like calligraphy. The viewer's left
+>   eyebrow is raised high in a smooth arch, well above the glasses. The
+>   viewer's right eyebrow is lower and angled down toward the nose, its
+>   inner end almost touching the top of the frame: a skeptical,
+>   know-it-all look.
+> - Mouth: a small lopsided closed smirk on the viewer's right side of the
+>   face. It is a thin curved ink line rising to the right, ending in a tiny
+>   upturned tick. No teeth.
+> - No nose, ears, hair, cheeks or blush.
+>
+> SCARF
+> - A slim deep emerald knit scarf with subtle ribbing and the same cel
+>   shading, wrapped once around the neck just below the collar ring. The
+>   wrap follows the round neck, and the collar ring stays fully visible
+>   above it.
+> - One end hangs down the front on the viewer's left, to about the middle
+>   of the body. Near its tip it has a neat checker pattern in the two
+>   emeralds.
+> - No fringe.
+>
+> POSE AND FRAMING: standing, centered, filling about 75% of the canvas
+> height, on a plain off-white background with generous padding. Square
+> 1:1. Logo-ready and readable at small sizes.
+>
+> EXPRESSION: clever, curious and a little smug, as if it just spotted the
+> winning move.
+
+**Avoid:**
+
+> flat icon style, uniform line weight, geometric line art, dot eyes,
+> straight-line eyebrows, rosy cheeks, blush, big sparkly eyes, chibi,
+> kawaii, baby proportions, wide grin, arms, hands, hair, sweater vest,
+> shirt collar, bow tie, photorealistic 3D render, airbrushed gradients,
+> textures, ground shadow, text, letters, chessboard, other chess pieces,
+> crown, lime or neon green, busy background
+
+Follow-ups, the favicon and vectorizing work as in revision 2: attach the
+chosen image as the exact reference and change one thing at a time.
