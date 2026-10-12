@@ -216,3 +216,111 @@ rounded square.
 **Mascot sheet (later):** front, three-quarter and side views, plus
 expressions: raised-eyebrow skeptical, explaining (mouth open, mid-word),
 eureka, smug, concerned, impressed.
+
+## Logo brief, revision 2 (2026-10-12)
+
+Supersedes revision 1. Changes:
+- **The scarf is back.** A slim scarf in place of the sweater vest.
+- **Every feature is pinned down** (body geometry, face placement, colors,
+  line weight) so repeated runs stay close, and so the character can be
+  animated later.
+- **No head tilt.** A straight front view is the base pose; tilt can come
+  in animation.
+- **No hair.** The round head is what reads as "pawn", especially at
+  favicon size, and hair is one more part that varies between runs.
+
+A prompt can't make ChatGPT deterministic, since it exposes no seed. The
+real lock is the chosen image: reuse it as the reference for every later
+generation, then vectorize it with eyes, eyebrows, mouth, glasses and scarf
+end on separate layers.
+
+**Main prompt:**
+
+> Generate an image of: A mascot logo: a chess pawn character with a nerdy,
+> clever personality. Follow this character spec exactly; do not add,
+> remove or restyle anything.
+>
+> CANVAS
+> - Square 1:1. Flat solid off-white background (#FAF8F3), nothing else in
+>   the background.
+> - One character, centered. Front view, straight-on with no perspective,
+>   standing upright, head not tilted. It fills about 70% of the canvas
+>   height.
+>
+> STYLE
+> - Flat vector illustration with solid color fills only. No gradients,
+>   shading, textures, shadows or highlights, except the single lens glint
+>   below.
+> - Every shape has the same uniform dark ink outline (#191610), about 3%
+>   of the head's width thick, with rounded joins.
+> - Use exactly these colors: ink #191610, cream #F6F3ED, emerald #156B4A,
+>   white #FFFFFF (lens glint only), and the background #FAF8F3.
+>
+> BODY: a classic Staunton pawn. Units: head width = 1. From top to bottom,
+> perfectly symmetric left to right, filled cream:
+> 1. Head: a perfect circle, 1 wide.
+> 2. Collar ring: a flat horizontal disc seen edge-on (a rounded
+>    rectangle), 1.15 wide and 0.18 tall, tucked just under the head.
+> 3. Body: a smooth flaring stem, 0.55 wide under the collar and widening to
+>    1.25 at its bottom, with gently concave sides; 1.45 tall.
+> 4. Base ring: a rounded horizontal band, 1.45 wide and 0.22 tall.
+> 5. Plinth: a flat slab, 1.6 wide and 0.2 tall, with a perfectly flat
+>    bottom edge.
+>
+> The total height is 3, so the head is one third. No arms, hands, legs or
+> feet.
+>
+> SCARF
+> - A slim emerald scarf (solid fill, no knit texture), 0.22 thick, wrapped
+>   once around the top of the body directly below the collar ring. The
+>   collar ring stays fully visible above it.
+> - One end hangs straight down the front on the viewer's left, ending level
+>   with the top of the base ring.
+> - The last 0.3 of that end is a checkerboard of emerald and cream squares,
+>   2 columns by 3 rows. No fringe.
+>
+> FACE (on the head)
+> - Glasses: two identical rectangular lenses with slightly rounded corners,
+>   each 0.34 wide and 0.24 tall, in thick ink frames (0.05 thick), joined
+>   by a short straight bridge. The lenses sit on the head's horizontal
+>   centerline, centered 0.21 left and right of the middle, with short
+>   temple stubs reaching the head outline. The lenses are clear, so the
+>   cream head shows through.
+> - Glint: one short white diagonal stroke in the upper-left corner of the
+>   viewer's left lens.
+> - Eyes: two small solid ink dots, perfectly round, 0.07 wide, one centered
+>   in each lens. No eye highlights.
+> - Eyebrows: two short thick ink strokes with rounded ends, each 0.2 long.
+>   The viewer's left brow is flat and level, just above the frame. The
+>   viewer's right brow is raised clearly higher and angled upward toward
+>   the outside: a curious, know-it-all look.
+> - Mouth: one thin ink line forming a lopsided closed half-smile, flat on
+>   the left and curling upward at the right end. It is 0.22 long, set
+>   slightly right of center, halfway between the glasses and the bottom of
+>   the head. No teeth.
+> - No nose, ears, hair, cheeks or blush.
+>
+> EXPRESSION: clever, curious and a little smug, as if it just spotted the
+> winning move.
+
+**Avoid:**
+
+> rosy cheeks, blush, big sparkly eyes, eye highlights, chibi, kawaii, baby
+> proportions, wide grin, arms, hands, hair, head tilt, perspective, 3D
+> render, photorealism, gradients, shading, drop shadows, textures, text,
+> letters, chessboard, other chess pieces, crown, lime or neon green, busy
+> background
+
+**Follow-ups:** in the same chat, attach the chosen image to each request:
+
+> Use the attached image as the exact character reference. Keep every
+> shape, proportion, color, line weight and facial feature identical.
+> Change only: [the one thing].
+
+**Favicon:**
+
+> Using the attached character as the exact reference: an app icon of the
+> head only (head circle, glasses, glint, eyes, both eyebrows with the
+> raised one, mouth), centered on a deep emerald (#156B4A) rounded square.
+> Cream head, ink outline about twice as thick as in the full-body version,
+> simplified to read at 32px. No scarf, no body, no text.
