@@ -168,3 +168,51 @@ switch over when they arrive.
   - axe found no serious or critical issues on `/`, `/analysis`,
     `/auth/sign-in` and `/privacy`;
   - the collapsed rail survives a reload and a full load into `/analysis`.
+
+## Logo brief, revision 1 (2026-10-12)
+
+Supersedes the prompts in "Logo brief". The first generations came out too
+cute. The mascot should read as the nerdy friend who has read every chess
+book: clever and a little smug, not adorable. So it has no blush, adult
+proportions, heavier glasses and a sweater vest instead of a scarf.
+
+**Main prompt:**
+
+> A mascot logo of a chess pawn character with a nerdy, clever personality.
+> The pawn keeps the classic, upright pawn silhouette (round head, collar
+> ring, flared base) with adult proportions, not chibi; the head is about a
+> third of its height. Its body is warm cream ivory (#F6F3ED) with flat
+> shading. It wears thick, slightly oversized rectangular horn-rimmed
+> glasses in dark ink (#191610), with a small flat glint on one lens. Behind
+> them are small, focused eyes, one eyebrow raised in a curious,
+> know-it-all look, and a subtle lopsided half-smile, as if it just spotted
+> the winning move. It wears a deep emerald (#156B4A) sweater vest with a
+> faint checkered pattern over a white collared shirt, with a small dark
+> bow tie. Flat vector illustration with clean geometric shapes and one
+> consistent medium-weight dark outline. No more than four colors; no
+> gradients, textures or blush. Front-facing and standing with a slight
+> head tilt. Centered on a plain off-white background with generous
+> padding. Logo-ready and readable at small sizes.
+
+**Avoid:**
+
+> rosy cheeks, blush, big sparkly eyes, chibi, kawaii, baby proportions,
+> wide grin, text, letters, chessboard, other chess pieces, crown, lime or
+> neon green, flat faceless silhouette, 3D render, photorealism, gradients,
+> drop shadows, busy background
+
+**Dials, if the result is off:**
+- **Still too cute:** "smaller eyes", "narrower, less round head",
+  "drier expression".
+- **Too goofy:** drop the bow tie and keep just the vest over the shirt
+  collar.
+- **More nerd:** "a pencil tucked into the collar" or "a pocket with two
+  pens on the vest". Taped glasses read as a joke, so leave them out.
+
+**Favicon:** the head and glasses only, simplified for 32px (thick shapes,
+the raised eyebrow kept), a cream pawn head in an emerald (#156B4A)
+rounded square.
+
+**Mascot sheet (later):** front, three-quarter and side views, plus
+expressions: raised-eyebrow skeptical, explaining (mouth open, mid-word),
+eureka, smug, concerned, impressed.
