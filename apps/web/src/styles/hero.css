@@ -18,8 +18,12 @@
 .hero-stage {
   display: grid;
   justify-items: center;
-  perspective: 1200px;
   padding-block: 3rem;
+}
+/* Board plus mascot; the mascot is positioned against the board, not the stage. */
+.hero-board {
+  position: relative;
+  perspective: 1200px;
 }
 .hero-tilt {
   transform-style: preserve-3d;
@@ -51,6 +55,16 @@
 .dark .hero-pieces {
   filter: drop-shadow(0 0 1.5px color-mix(in oklch, var(--foreground) 55%, transparent));
 }
+/* The mascot stands in front of the board's lower-left corner, looking at it.
+   A flat layer outside the 3D rig, so it never tilts with the board. */
+.hero-mascot {
+  position: absolute;
+  z-index: 1;
+  left: -2.4rem;
+  bottom: -0.5rem;
+  width: 6rem;
+  height: auto;
+}
 .hero-label {
   position: absolute;
   left: calc(100% + 0.75rem);
@@ -68,6 +82,10 @@
 @media (min-width: 1024px) {
   .hero-rig {
     width: min(26vw, 22rem);
+  }
+  .hero-mascot {
+    left: -6.2rem;
+    width: 9.5rem;
   }
   .hero-label {
     display: flex;
@@ -90,7 +108,8 @@
     .hero-shade,
     .hero-pieces,
     .hero-label,
-    .hero-copy {
+    .hero-copy,
+    .hero-mascot {
       animation-timing-function: linear;
       animation-fill-mode: both;
       animation-timeline: --hero;
@@ -110,6 +129,10 @@
     }
     .hero-copy {
       animation-name: hero-drift;
+    }
+    /* The nearest layer moves most: classic parallax against the copy. */
+    .hero-mascot {
+      animation-name: hero-mascot-rise;
     }
 
     .hero-card {
@@ -165,6 +188,14 @@
 @keyframes hero-drift {
   to {
     transform: translateY(-3rem);
+  }
+}
+@keyframes hero-mascot-rise {
+  from {
+    transform: translateY(1.5rem);
+  }
+  to {
+    transform: translateY(-2.5rem);
   }
 }
 @keyframes hero-card-in {

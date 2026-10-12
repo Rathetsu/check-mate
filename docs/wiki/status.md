@@ -19,7 +19,9 @@ built.**
   On desktop the sidebar collapses to icons and remembers that choice.
 - **Home page:** a hero about the AI coach. Its board pulls apart into
   layers (squares, which side controls each square, pieces) as you scroll,
-  then cards lead to each feature that's built.
+  while the mascot (a nerdy pawn in a vest and tie) stands in front of it.
+  Cards below lead to each feature that's built.
+- **Brand:** the mascot is also the favicon and the home-screen icon.
 - **The analysis board** (`/analysis`):
   - a real chessboard: drag or click to move, promotion, arrows in four
     colors, flip, arrow keys, typed moves, variations
@@ -146,11 +148,9 @@ docs/stream/2026-10-11-phase-1-implementation.plan.md.
 - **Send two permission emails** to unlock historical master games (TWIC
   1994 to now, and PGN Mentor). Drafts and tracking are in
   docs/stream/2026-10-10-masters-data-permission-requests.plan.md.
-- **Logo:** the pawn mascot is designed: glasses, a checkered emerald
-  vest and a necktie. The final prompt and the favicon, transparent and
-  pose prompts are in docs/stream/2026-10-11-ui-refresh.spec.md ("Logo
-  brief, final"). A text wordmark is used until you send the transparent
-  PNG and the favicon.
+- **Mascot poses:** paste pose and direction variations into
+  `apps/web/brand/poses/` (prompts in docs/stream/2026-10-11-ui-refresh.spec.md,
+  "Logo brief, final").
 - **Before marketing:** buy a domain, pick an email service, then turn on
   required verification and ship data export (ADR 2026-10-11-03).
 

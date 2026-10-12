@@ -490,11 +490,15 @@ is a seamless knitted wrap that follows the pawn's turned form:
 ## Logo brief, final (2026-10-12)
 
 Supersedes every earlier revision. The owner chose the vest variant with
-the **necktie**. Two runs of this exact prompt came out nearly identical,
-and the owner approved both images. The prompt below is verbatim what was
-used.
+the **necktie**. Two runs of the off-white version came out nearly
+identical, and the owner approved both images. The saved prompt is that
+exact text with the background switched to transparent (2026-10-12), so
+the output drops straight onto any page. For an off-white background
+instead, change the two background lines back to "Plain off-white
+background (#FAF8F3)." and "on a plain off-white background with generous
+padding", and remove the last four Avoid entries.
 
-**Main prompt (final):**
+**Main prompt (final, transparent background):**
 
 ```text
 Generate an image of:
@@ -504,7 +508,7 @@ STYLE
 - Bold black ink outlines, slightly thicker on the outer silhouette and thinner on inner details, like a hand-inked mascot logo.
 - Soft two-tone cel shading: one darker tone per color on the lower-right side of each form, light coming from the upper left, plus small clean highlights.
 - No airbrushed gradients, no textures, no drop shadow on the ground.
-- Colors: cream ivory body (#F6F3ED) shaded with warm darker cream (#E4DCCB); ink (#191610); deep emerald (#156B4A) with a lighter emerald (#2E8B63) for the checker and highlights; white for the shirt collar, the lens glint and the eye catchlights. Plain off-white background (#FAF8F3).
+- Colors: cream ivory body (#F6F3ED) shaded with warm darker cream (#E4DCCB); ink (#191610); deep emerald (#156B4A) with a lighter emerald (#2E8B63) for the checker and highlights; white for the shirt collar, the lens glint and the eye catchlights. Fully transparent background (PNG with an alpha channel), no background color.
 
 BODY: a classic Staunton pawn, seen from slightly above eye level, so every ring shows a gentle elliptical curve.
 - A smooth spherical head, about a third of the total height and noticeably narrower than the base.
@@ -528,24 +532,13 @@ OUTFIT: a fitted sweater vest that wraps the pawn's body like a knitted sleeve, 
 - A slim black necktie with a small knot under the collar tips. Its blade runs down the V and tucks into the vest at the V's point.
 - The vest is deep emerald knit with subtle vertical ribbing and the same cel shading, with a neat checker pattern in the two emeralds. The checks follow the curve of the body, getting narrower toward the sides, so the vest visibly wraps around a round form.
 
-POSE AND FRAMING: standing, centered, filling about 75% of the canvas height, on a plain off-white background with generous padding. Square 1:1. Logo-ready and readable at small sizes.
+POSE AND FRAMING: standing, centered, filling about 75% of the canvas height, on a fully transparent background with small, even padding. Square 1:1. Logo-ready and readable at small sizes.
 
 EXPRESSION: clever, curious and a little smug, as if it just spotted the winning move.
 
 Avoid:
-flat icon style, uniform line weight, geometric line art, dot eyes, straight-line eyebrows, rosy cheeks, blush, big sparkly eyes, chibi, kawaii, baby proportions, wide grin, arms, hands, armholes, shoulders, shoulder straps, sleeves, side seams, buttons, scarf, hair, photorealistic 3D render, airbrushed gradients, textures, ground shadow, text, letters, chessboard, other chess pieces, crown, lime or neon green, busy background
+flat icon style, uniform line weight, geometric line art, dot eyes, straight-line eyebrows, rosy cheeks, blush, big sparkly eyes, chibi, kawaii, baby proportions, wide grin, arms, hands, armholes, shoulders, shoulder straps, sleeves, side seams, buttons, scarf, hair, photorealistic 3D render, airbrushed gradients, textures, ground shadow, text, letters, chessboard, other chess pieces, crown, lime or neon green, busy background, background color, painted checkerboard, white halo, outer glow
 ```
-
-**Transparent background, from scratch:** the main prompt with three
-edits.
-- In STYLE, replace "Plain off-white background (#FAF8F3)." with "Fully
-  transparent background (PNG with an alpha channel), no background
-  color."
-- In POSE AND FRAMING, replace "on a plain off-white background with
-  generous padding" with "on a fully transparent background with small,
-  even padding".
-- Add "background color, painted checkerboard, white halo, outer glow" to
-  Avoid.
 
 **Follow-ups in the same chat** (ChatGPT sees the history):
 
@@ -611,3 +604,20 @@ Starter poses and where they go:
   POSE AND FRAMING and EXPRESSION replaced by the pose.
 - **Animation:** talking and blinking come later from a vector rig of the
   vectorized front view, not from generated frames.
+
+## Brand assets (2026-10-12)
+
+| What | Where | Notes |
+|---|---|---|
+| Masters (raw generator output) | `apps/web/brand/`: `mascot.png` (transparent, full body), `favicon.png` (head on emerald) | Versioned, not served. Every served file is built from these |
+| Poses and directions | `apps/web/brand/poses/` | Paste new variations here, named by use (for example `celebrate.png`, `look-left.png`). They're optimized into `apps/web/public/brand/` when a page uses one |
+| Hero mascot | `apps/web/public/brand/mascot.webp`, 480×851, 48 KB | Alpha snapped (≥240 → opaque, ≤12 → clear; the generator left the body at 253/255), trimmed with 3% padding, `sharp` lanczos3, WebP q88. Rendered with `next/image` `unoptimized`, since it's already sized |
+| Favicon | `apps/web/src/app/icon1.png` (32 px) and `icon2.png` (192 px), with rounded corners | Next 16 icon convention. `icon.svg` (the "CM" monogram) is removed |
+| Apple touch icon | `apps/web/src/app/apple-icon.png`, 180 px, full bleed | iOS rounds it itself |
+
+In the hero, the mascot stands in front of the board's lower-left corner,
+looking at the board. It's a flat layer outside the 3D rig, positioned
+against a `.hero-board` wrapper that also carries the perspective. On wide
+screens with motion allowed it rises as you scroll (the nearest parallax
+layer, transform only). Its alt text is empty because the wordmark already
+names the brand.
