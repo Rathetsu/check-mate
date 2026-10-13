@@ -621,3 +621,47 @@ against a `.hero-board` wrapper that also carries the perspective. On wide
 screens with motion allowed it rises as you scroll (the nearest parallax
 layer, transform only). Its alt text is empty because the wordmark already
 names the brand.
+
+## Favicon: toppled king (2026-10-13)
+
+Supersedes the Favicon and Apple touch icon rows of "Brand assets". The
+owner found the pawn bust still read as a face, not chess, and chose a
+favicon apart from the mascot: a king lying on its side, the gesture for
+resigning, so it literally says "checkmate". The mascot stays the logo.
+The owner supplied the king's style (a crown-shaped king with teardrop
+windows); the prompt describes it in words so the result is our own.
+
+| What | Where | Notes |
+|---|---|---|
+| Master | `apps/web/brand/king-toppled.png`, 1254 px, transparent | Raw generator output, versioned, not served |
+| Favicon | `apps/web/src/app/icon1.png` (32 px), `icon2.png` (192 px), rounded corners | Alpha snapped and trimmed as for the mascot, 92% of the tile width, centered on brand emerald `#156B4A`. The see-through windows show the green, which keeps them readable at 16 px. Without a background the wide king fills half the height and reads as "IB+" |
+| Apple touch icon | `apps/web/src/app/apple-icon.png`, 180 px, full bleed | The same at 84% width, for more room on the home screen |
+
+**Prompt (ChatGPT image, from scratch):**
+
+```text
+Generate an image of:
+An app icon glyph of a single chess king that has been knocked over and lies on its side, the moment after checkmate. Clean, bold and full of character, like a sticker icon, built to stay readable at 16×16 pixels.
+
+STYLE
+- Flat illustration with one thick black ink outline of even weight around the silhouette and every inner detail, with softly rounded corners and joins.
+- Colors: cream ivory fill (#F6F3ED), one flat shadow tone of warm darker cream (#E4DCCB), ink outline (#191610). Nothing else.
+- Light comes from the top. The shadow is one clean flat band along the bottom edge of the piece, inside the outline, following its contour.
+- Fully transparent background (PNG with an alpha channel), no background color.
+
+THE KING (described standing upright; it is drawn lying down, see POSE). A short, chunky "crown" king with no long body or neck: just a cross, a big crown and a low base, seen straight from the front.
+- Cross: short and chunky with square-cut ends, all four arms the same thickness. Its short stem sits in the dip at the top center of the crown. About a quarter of the piece's height.
+- Crown: the largest part, about half the height, and the widest part of the piece. Its outline is a heart with the bottom point cut off flat: two big round lobes at the top left and top right meeting in a small V dip at the center where the cross stands, then the sides curve smoothly down and inward to a narrower flat bottom.
+- Two windows cut all the way through the crown, side by side in its middle: mirror-image teardrops, rounded at the top and narrowing to a soft point at the bottom, with their straighter edges facing each other across the center. The background shows through them.
+- Base: a low, wide, rounded plinth like a cushion, narrower than the crown's lobes but wider than the crown's bottom, with a gently domed top edge, rounded ends and a flat underside. About a quarter of the height. A thin gap line separates it from the crown.
+- No face, no jewels, no points or spikes on the crown, no orb.
+
+POSE AND FRAMING: the king has tipped over to the viewer's right and lies on its side. The base is on the left, the cross is on the right pointing right, and the front of the piece still faces the viewer, so the two windows are now one above the other. It rests on the curve of one crown lobe and the end of the base, so its long axis tilts only slightly, with the cross end a little higher. Centered, filling about 88% of the canvas width, with small even padding. Square 1:1.
+
+Avoid:
+text, letters, face, eyes, glasses, arms, hands, sword, blood, cracks, motion lines, impact stars, ground line, ground shadow, chessboard, other chess pieces, pawn, tall Staunton king with a long body or neck, crown points, jewels, orb, fleur-de-lis, 3D render, photorealism, gradients, textures, thin or uneven lines, background color, painted checkerboard, white halo, outer glow
+```
+
+Later: the two hugging kings (check + "mate" as in friend) were too
+muddy at 16 px for a favicon but suit a bigger spot, such as a drawn-game
+screen, the 404 page or the social preview image.

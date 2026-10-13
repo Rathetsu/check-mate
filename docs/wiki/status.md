@@ -21,7 +21,8 @@ built.**
   layers (squares, which side controls each square, pieces) as you scroll,
   while the mascot (a nerdy pawn in a vest and tie) stands in front of it.
   Cards below lead to each feature that's built.
-- **Brand:** the mascot is also the favicon and the home-screen icon.
+- **Brand:** the favicon and home-screen icon are a toppled king (a
+  checkmate) on brand green; the mascot is the logo.
 - **The analysis board** (`/analysis`):
   - a real chessboard: drag or click to move, promotion, arrows in four
     colors, flip, arrow keys, typed moves, variations
