@@ -33,6 +33,7 @@ Third-party components:
 - pg-boss (MIT)
 - pnpm / Turborepo (MIT)
 - Vitest / Playwright (MIT / Apache-2.0)
+- sharp (Apache-2.0)
 - zod (MIT)
 - axe-core (MPL-2.0)
 - Geist font (OFL-1.1)
@@ -47,6 +48,7 @@ Datasets:
 - lichess-org/chess-openings (CC0)
 - Lichess game export + OAuth API (Lichess ToS; one request at a time; wait ≥60 s after 429)
 - Have I Been Pwned (Pwned Passwords range API) (free, no key; k-anonymity (only a 5-character SHA-1 prefix is sent))
+- The Opera Game (Morphy vs. the Duke of Brunswick and Count Isouard, Paris 1858) (public domain: a game record is facts, and this one is from 1858)
 - Test fixtures (packages/chess/fixtures/) (per file: Lichess game exports CC0, broadcast round CC BY-SA 4.0, our own study and Chess.com games, synthetic malformed files)
 
 Assets requiring attribution:

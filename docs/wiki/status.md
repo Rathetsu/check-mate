@@ -17,12 +17,21 @@ built.**
 - **Look:** the app has its CheckMate look in light and dark (Mate Green
   on a soft eggshell background), plus About, Privacy and Source pages.
   On desktop the sidebar collapses to icons and remembers that choice.
-- **Home page:** a hero about the AI coach. Its board pulls apart into
-  layers (squares, which side controls each square, pieces) as you scroll,
-  while the mascot (a nerdy pawn in a vest and tie) stands in front of it.
-  Cards below lead to each feature that's built.
+- **Home page:** a hero about the AI coach.
+  - Its board replays Morphy's Opera Game on a loop. Pieces slide, the
+    shading of who controls each square updates every move, and on checks
+    the board pulls apart into its layers.
+  - On the final checkmate the king topples.
+  - The mascot (a nerdy pawn in a vest and tie) thinks, explains and
+    celebrates along with it.
+  - Around it: a typewriter headline, a faint coordinate backdrop with
+    drifting lines, and a ticker of famous openings that open on the
+    analysis board.
+  - Cards below have small looping previews.
+  - One Pause button stops all of it, and reduced motion gets a still.
 - **Brand:** the favicon and home-screen icon are a toppled king (a
-  checkmate) on brand green; the mascot is the logo.
+  checkmate) on brand green. The same tile sits next to the name in the
+  sidebar. The mascot is the logo.
 - **The analysis board** (`/analysis`):
   - a real chessboard: drag or click to move, promotion, arrows in four
     colors, flip, arrow keys, typed moves, variations
@@ -139,6 +148,14 @@ docs/stream/2026-10-11-phase-1-implementation.plan.md.
   build plan. One is dropped for good: browser back/forward through editor
   edits. Two-factor sign-in waits until later.
 
+## Decided (2026-10-13)
+
+- **The home hero replays a real game on a clock**, not on scroll: Morphy's
+  Opera Game, with no evals. Everything that moves by itself has one Pause
+  button (ADR 2026-10-13-01, home-motion spec).
+- **Won't do on the home page:** a stats row, ECO codes in the openings
+  ticker, and any "most popular" claim (we have no popularity data).
+
 ## Waiting on you
 
 - **One manual check (2 minutes):** export a PGN with variations, comments
@@ -149,9 +166,10 @@ docs/stream/2026-10-11-phase-1-implementation.plan.md.
 - **Send two permission emails** to unlock historical master games (TWIC
   1994 to now, and PGN Mentor). Drafts and tracking are in
   docs/stream/2026-10-10-masters-data-permission-requests.plan.md.
-- **Mascot poses:** paste pose and direction variations into
-  `apps/web/brand/poses/` (prompts in docs/stream/2026-10-11-ui-refresh.spec.md,
-  "Logo brief, final").
+- **More mascot poses (optional):** 11 are in `apps/web/brand/poses/`, and
+  the home hero uses thinking, explaining and celebrating. Add more there
+  when a page needs one (prompts in docs/stream/2026-10-11-ui-refresh.spec.md,
+  "Logo brief, final"), then list it in `scripts/gen-mascot.ts`.
 - **Before marketing:** buy a domain, pick an email service, then turn on
   required verification and ship data export (ADR 2026-10-11-03).
 

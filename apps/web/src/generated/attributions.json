@@ -148,6 +148,11 @@
       "mode": "reused (dev only)"
     },
     {
+      "name": "sharp",
+      "license": "Apache-2.0",
+      "mode": "reused (dev only)"
+    },
+    {
       "name": "zod",
       "license": "MIT",
       "mode": "reused"
@@ -208,6 +213,11 @@
       "name": "Have I Been Pwned (Pwned Passwords range API)",
       "terms": "free, no key; k-anonymity (only a 5-character SHA-1 prefix is sent)",
       "notes": "Disclosed on /privacy"
+    },
+    {
+      "name": "The Opera Game (Morphy vs. the Duke of Brunswick and Count Isouard, Paris 1858)",
+      "terms": "public domain: a game record is facts, and this one is from 1858",
+      "notes": "The move list lives in apps/web/src/lib/hero-game.ts and is replayed through loadGame, so an illegal move throws"
     },
     {
       "name": "Test fixtures (packages/chess/fixtures/)",

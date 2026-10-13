@@ -28,6 +28,8 @@ register:write` regenerates `NOTICE` and the `/about` data
 - `node scripts/gen-openings.ts`: regenerate
   `packages/chess/src/data/openings.json` from chess-openings (pinned
   commit). Committed
+- `node scripts/gen-mascot.ts`: rebuild the served mascot poses in
+  `apps/web/public/brand/` from the masters in `apps/web/brand/`. Committed
 - Stockfish: `pnpm install` copies the WASM builds into
   `apps/web/public/engine/` (gitignored) via `scripts/copy-stockfish.ts`
 - Tablebase (optional): `scripts/fetch-tablebases.sh` (3-5 pieces, ~938

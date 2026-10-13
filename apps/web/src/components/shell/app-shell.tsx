@@ -4,8 +4,10 @@
 // icon rail. Phone <640px: top bar plus bottom tab bar (ui-shell spec, Layout).
 import { cn } from 'cn';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import kingTile from '@/app/icon2.png';
 import { Button } from '@/components/ui/button';
 import { NAV } from '@/lib/nav';
 import { CommandPalette } from './command-palette';
@@ -47,11 +49,9 @@ export function AppShell({
           !collapsed && 'lg:w-56',
         )}
       >
-        <NavLink href="/" className="flex h-14 items-center px-4" aria-label="CheckMate home">
+        <NavLink href="/" className="flex h-14 items-center gap-2.5 px-4.5" aria-label="CheckMate home">
+          <Logo />
           <Wordmark className={cn('hidden text-lg', !collapsed && 'lg:inline')} />
-          <span className={cn('font-semibold', !collapsed && 'lg:hidden')} aria-hidden>
-            C<span className="text-primary">M</span>
-          </span>
         </NavLink>
         <ul className="flex flex-1 flex-col gap-1 px-2">
           {NAV.map(({ href, label: name, icon: Icon }) => (
@@ -88,7 +88,8 @@ export function AppShell({
 
       <div className="flex min-w-0 flex-1 flex-col pb-14 sm:pb-0">
         <header className="flex h-12 items-center justify-between border-b px-4 sm:hidden">
-          <NavLink href="/" aria-label="CheckMate home">
+          <NavLink href="/" className="flex items-center gap-2" aria-label="CheckMate home">
+            <Logo />
             <Wordmark />
           </NavLink>
           <UserMenu user={user} compact />
@@ -118,4 +119,9 @@ export function AppShell({
       <CommandPalette />
     </div>
   );
+}
+
+// The favicon's toppled king, next to the wordmark (alone on the icon rail).
+function Logo() {
+  return <Image src={kingTile} alt="" width={28} height={28} className="size-7 shrink-0 rounded-md" />;
 }

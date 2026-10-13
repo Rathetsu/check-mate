@@ -25,6 +25,7 @@ documentation system (ai-dev-docs).
 | 1 | [p1-accounts-and-preferences](stream/2026-10-10-p1-accounts-and-preferences.spec.md) |
 | 1 | [p1-ui-shell-and-design-system](stream/2026-10-10-p1-ui-shell-and-design-system.spec.md) |
 | 1 | [ui-refresh](stream/2026-10-11-ui-refresh.spec.md) (supersedes the shell spec's Brand, `/` and desktop rail) |
+| 1 | [home-motion](stream/2026-10-13-home-motion.spec.md) (supersedes ui-refresh's hero scroll motion) |
 | 1 | [p1-chessboard-component](stream/2026-10-10-p1-chessboard-component.spec.md) |
 | 1 | [p1-pgn-fen](stream/2026-10-10-p1-pgn-fen.spec.md) |
 | 1 | [p1-analysis-board](stream/2026-10-10-p1-analysis-board.spec.md) |
@@ -71,6 +72,7 @@ documentation system (ai-dev-docs).
 | 2026-10-11-06 | [self-hosted-syzygy-tablebase](adr/2026-10-11-06-self-hosted-syzygy-tablebase.md) |
 | 2026-10-11-07 | [internal-packages-ship-typescript-source](adr/2026-10-11-07-internal-packages-ship-typescript-source.md) |
 | 2026-10-11-08 | [mate-green-brand-accent](adr/2026-10-11-08-mate-green-brand-accent.md) |
+| 2026-10-13-01 | [home-hero-replays-a-historical-game](adr/2026-10-13-01-home-hero-replays-a-historical-game.md) |
 
 ## Conventions
 

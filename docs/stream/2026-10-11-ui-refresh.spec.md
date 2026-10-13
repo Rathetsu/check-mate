@@ -73,6 +73,11 @@ A logo is being designed separately (see Logo brief).
 
 ### Hero: "Exploded board"
 
+> **Superseded (2026-10-13)** by 2026-10-13-home-motion.spec.md: the hero
+> now replays the Opera Game on a clock. The scroll motion, its fallback and
+> the C50 position below are gone. The planes, shading rule and pointer
+> tilt carry over, redesigned.
+
 The copy column holds:
 - the wordmark
 - an "AI chess coach" chip
@@ -611,16 +616,16 @@ Starter poses and where they go:
 |---|---|---|
 | Masters (raw generator output) | `apps/web/brand/mascot.png` (transparent, full body) | Versioned, not served. Every served file is built from it or from a pose |
 | Poses and directions | `apps/web/brand/poses/`: `mascot-<pose>.png` (celebrating, encouraging, explaining, look-left, look-right, oops-1..3, peeking, thinking, thinking-2) | Paste new variations here, named by use. They're optimized into `apps/web/public/brand/` when a page uses one |
-| Hero mascot | `apps/web/public/brand/mascot.webp`, 480×851, 48 KB | Alpha snapped (≥240 → opaque, ≤12 → clear; the generator left the body at 253/255), trimmed with 3% padding, `sharp` lanczos3, WebP q88. Rendered with `next/image` `unoptimized`, since it's already sized |
+| Hero mascot and poses | `apps/web/public/brand/mascot{,-thinking,-explaining,-celebrating}.webp`, 722×909, 49-58 KB each | `node scripts/gen-mascot.ts` (2026-10-13). Same alpha snap (≥240 → opaque, ≤12 → clear), `sharp` lanczos3, WebP q88. Each pose is scaled so the pawn's body has the same area (a leaning pose has a narrower base) and placed with its base centred on one shared canvas, so swapping poses never moves the pawn. Rendered with `next/image` `unoptimized`. Add a pose to the script's list when a page uses one |
 | Favicon | `apps/web/src/app/icon1.png` (32 px) and `icon2.png` (192 px), with rounded corners | A bust cropped from the mascot master (the top 56% of the trimmed image: head, collar ring, tie), 84% of the width, bleeding off the bottom edge, on light emerald `#2E8B63`. The ball-on-collar shape says "pawn" even at 16 px. The first head-only favicon (2026-10-12) read as a face, not chess, and on `#156B4A` the vest disappeared into the background |
 | Apple touch icon | `apps/web/src/app/apple-icon.png`, 180 px, full bleed | The same bust; iOS rounds it itself |
 
 In the hero, the mascot stands in front of the board's lower-left corner,
 looking at the board. It's a flat layer outside the 3D rig, positioned
-against a `.hero-board` wrapper that also carries the perspective. On wide
-screens with motion allowed it rises as you scroll (the nearest parallax
-layer, transform only). Its alt text is empty because the wordmark already
-names the brand.
+against a `.hero-board` wrapper that also carries the perspective. Its
+pose follows the replay, and it shifts against the board as the pointer
+moves (2026-10-13-home-motion.spec.md). Its alt text is empty because the
+wordmark already names the brand.
 
 ## Favicon: toppled king (2026-10-13)
 
