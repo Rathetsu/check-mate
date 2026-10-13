@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import attributions from '@/generated/attributions.json';
-import { REPO_URL, SOURCE_URL } from '@/lib/site';
+import { REPO_URL } from '@/lib/site';
 
 export const metadata: Metadata = { title: 'About & attributions' };
 
@@ -13,11 +13,7 @@ export default function AboutPage() {
       <header className="grid gap-2">
         <h1 className="text-2xl font-semibold">About CheckMate</h1>
         <p>
-          CheckMate is free software under the GNU Affero General Public License v3.0 or later. The{' '}
-          <a href={SOURCE_URL} className="text-primary underline">
-            source of the exact version running here
-          </a>{' '}
-          is on{' '}
+          CheckMate is free software under the GNU Affero General Public License v3.0 or later. The source code is on{' '}
           <a href={REPO_URL} className="text-primary underline">
             GitHub
           </a>

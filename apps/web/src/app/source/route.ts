@@ -1,4 +1,4 @@
-import { SOURCE_URL } from '@/lib/site';
+import { REPO_URL } from '@/lib/site';
 
-// AGPL §13: /source always points at the exact deployed commit.
-export const GET = () => Response.redirect(SOURCE_URL, 307);
+// AGPL §13: /source points at the public repo.
+export const GET = () => Response.redirect(REPO_URL, 307);

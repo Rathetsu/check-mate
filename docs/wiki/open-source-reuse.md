@@ -141,7 +141,7 @@ page. A paid review happens only at the triggers in
   link (P2-EX-02).
 - **`/about/data`:** the monthly CC BY-SA 4.0 masters dump, with
   `SOURCES.md` and the license (P2-EI-35).
-- **Footer:** the Source link to the deployed commit (P1-UI-08).
+- **Footer:** the Source link to the public repo (P1-UI-08).
 
 ## Release compliance checklist
 

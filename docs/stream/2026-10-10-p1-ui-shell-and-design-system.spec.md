@@ -82,7 +82,7 @@ Source link) · 2026-10-10-05-typescript-monorepo-nextjs-and-node-worker ·
   leipzig), shahi-ivory-brown, unlicensed sets, the lichess logo and favicon,
   and lila's unlisted default sounds and art.
 - **P1-UI-08 MUST** The footer on every page shows a "Source" link to the
-  exact deployed commit (AGPL §13) and an "About & attributions" link. The
+  public repo (AGPL §13; 2026-10-13: repo root, not the deployed commit) and an "About & attributions" link. The
   `/about` page lists dataset and asset attributions (CC BY 4.0 pieces, CC
   BY-SA broadcasts).
 - **P1-UI-09 MUST** A consistent empty / loading / error state component.

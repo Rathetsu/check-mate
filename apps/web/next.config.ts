@@ -14,8 +14,6 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(import.meta.dirname, '../..'),
   // Workspace packages ship TypeScript source (no build step).
   transpilePackages: ['@checkmate/core', '@checkmate/chess'],
-  // AGPL §13 Source link (P1-UI-08). Set at image build time.
-  env: { NEXT_PUBLIC_COMMIT_SHA: process.env.COMMIT_SHA ?? 'unknown' },
   // Pages that run the engine are cross-origin isolated, so the
   // multi-threaded Stockfish build can use SharedArrayBuffer (P1-AN-13).
   // Only these routes: isolation blocks cross-origin embeds elsewhere.

@@ -200,7 +200,7 @@ packages/core/  drizzle.config.ts · drizzle/ · src/{db,auth,email,errors,migra
 5. **Compose:**
    - `postgres:16` (pinned, with volume)
    - a one-shot `migrate` service
-   - `web` (`COMMIT_SHA` build arg)
+   - `web`
    - `worker`
    - `caddy`
    - `mailpit` (profile `dev`)

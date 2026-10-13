@@ -1,7 +1,7 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "tasks": {
-    "build": { "outputs": [".next/**", "!.next/cache/**"], "env": ["COMMIT_SHA"] },
+    "build": { "outputs": [".next/**", "!.next/cache/**"] },
     "typecheck": {},
     "dev": { "cache": false, "persistent": true }
   }

@@ -14,10 +14,9 @@ COPY tsconfig.base.json ./
 COPY packages/core packages/core
 COPY packages/chess packages/chess
 COPY apps/web apps/web
-# COMMIT_SHA feeds the footer Source link (AGPL §13, P1-UI-08). The secret is a
-# build-time placeholder only: pages render at request time with the real one.
-ARG COMMIT_SHA=unknown
-ENV COMMIT_SHA=$COMMIT_SHA NEXT_TELEMETRY_DISABLED=1 BETTER_AUTH_SECRET=build-time-placeholder
+# The secret is a build-time placeholder only: pages render at request time
+# with the real one.
+ENV NEXT_TELEMETRY_DISABLED=1 BETTER_AUTH_SECRET=build-time-placeholder
 RUN pnpm --filter @checkmate/web build
 
 FROM node:24-alpine

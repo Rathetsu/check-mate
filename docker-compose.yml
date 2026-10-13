@@ -46,11 +46,7 @@ services:
       migrate: { condition: service_completed_successfully }
 
   web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-      args:
-        COMMIT_SHA: ${COMMIT_SHA:-unknown}
+    build: { context: ., dockerfile: apps/web/Dockerfile }
     restart: unless-stopped
     env_file: [{ path: .env, required: false }]
     environment:

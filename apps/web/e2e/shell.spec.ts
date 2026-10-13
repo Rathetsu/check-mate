@@ -1,11 +1,8 @@
 import { expect, test } from './fixtures';
 
-test('the footer Source link points at the deployed commit (P1-UI-08)', async ({ page }) => {
+test('the footer Source link points at the repo (P1-UI-08)', async ({ page }) => {
   await page.goto('/');
-  const href = await page.getByTestId('source-link').getAttribute('href');
-  const sha = process.env.COMMIT_SHA;
-  expect(href).toContain('github.com/Rathetsu/check-mate');
-  if (sha) expect(href).toBe(`https://github.com/Rathetsu/check-mate/tree/${sha}`);
+  await expect(page.getByTestId('source-link')).toHaveAttribute('href', 'https://github.com/Rathetsu/check-mate');
   await expect(page.getByRole('link', { name: 'About & attributions' })).toBeVisible();
 });
 

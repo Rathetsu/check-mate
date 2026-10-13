@@ -32,7 +32,6 @@ jobs:
     env:
       DATABASE_URL: postgres://checkmate:checkmate@localhost:5432/checkmate
       BETTER_AUTH_SECRET: ci-only-secret-used-nowhere-else-5b0e8f1d
-      COMMIT_SHA: ${{ github.sha }}
       SMTP_HOST: 127.0.0.1
       SMTP_PORT: '1025'
       NEXT_PUBLIC_E2E: '1' # this build only serves the tests: allows ?engine=fake
